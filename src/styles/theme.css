@@ -1,0 +1,11 @@
+/* VBC Theme CSS Variables — see globals.css for full token set */
+:root {
+  --vbc-red: #CC0000;
+  --vbc-red-bright: #FF1A1A;
+  --vbc-red-dark: #990000;
+  --vbc-black: #0A0A0A;
+  --vbc-dark: #141414;
+  --vbc-gray: #1E1E1E;
+  --vbc-muted: #666666;
+  --vbc-text: #E8E8E8;
+}
