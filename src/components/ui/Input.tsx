@@ -1,7 +1,7 @@
 "use client";
-import { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes } from "react";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "prefix"> {
   label?: string;
   error?: string;
   prefix?: React.ReactNode;
