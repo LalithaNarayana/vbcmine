@@ -1,139 +1,138 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import { testimonials, stats } from "@/constants/testimonials";
-import { ArrowRight, Star, Zap } from "lucide-react";
+
+const testimonials = [
+  {
+    name: "Rajesh Kumar", initials: "RK", plan: "Gold Plan — ₹699/mo", color: "#CC0000",
+    review: "Switched from a cable operator to VBC last year. The speeds are consistently good and the OTT bundling is genuinely convenient. Support team sorted my setup issue within 2 hours.",
+  },
+  {
+    name: "Priya Sharma", initials: "PS", plan: "Ultimate Plan — ₹999/mo", color: "#0055CC",
+    review: "Our whole family uses streaming and work-from-home simultaneously — zero buffering. The IPTV channels are crystal clear too. Best decision we made for our home.",
+  },
+  {
+    name: "Venkat Rao", initials: "VR", plan: "Silver Plan — ₹599/mo", color: "#006633",
+    review: "Affordable and reliable. Disney+ Hotstar and Sony LIV bundled at this price is unbeatable in Vizag. Highly recommend VBC to anyone looking to upgrade their connection.",
+  },
+  {
+    name: "Anitha Reddy", initials: "AR", plan: "Premium Plan — ₹799/mo", color: "#CC8800",
+    review: "I run a small business from home and the symmetric speeds VBC offers are a game-changer. Video calls are flawless. The 24/7 support gives me real peace of mind every single day.",
+  },
+];
 
 export function Testimonials() {
-  const [active, setActive] = useState(0);
-
   return (
-    <section style={{ padding: "48px 24px" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-        <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "16px", marginBottom: "36px" }}>
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              style={{
-                background: "#fff",
-                border: "1px solid #E4E7EC",
-                borderRadius: "22px",
-                padding: "22px 18px",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "28px", color: "#CC0000" }}>{stat.value}</div>
-              <div style={{ color: "#667085", fontSize: "12px", marginTop: "6px" }}>{stat.label}</div>
-            </div>
-          ))}
-        </div>
+    <section style={{ background: "#ffffff", padding: "110px 24px" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
 
-        <div style={{ maxWidth: "700px", marginBottom: "24px" }}>
-          <div className="badge-red" style={{ display: "inline-block", marginBottom: "16px" }}>
-            Customer Stories
-          </div>
-          <h2 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 5vw, 48px)", lineHeight: 1.15, color: "#152238", marginBottom: "10px" }}>
-            Real feedback presented like a service website, not a flashy landing experiment.
+        {/* ── Heading ── */}
+        <div style={{ textAlign: "center", marginBottom: 80 }}>
+          <p style={{
+            fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
+            fontSize: 22, letterSpacing: 4, textTransform: "uppercase",
+            color: "#CC0000", marginBottom: 14,
+          }}>Customer Stories</p>
+          <h2 style={{
+            fontFamily: "'Bebas Neue', cursive",
+            fontSize: "clamp(52px, 7vw, 88px)",
+            letterSpacing: 2, lineHeight: 0.95, marginBottom: 24, color: "#14213D",
+          }}>
+            TRUSTED BY{" "}
+            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>50,000+</span>
+            <br />HOUSEHOLDS
           </h2>
-          <p style={{ color: "#667085", fontSize: "16px", lineHeight: 1.8 }}>
-            The testimonials already existed. The improvement here is mostly structural: better spacing, clearer hierarchy and a more trustworthy presentation.
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
+            <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, transparent, #CC0000)" }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CC0000" }} />
+            <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
+          </div>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#667085", maxWidth: 520, margin: "20px auto 0", lineHeight: 1.8 }}>
+            Real experiences from VBC subscribers across Visakhapatnam.
           </p>
         </div>
 
-        <div className="testimonial-layout" style={{ display: "grid", gridTemplateColumns: "0.8fr 1.2fr", gap: "20px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {testimonials.map((testimonial, index) => (
-              <button
-                key={testimonial.id}
-                onClick={() => setActive(index)}
-                style={{
-                  textAlign: "left",
-                  borderRadius: "20px",
-                  border: active === index ? "1px solid rgba(204,0,0,0.2)" : "1px solid #E4E7EC",
-                  background: active === index ? "#FFF5F3" : "#FFFFFF",
-                  padding: "18px 20px",
-                  cursor: "pointer",
-                }}
-              >
-                <div style={{ fontWeight: 700, color: "#152238", marginBottom: "4px" }}>{testimonial.name}</div>
-                <div style={{ color: "#667085", fontSize: "13px" }}>{testimonial.area}</div>
-              </button>
-            ))}
-          </div>
-
-          <div style={{ background: "#FFFFFF", border: "1px solid #E4E7EC", borderRadius: "28px", padding: "30px", boxShadow: "0 18px 40px rgba(20, 33, 61, 0.05)" }}>
-            <div style={{ display: "flex", gap: "4px", marginBottom: "16px" }}>
-              {Array.from({ length: testimonials[active].rating }).map((_, index) => (
-                <Star key={index} size={16} fill="#CC0000" color="#CC0000" />
-              ))}
-            </div>
-            <blockquote style={{ color: "#344054", fontSize: "18px", lineHeight: 1.9, marginBottom: "24px" }}>
-              "{testimonials[active].text}"
-            </blockquote>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-              <div>
-                <div style={{ fontWeight: 700, color: "#152238" }}>{testimonials[active].name}</div>
-                <div style={{ color: "#667085", fontSize: "13px" }}>{testimonials[active].area}</div>
+        {/* Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 26 }}>
+          {testimonials.map((t, i) => (
+            <div key={i}
+              style={{
+                background: "#ffeeeed3", borderRadius: 18, padding: "36px 30px",
+                border: "1px solid rgba(20,33,61,0.07)",
+                boxShadow: "0 4px 20px rgba(20,33,61,0.05)",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                position: "relative", overflow: "hidden",
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLDivElement).style.transform = "translateY(-6px)";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 20px 48px rgba(20,33,61,0.12)";
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 20px rgba(20,33,61,0.05)";
+              }}
+            >
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${t.color}, ${t.color}55)` }} />
+              <div style={{ fontFamily: "Georgia, serif", fontSize: 72, color: t.color, lineHeight: 0.8, marginBottom: 20, opacity: 0.18 }}>&ldquo;</div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: "#334155", lineHeight: 1.85, marginBottom: 28, fontStyle: "italic" }}>{t.review}</p>
+              <div style={{ height: 1, background: `linear-gradient(90deg, ${t.color}44, transparent)`, marginBottom: 22 }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: "50%",
+                  background: `linear-gradient(135deg, ${t.color}, ${t.color}99)`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 15,
+                  color: "#fff", flexShrink: 0, boxShadow: `0 4px 12px ${t.color}44`,
+                }}>{t.initials}</div>
+                <div>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 16, color: "#14213D", letterSpacing: 0.5 }}>{t.name}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: t.color, fontWeight: 600, marginTop: 3 }}>{t.plan}</div>
+                </div>
               </div>
-              <div className="badge-red">{testimonials[active].plan}</div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 1080px) {
-          .stats-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-          }
-        }
-
-        @media (max-width: 900px) {
-          .testimonial-layout {
-            grid-template-columns: 1fr !important;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .stats-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }
 
 export function CTABanner() {
   return (
-    <section style={{ padding: "48px 24px 0" }}>
-      <div
-        style={{
-          maxWidth: "980px",
-          margin: "0 auto",
-          padding: "38px clamp(24px, 4vw, 44px)",
-          borderRadius: "32px",
-          background: "linear-gradient(135deg, #FFF1EE 0%, #FFFFFF 100%)",
-          border: "1px solid rgba(204,0,0,0.08)",
-          textAlign: "center",
-        }}
-      >
-        <div className="badge-red" style={{ display: "inline-block", marginBottom: "16px" }}>
-          Get Started
-        </div>
-        <h2 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "clamp(30px, 5vw, 46px)", lineHeight: 1.15, color: "#152238", marginBottom: "12px" }}>
-          A stronger site structure with the same project content, ready to feel more like a real brand.
+    <section style={{
+      background: "linear-gradient(135deg, #CC0000 0%, #8B1A1A 60%, #14213D 100%)",
+      padding: "80px 24px", position: "relative", overflow: "hidden", textAlign: "center",
+    }}>
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
+      }} />
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto" }}>
+        <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(36px, 5vw, 60px)", letterSpacing: 2, color: "#fff", lineHeight: 1.05, marginBottom: 16 }}>
+          READY TO EXPERIENCE<br />REAL FIBER SPEED?
         </h2>
-        <p style={{ color: "#667085", fontSize: "16px", lineHeight: 1.8, maxWidth: "680px", margin: "0 auto 24px" }}>
-          The major shift is tone and layout: clear actions, calmer sections and a more practical visual system instead of keeping everything dark.
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "rgba(255,255,255,0.75)", marginBottom: 36, lineHeight: 1.7 }}>
+          Join 50,000+ happy subscribers in Vizag. Installation in as little as 24 hours.
         </p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
-          <Link href="/plans" className="btn-primary" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px" }}>
-            <Zap size={16} /> View Plans <ArrowRight size={14} />
-          </Link>
-          <Link href="/contact" className="btn-outline" style={{ textDecoration: "none" }}>
-            Contact Us
-          </Link>
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+          <a href="/plans" style={{
+            display: "inline-block", background: "#fff", color: "#CC0000",
+            fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14,
+            letterSpacing: 1.5, textTransform: "uppercase", textDecoration: "none",
+            padding: "14px 36px", borderRadius: 999, transition: "all 0.2s",
+          }}
+            onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.2)")}
+            onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.boxShadow = "none")}
+          >View Plans</a>
+          <a href="/contact" style={{
+            display: "inline-block", background: "transparent", color: "#fff",
+            fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14,
+            letterSpacing: 1.5, textTransform: "uppercase", textDecoration: "none",
+            padding: "13px 35px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.4)",
+            transition: "all 0.2s",
+          }}
+            onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.1)")}
+            onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.background = "transparent")}
+          >Contact Us</a>
         </div>
       </div>
     </section>

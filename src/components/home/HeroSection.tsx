@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 const banners = [
-  "/images/hero.webp",
-  "/images/hero.webp",
+  "/images/hero.png",
+  "/images/hero.png",
 ];
 
 export default function HeroSection() {

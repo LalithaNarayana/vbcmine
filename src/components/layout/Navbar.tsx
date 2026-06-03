@@ -40,7 +40,7 @@ export default function Navbar() {
             style={{
               maxWidth: "1920px",
               margin: "0 auto",
-              padding: "10px 55px",
+              padding: "10px 65px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
@@ -70,7 +70,7 @@ export default function Navbar() {
           style={{
             maxWidth: "1920px",
             margin: "0 auto",
-            padding: "18px 50px",
+            padding: "18px 60px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
