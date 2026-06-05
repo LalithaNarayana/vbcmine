@@ -56,7 +56,7 @@ export default function Navbar() {
             <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
               <Link href="tel:+918910000000" style={{ color: "#ffffff", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                  <Phone size={14} color="#ffffff" /> +91 891 000 0000
+                  <Phone size={14} color="#ffffff" /> +91 87909 99649
                 </span>
               </Link>
               <Link href="/contact" style={{ color: "#ff5b5b", textDecoration: "none", fontSize: "13px", fontWeight: 700 }}>

@@ -70,7 +70,7 @@ export default function Footer() {
               <Phone size={18} color="#CC0000" />
               <div>
                 <div style={{ color: "#9CA3AF", fontSize: "12px" }}>24/7 customer care</div>
-                <div style={{ color: "#FFFFFF", fontWeight: 700 }}>1800-000-0000</div>
+                <div style={{ color: "#FFFFFF", fontWeight: 700 }}>(0891) 6677-123</div>
               </div>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function Footer() {
               </div>
               <div style={{ display: "flex", gap: "10px" }}>
                 <Phone size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                <span>+91 891 000 0000</span>
+                <span>+91 87909 99649</span>
               </div>
               <div style={{ display: "flex", gap: "10px" }}>
                 <Mail size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
