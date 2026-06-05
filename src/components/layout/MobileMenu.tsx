@@ -8,7 +8,14 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
+import { useEffect } from "react";   // ← add this import at the top with the others
+
 export default function MobileMenu({ open, onClose }: MobileMenuProps) {
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   if (!open) return null;
 
   return (
@@ -48,6 +55,10 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
               background: "#fff",
               color: "#152238",
               cursor: "pointer",
+              display: "flex",           // ← added
+              alignItems: "center",      // ← added
+              justifyContent: "center",  // ← added
+              flexShrink: 0,             // ← prevents squishing in row layout
             }}
           >
             <X size={20} />
