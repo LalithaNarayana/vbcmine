@@ -70,7 +70,7 @@ export default function Navbar() {
           style={{
             maxWidth: "1920px",
             margin: "0 auto",
-            padding: "18px 60px",
+            padding: "14px 40px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -92,7 +92,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "28px" }}>
+          <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -101,7 +101,7 @@ export default function Navbar() {
                   color: "#344054",
                   textDecoration: "none",
                   fontWeight: 600,
-                  fontSize: "15px",
+                  fontSize: "14px",
                   transition: "color 0.2s ease",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#CC0000")}
@@ -146,7 +146,7 @@ export default function Navbar() {
       <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       <style>{`
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
           .navbar-desktop,
           .utility-hide {
             display: none !important;

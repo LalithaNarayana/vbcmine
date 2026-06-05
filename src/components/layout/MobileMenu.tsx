@@ -2,13 +2,12 @@
 import Link from "next/link";
 import { Phone, X } from "lucide-react";
 import { navLinks } from "@/constants/nav";
+import { useEffect } from "react";
 
 interface MobileMenuProps {
   open: boolean;
   onClose: () => void;
 }
-
-import { useEffect } from "react";   // ← add this import at the top with the others
 
 export default function MobileMenu({ open, onClose }: MobileMenuProps) {
   useEffect(() => {
@@ -55,10 +54,10 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
               background: "#fff",
               color: "#152238",
               cursor: "pointer",
-              display: "flex",           // ← added
-              alignItems: "center",      // ← added
-              justifyContent: "center",  // ← added
-              flexShrink: 0,             // ← prevents squishing in row layout
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
             }}
           >
             <X size={20} />

@@ -277,14 +277,15 @@ export function SpeedHighlight() {
   );
 }
 
-// ─── WHY VBC ─────────────────────────────────────────────────────────────────
 const whyItems = [
   { img: "/images/why1.jpeg", iconKey: "lightning", title: "Lightning Fast Speeds", desc: "True fiber-optic infrastructure with symmetric upload and download speeds — no throttling, no fair usage caps." },
   { img: "/images/why2.jpeg", iconKey: "shield", title: "99.9% Uptime SLA", desc: "Our redundant network architecture and 24/7 NOC monitoring guarantee near-zero downtime for homes and businesses." },
-  { img: "/images/why3.jpeg", iconKey: "tv", title: "550+ Live TV Channels", desc: "Crisp HD/4K live television over your fiber line — sports, news, entertainment, and regional channels all included." },
   { img: "/images/why4.jpeg", iconKey: "film", title: "21+ OTT Platforms", desc: "Disney+ Hotstar, Sony LIV, ZEE5, Aha, Sun NXT, Amazon Prime and more — bundled at no extra subscription cost." },
   { img: "/images/why5.jpeg", iconKey: "headset", title: "24/7 Expert Support", desc: "Our local Vizag-based support team is available round the clock via phone, WhatsApp, and in-person visits." },
   { img: "/images/why6.jpeg", iconKey: "globe", title: "City-Wide Coverage", desc: "50+ zones across Visakhapatnam covered with our fiber backbone — expanding every quarter to new areas." },
+  { img: "/images/why3.jpeg", iconKey: "tv", title: "Home Connection", desc: "Fast fiber internet for your home with free installation and same-day activation. Symmetric speeds, no throttling, no hidden charges." },
+  { img: "/images/why1.jpeg", iconKey: "lightning", title: "Business Connection", desc: "Dedicated leased lines, static IPs, and SLA-backed plans tailored for businesses. Priority support and guaranteed uptime around the clock." },
+  { img: "/images/why2.jpeg", iconKey: "shield", title: "Bulk / Apartments", desc: "Special group packages for apartments, hostels, and commercial complexes. One connection, whole building — managed effortlessly." },
 ];
 
 export function WhyVBC() {
