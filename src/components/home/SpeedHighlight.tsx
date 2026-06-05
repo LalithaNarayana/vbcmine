@@ -284,8 +284,8 @@ const whyItems = [
   { img: "/images/why5.jpeg", iconKey: "headset", title: "24/7 Expert Support", desc: "Our local Vizag-based support team is available round the clock via phone, WhatsApp, and in-person visits." },
   { img: "/images/why6.jpeg", iconKey: "globe", title: "City-Wide Coverage", desc: "50+ zones across Visakhapatnam covered with our fiber backbone — expanding every quarter to new areas." },
   { img: "/images/why3.jpeg", iconKey: "tv", title: "Home Connection", desc: "Fast fiber internet for your home with free installation and same-day activation. Symmetric speeds, no throttling, no hidden charges." },
-  { img: "/images/why1.jpeg", iconKey: "lightning", title: "Business Connection", desc: "Dedicated leased lines, static IPs, and SLA-backed plans tailored for businesses. Priority support and guaranteed uptime around the clock." },
-  { img: "/images/why2.jpeg", iconKey: "shield", title: "Bulk / Apartments", desc: "Special group packages for apartments, hostels, and commercial complexes. One connection, whole building — managed effortlessly." },
+  { img: "/images/why7.jpeg", iconKey: "lightning", title: "Business Connection", desc: "Dedicated leased lines, static IPs, and SLA-backed plans tailored for businesses. Priority support and guaranteed uptime around the clock." },
+  { img: "/images/why8.png", iconKey: "shield", title: "Bulk / Apartments", desc: "Special group packages for apartments, hostels, and commercial complexes. One connection, whole building — managed effortlessly." },
 ];
 
 export function WhyVBC() {
