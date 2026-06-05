@@ -43,7 +43,7 @@ export default function HeroSection() {
   return (
     <section style={{ position: "relative", width: "100%", overflow: "hidden", userSelect: "none" }}>
       {/* Slide container */}
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1920/700", minHeight: 220 }}>
+      <div style={{ position: "relative", width: "100%" }}>
         {banners.map((src, i) => (
           <div
             key={i}
@@ -51,7 +51,7 @@ export default function HeroSection() {
               position: i === 0 ? "relative" : "absolute",
               inset: 0,
               width: "100%",
-              height: "100%",
+              height: i === 0 ? "auto" : "100%",
               opacity: i === active ? 1 : 0,
               transform: i === active
                 ? "scale(1.04)"
@@ -67,9 +67,10 @@ export default function HeroSection() {
             <Image
               src={src}
               alt={`Hero banner ${i + 1}`}
-              fill
+              width={1920}
+              height={900}
               priority={i === 0}
-              style={{ objectFit: "cover", width: "100%", height: "100%" }}
+              style={{ objectFit: "contain", width: "100%", height: "auto", display: "block" }}
               sizes="100vw"
             />
           </div>
