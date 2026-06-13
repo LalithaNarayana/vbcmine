@@ -1,21 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
+import { Suspense } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { broadbandPlans } from "@/constants/plans";
 import { Check, CreditCard, Shield, Smartphone, ArrowLeft } from "lucide-react";
 
-// Default plan used for renewal (the user's current active plan)
 const DEFAULT_PLAN_ID = "bb-standard";
 
-export default function RenewPage() {
+function RenewContent() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState<"payment" | "done">("payment");
 
-  // planId can be passed via query param to pre-select a specific plan
   const planId = searchParams.get("planId") || DEFAULT_PLAN_ID;
-  const allPlans = broadbandPlans; // extend as needed
-  const currentPlan = allPlans.find((p) => p.id === planId) ?? allPlans[0];
+  const currentPlan = broadbandPlans.find((p) => p.id === planId) ?? broadbandPlans[0];
 
   if (step === "done") {
     return (
@@ -37,7 +35,6 @@ export default function RenewPage() {
     );
   }
 
-  // Payment step — shown immediately, no plan selection
   return (
     <div style={{ minHeight: "100vh", background: "#ffffff", padding: "100px 24px 60px" }}>
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
@@ -139,5 +136,13 @@ export default function RenewPage() {
       </div>
       <style>{`@media(max-width:768px){div > div > div:last-child{grid-template-columns:1fr!important;}}`}</style>
     </div>
+  );
+}
+
+export default function RenewPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
+      <RenewContent />
+    </Suspense>
   );
 }
