@@ -43,7 +43,7 @@ export const testimonials = [
 
 export const stats = [
   { value: "12+", label: "Years of Service" },
-  { value: "50K+", label: "Happy Customers" },
+  { value: "30K+", label: "Happy Customers" },
   { value: "1 Gbps", label: "Max Speed" },
   { value: "99.9%", label: "Uptime SLA" },
   { value: "400+", label: "TV Channels" },

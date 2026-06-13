@@ -1,19 +1,21 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Phone, Radio, ShieldCheck, Tv, Wifi } from "lucide-react";
+import { Mail, MapPin, Phone, Radio, ShieldCheck, Tv, Wifi, Server, PhoneCall, Globe } from "lucide-react";
 
-const serviceLinks = [
-  { label: "Fiber Broadband", icon: Wifi },
-  { label: "Digital TV", icon: Tv },
-  { label: "IPTV Services", icon: Radio },
-  { label: "Business Connectivity", icon: ShieldCheck },
+const businessServices = [
+  { label: "Internet Leased Lines (ILL)", icon: Wifi, href: "/services/ill" },
+  { label: "MPLS Connectivity", icon: Globe, href: "/services/mpls" },
+  { label: "Hosting & Server Colocation", icon: Server, href: "/services/hosting" },
+  { label: "VOIP / IBS Solutions", icon: PhoneCall, href: "/services/voip" },
+  { label: "Optical Fiber Lease", icon: ShieldCheck, href: "/services/optical-fiber" },
 ];
 
 const quickLinks = [
   { label: "About Us", href: "/about" },
   { label: "Plans & Pricing", href: "/plans" },
-  { label: "Coverage Areas", href: "/city-selection" },
   { label: "Renew Plan", href: "/renew" },
+  { label: "FAQ", href: "/faq" },
   { label: "Contact Us", href: "/contact" },
 ];
 
@@ -30,7 +32,7 @@ export default function Footer() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1.4fr 1fr 1fr 1.2fr",
+            gridTemplateColumns: "1.4fr 1.2fr 1fr 1.2fr",
             gap: "32px",
           }}
           className="footer-grid"
@@ -75,14 +77,19 @@ export default function Footer() {
             </div>
           </div>
 
+          {/* Business Services */}
           <div>
-            <h4 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "16px", color: "#FFFFFF", marginBottom: "16px" }}>Services</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {serviceLinks.map(({ label, icon: Icon }) => (
-                <div key={label} style={{ display: "flex", alignItems: "center", gap: "10px", color: "#B7BDC6", fontSize: "14px" }}>
-                  <Icon size={16} color="#CC0000" />
+            <h4 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "16px", color: "#FFFFFF", marginBottom: "16px" }}>Business Services</h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {businessServices.map(({ label, icon: Icon, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="footer-service-link"
+                >
+                  <Icon size={14} color="#CC0000" style={{ flexShrink: 0 }} />
                   <span>{label}</span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -103,15 +110,15 @@ export default function Footer() {
             <div style={{ display: "flex", flexDirection: "column", gap: "14px", color: "#B7BDC6", fontSize: "14px", lineHeight: 1.7 }}>
               <div style={{ display: "flex", gap: "10px" }}>
                 <MapPin size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                <span>VBC House, MVP Colony, Visakhapatnam, Andhra Pradesh 530017</span>
+                <span>#47-10-20, 401, 4th Floor, Dwaraka Plaza, Dwaraka Nagar, Visakhapatnam – 530016</span>
               </div>
               <div style={{ display: "flex", gap: "10px" }}>
                 <Phone size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                <span>+91 87909 99649</span>
+                <span>(0891) 6677-123, 6677-124</span>
               </div>
               <div style={{ display: "flex", gap: "10px" }}>
                 <Mail size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                <span>support@vbconfiber.com</span>
+                <span>sales@vbctv.in | support@vbctv.in</span>
               </div>
             </div>
           </div>
@@ -132,6 +139,10 @@ export default function Footer() {
           }}
         >
           <p>(c) {new Date().getFullYear()} VBC On Fiber. All rights reserved.</p>
+          <p style={{ color: "#9CA3AF", fontSize: "13px" }}>
+            Designed and developed by{" "}
+            <a href="https://www.thecolourmoon.com/" target="_blank" rel="noopener noreferrer" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>Colourmoon Technologies</a>
+          </p>
           <div style={{ display: "flex", gap: "18px", flexWrap: "wrap" }}>
             <Link href="#" style={{ color: "#9CA3AF", textDecoration: "none" }}>Privacy Policy</Link>
             <Link href="#" style={{ color: "#9CA3AF", textDecoration: "none" }}>Terms of Service</Link>
@@ -141,12 +152,23 @@ export default function Footer() {
       </div>
 
       <style>{`
+        .footer-service-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #B7BDC6;
+          font-size: 13px;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+        .footer-service-link:hover {
+          color: #CC0000;
+        }
         @media (max-width: 960px) {
           .footer-grid {
             grid-template-columns: 1fr 1fr !important;
           }
         }
-
         @media (max-width: 640px) {
           .footer-grid {
             grid-template-columns: 1fr !important;

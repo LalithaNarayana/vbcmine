@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, MapPin, Phone } from "lucide-react";
+import { Menu, Phone } from "lucide-react";
 import { navLinks } from "@/constants/nav";
 import MobileMenu from "@/components/layout/MobileMenu";
 import Image from "next/image";
@@ -18,6 +18,27 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Top announcement bar */}
+      <div style={{
+        background: "#161616",
+        padding: "10px 16px",
+        textAlign: "center",
+        fontSize: "13px",
+        fontFamily: "'Rajdhani', sans-serif",
+        fontWeight: 600,
+        color: "#fff",
+        letterSpacing: "0.3px",
+      }}>
+        <Link href="/plans" style={{ color: "#fff", textDecoration: "none" }}>
+          📶 Click here to book connection online
+        </Link>
+        <span style={{ margin: "0 16px", opacity: 0.6 }}>|</span>
+        <Link href="tel:08916677123" style={{ color: "#fff", textDecoration: "none" }}>
+          <Phone size={12} style={{ display: "inline", marginRight: 4 }} />
+          Call 0891 - 6677-123
+        </Link>
+      </div>
+
       <header
         style={{
           position: "sticky",
@@ -29,43 +50,6 @@ export default function Navbar() {
           borderBottom: "1px solid rgba(20,33,61,0.06)",
         }}
       >
-        <div
-          className="nav-utility"
-          style={{
-            borderBottom: "1px solid #EEF2F6",
-            background: "#000000",
-          }}
-        >
-          <div
-            style={{
-              maxWidth: "1920px",
-              margin: "0 auto",
-              padding: "10px 65px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "16px",
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "18px", color: "#ffffff", fontSize: "13px" }}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                <MapPin size={14} color="#ffffff" /> Serving Visakhapatnam and surrounding areas
-              </span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
-              <Link href="tel:+918910000000" style={{ color: "#ffffff", textDecoration: "none", fontSize: "13px", fontWeight: 600 }}>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                  <Phone size={14} color="#ffffff" /> +91 87909 99649
-                </span>
-              </Link>
-              <Link href="/contact" style={{ color: "#ff5b5b", textDecoration: "none", fontSize: "13px", fontWeight: 700 }}>
-                Support Center
-              </Link>
-            </div>
-          </div>
-        </div>
-
         <nav
           style={{
             maxWidth: "1920px",
@@ -84,15 +68,11 @@ export default function Navbar() {
               width={180}
               height={60}
               priority
-              style={{
-                width: "auto",
-                height: "48px",
-                display: "block",
-              }}
+              style={{ width: "auto", height: "48px", display: "block" }}
             />
           </Link>
 
-          <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "28px" }}>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -147,20 +127,8 @@ export default function Navbar() {
 
       <style>{`
         @media (max-width: 1100px) {
-          .navbar-desktop,
-          .utility-hide {
-            display: none !important;
-          }
-
-          .navbar-mobile-toggle {
-            display: inline-flex !important;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .nav-utility {
-            display: none;
-          }
+          .navbar-desktop { display: none !important; }
+          .navbar-mobile-toggle { display: inline-flex !important; }
         }
       `}</style>
     </>

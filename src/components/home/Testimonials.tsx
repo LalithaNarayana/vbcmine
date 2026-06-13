@@ -37,7 +37,7 @@ export function Testimonials() {
             letterSpacing: 2, lineHeight: 0.95, marginBottom: 24, color: "#14213D",
           }}>
             TRUSTED BY{" "}
-            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>50,000+</span>
+            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>30,000+</span>
             <br />HOUSEHOLDS
           </h2>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
@@ -111,7 +111,7 @@ export function CTABanner() {
           READY TO EXPERIENCE<br />REAL FIBER SPEED?
         </h2>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "rgba(255,255,255,0.75)", marginBottom: 36, lineHeight: 1.7 }}>
-          Join 50,000+ happy subscribers in Vizag. Installation in as little as 24 hours.
+          Join 30,000+ happy subscribers in Vizag. Installation in as little as 24 hours.
         </p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           <a href="/plans" style={{

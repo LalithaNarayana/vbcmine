@@ -9,6 +9,8 @@ const banners = [
   "/images/hero3.png",
   "/images/hero4.png",
   "/images/hero5.png",
+  "/images/hero6.png",
+  "/images/hero7.png",
 ];
 
 export default function HeroSection() {
@@ -21,10 +23,7 @@ export default function HeroSection() {
     setPrev(active);
     setAnimating(true);
     setActive(idx);
-    setTimeout(() => {
-      setPrev(null);
-      setAnimating(false);
-    }, 900);
+    setTimeout(() => { setPrev(null); setAnimating(false); }, 900);
   }, [active, animating]);
 
   useEffect(() => {
@@ -36,28 +35,34 @@ export default function HeroSection() {
         setTimeout(() => { setPrev(null); setAnimating(false); }, 900);
         return next;
       });
-    }, 4000);
+    }, 5000);
     return () => clearInterval(timer);
   }, []);
 
   return (
     <section style={{ position: "relative", width: "100%", overflow: "hidden", userSelect: "none" }}>
-      {/* Slide container */}
       <div style={{ position: "relative", width: "100%" }}>
+
+        {/* Invisible active image — drives the container height naturally */}
+        <Image
+          src={banners[active]}
+          alt=""
+          aria-hidden
+          width={1920}
+          height={900}
+          style={{ width: "100%", height: "auto", display: "block", visibility: "hidden" }}
+          sizes="100vw"
+        />
+
+        {/* All slides stacked on top */}
         {banners.map((src, i) => (
           <div
             key={i}
             style={{
-              position: i === 0 ? "relative" : "absolute",
+              position: "absolute",
               inset: 0,
-              width: "100%",
-              height: i === 0 ? "auto" : "100%",
               opacity: i === active ? 1 : 0,
-              transform: i === active
-                ? "scale(1.04)"
-                : i === prev
-                  ? "scale(1.0)"
-                  : "scale(1.04)",
+              transform: i === active ? "scale(1.04)" : i === prev ? "scale(1.0)" : "scale(1.04)",
               transition: i === active
                 ? "opacity 0.9s cubic-bezier(0.4,0,0.2,1), transform 5s cubic-bezier(0.0,0.0,0.2,1)"
                 : "opacity 0.9s cubic-bezier(0.4,0,0.2,1), transform 0.9s ease",
@@ -67,10 +72,9 @@ export default function HeroSection() {
             <Image
               src={src}
               alt={`Hero banner ${i + 1}`}
-              width={1920}
-              height={900}
+              fill
               priority={i === 0}
-              style={{ objectFit: "contain", width: "100%", height: "auto", display: "block" }}
+              style={{ objectFit: "contain" }}
               sizes="100vw"
             />
           </div>

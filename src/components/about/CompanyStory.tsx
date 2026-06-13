@@ -6,7 +6,7 @@ const milestones = [
   { year: "2018", title: "IPTV Launch", desc: "Launched full IPTV platform with 400+ channels and VOD library." },
   { year: "2020", title: "1 Gbps Fiber", desc: "Upgraded network infrastructure to deliver 1 Gbps speeds citywide." },
   { year: "2022", title: "Enterprise Solutions", desc: "Launched leased lines, VoIP, and enterprise hosting for businesses." },
-  { year: "2024", title: "50,000+ Customers", desc: "Largest fiber ISP in Visakhapatnam. Covering all major zones." },
+  { year: "2024", title: "30,000+ Customers", desc: "Largest fiber ISP in Visakhapatnam. Covering all major zones." },
 ];
 
 export default function CompanyStory() {
@@ -27,13 +27,13 @@ export default function CompanyStory() {
               VBC (Vizag Broadcasting Company) was born from a simple idea — that Visakhapatnam deserved world-class internet. In 2012, a small team of engineers laid the first fiber cables in MVP Colony, believing that fast, reliable connectivity would transform the city.
             </p>
             <p style={{ color: "#475467", fontSize: "14px", lineHeight: "1.9", marginBottom: "32px" }}>
-              Today, we're Vizag's largest multi-service operator — delivering fiber broadband, Digital TV, IPTV, enterprise solutions and more to over 50,000 homes and businesses across every major area of the city.
+              Today, we're Vizag's largest multi-service operator — delivering fiber broadband, Digital TV, IPTV, enterprise solutions and more to over 30,000 homes and businesses across every major area of the city.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
               {[
                 { icon: <Calendar size={18} />, label: "Established", value: "2012" },
                 { icon: <MapPin size={18} />, label: "Headquarters", value: "MVP Colony, Vizag" },
-                { icon: <Users size={18} />, label: "Customers", value: "50,000+" },
+                { icon: <Users size={18} />, label: "Customers", value: "30,000+" },
                 { icon: <Award size={18} />, label: "Coverage Areas", value: "50+ Zones" },
               ].map((item, i) => (
                 <div key={i} style={{ background: "#ffffff", border: "1px solid rgba(204,0,0,0.12)", padding: "20px", boxShadow: "0 12px 30px rgba(20, 33, 61, 0.06)" }}>

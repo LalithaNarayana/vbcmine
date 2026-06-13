@@ -1,44 +1,519 @@
 "use client";
 import type { JSX } from "react";
+import { useState } from "react";
+import Link from "next/link";
+import { CheckCircle, Zap, X } from "lucide-react";
 
-const plans = [
+// ─── INTERNET + OTT PLANS (from plans page) ─────────────────────────────────
+const ottPlans = [
   {
-    name: "Starter", price: "₹399", speed: "30 Mbps", color: "#94A3B8",
-    ott: { "Aha": true, "Sun NXT": true, "Hungama Play": true, "Epic ON": true, "ShemarooMe": true, "Disney+ Hotstar": false, "Sony LIV": false, "ZEE5": false, "Amazon Prime": false, "Lionsgate Play": false, "IPTV 550+": false },
+    speed: "30 Mbps",
+    price: 499,
+    otts: 20,
+    popular: false,
+    features: [
+      "20 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
   },
   {
-    name: "Silver", price: "₹599", speed: "50 Mbps", color: "#7EC8E3",
-    ott: { "Aha": true, "Sun NXT": true, "Hungama Play": true, "Epic ON": true, "ShemarooMe": true, "Disney+ Hotstar": true, "Sony LIV": true, "ZEE5": true, "Amazon Prime": false, "Lionsgate Play": true, "IPTV 550+": false },
+    speed: "50 Mbps",
+    price: 599,
+    otts: 27,
+    popular: false,
+    features: [
+      "27 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
   },
   {
-    name: "Gold", price: "₹699", speed: "75 Mbps", color: "#F5A623", popular: true,
-    ott: { "Aha": true, "Sun NXT": true, "Hungama Play": true, "Epic ON": true, "ShemarooMe": true, "Disney+ Hotstar": true, "Sony LIV": true, "ZEE5": true, "Amazon Prime": false, "Lionsgate Play": true, "IPTV 550+": false },
+    speed: "100 Mbps",
+    price: 799,
+    otts: 30,
+    popular: true,
+    features: [
+      "30 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
   },
   {
-    name: "Premium", price: "₹799", speed: "100 Mbps", color: "#E05C5C",
-    ott: { "Aha": true, "Sun NXT": true, "Hungama Play": true, "Epic ON": true, "ShemarooMe": true, "Disney+ Hotstar": true, "Sony LIV": true, "ZEE5": true, "Amazon Prime": true, "Lionsgate Play": true, "IPTV 550+": true },
+    speed: "150 Mbps",
+    price: 899,
+    otts: 30,
+    popular: false,
+    features: [
+      "30 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
   },
   {
-    name: "Ultimate", price: "₹999", speed: "200 Mbps", color: "#CC0000",
-    ott: { "Aha": true, "Sun NXT": true, "Hungama Play": true, "Epic ON": true, "ShemarooMe": true, "Disney+ Hotstar": true, "Sony LIV": true, "ZEE5": true, "Amazon Prime": true, "Lionsgate Play": true, "IPTV 550+": true },
+    speed: "200 Mbps",
+    price: 999,
+    otts: 30,
+    popular: false,
+    features: [
+      "30 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
   },
 ];
 
-const ottColumns = ["Aha","Sun NXT","Hungama Play","Epic ON","ShemarooMe","Disney+ Hotstar","Sony LIV","ZEE5","Amazon Prime","Lionsgate Play","IPTV 550+"];
+// ─── PLANS SECTION ────────────────────────────────────────────────────────────
+export function SpeedHighlight() {
+  const [ottPopupOpen, setOttPopupOpen] = useState(false);
 
-const ottLogos: Record<string, string> = {
-  "Aha": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Aha_OTT_Logo.svg",
-  "Sun NXT": "https://cdn.brandfetch.io/id_KZi_KXq/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B",
-  "Hungama Play": "https://play-lh.googleusercontent.com/-3gyIwChvq6I8Ra9AJzm9txK49ttPpolPimdR79szZXy-wFLWlt8Rrwb3FQhx_fMnciI",
-  "Epic ON": "https://cdn.brandfetch.io/idp2z3BuPu/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B",
-  "ShemarooMe": "https://image.pngaaa.com/593/7139593-middle.png",
-  "Disney+ Hotstar": "https://cdn.brandfetch.io/idh5Jct7tV/w/3840/h/2811/theme/light/idRhWuwdh-.png?c=1dxbfHSJFAPEGdCLU4o5B",
-  "Sony LIV": "https://cdn.brandfetch.io/idzv1z05h1/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B",
-  "ZEE5": "https://cdn.brandfetch.io/idG83-n-Gw/w/512/h/512/theme/light/logo.png?c=1dxbfHSJFAPEGdCLU4o5B",
-  "Amazon Prime": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Amazon_Prime_Video_blue_logo_1.svg",
-  "Lionsgate Play": "https://cdn.brandfetch.io/idetipNrU2/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B",
-  "IPTV 550+": "https://play-lh.googleusercontent.com/qVBLymJyAWhGFYUKlGS3pvXmKrLRu3D19YnJSumDcYLypXWvKoZ9qceaKJhJwXd3J9A",
-};
+  return (
+    <section
+      style={{
+        background: "#14213D",
+        padding: "110px 24px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Background texture */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: -160,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: 700,
+          height: 350,
+          background: "radial-gradient(ellipse, rgba(204,0,0,0.12) 0%, transparent 70%)",
+          zIndex: 0,
+        }}
+      />
+
+      <div style={{ maxWidth: 1320, margin: "0 auto", position: "relative", zIndex: 1 }}>
+
+        {/* Heading */}
+        <div style={{ textAlign: "center", marginBottom: 64 }}>
+          <p
+            style={{
+              fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700,
+              fontSize: 22,
+              letterSpacing: 4,
+              textTransform: "uppercase",
+              color: "#CC0000",
+              marginBottom: 14,
+            }}
+          >
+            Internet + OTT Plans
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Bebas Neue', cursive",
+              fontSize: "clamp(52px, 7vw, 88px)",
+              letterSpacing: 2,
+              lineHeight: 0.95,
+              marginBottom: 24,
+              color: "#FFFFFF",
+            }}
+          >
+            FIBER SPEED{" "}
+            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>
+              +
+            </span>{" "}
+            OTT BUNDLE
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              marginBottom: 20,
+            }}
+          >
+            <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, transparent, #CC0000)" }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CC0000" }} />
+            <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
+          </div>
+          <p
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 16,
+              color: "#becada",
+              maxWidth: 540,
+              margin: "0 auto",
+              lineHeight: 1.8,
+            }}
+          >
+            High-speed unlimited fiber internet bundled with your favourite OTT streaming apps — all in one plan.
+          </p>
+        </div>
+
+        {/* Offer banner */}
+        <div
+          style={{
+            background: "rgba(204,0,0,0.1)",
+            border: "1px solid rgba(204,0,0,0.25)",
+            borderRadius: 10,
+            padding: "14px 20px",
+            marginBottom: 48,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            maxWidth: 800,
+            margin: "0 auto 48px",
+          }}
+        >
+          <Zap size={18} color="#CC0000" style={{ flexShrink: 0 }} />
+          <span
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 13,
+              color: "#becada",
+            }}
+          >
+            6+1 or 12+2 months offer available. Router &amp; Installation free on 6/12 month plans. Non-refundable installation: ₹1500 for monthly plans. GST @18% extra.
+          </span>
+        </div>
+
+        {/* Plan Cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+            gap: 24,
+            alignItems: "start",
+          }}
+        >
+          {ottPlans.map((plan, i) => (
+            <div
+              key={i}
+              style={{
+                background: plan.popular
+                  ? "linear-gradient(135deg, #1a0505 0%, #2a0808 100%)"
+                  : "rgba(255,255,255,0.04)",
+                border: plan.popular
+                  ? "2px solid #CC0000"
+                  : "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 18,
+                padding: "32px 24px",
+                position: "relative",
+                boxShadow: plan.popular
+                  ? "0 24px 60px rgba(204,0,0,0.25)"
+                  : "0 4px 20px rgba(0,0,0,0.2)",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                cursor: "default",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = "translateY(-6px)";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = plan.popular
+                  ? "0 32px 80px rgba(204,0,0,0.35)"
+                  : "0 20px 60px rgba(0,0,0,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = "";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = plan.popular
+                  ? "0 24px 60px rgba(204,0,0,0.25)"
+                  : "0 4px 20px rgba(0,0,0,0.2)";
+              }}
+            >
+              {plan.popular && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -13,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    background: "linear-gradient(135deg, #CC0000, #E43B2C)",
+                    color: "#fff",
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 10,
+                    letterSpacing: 2,
+                    padding: "4px 18px",
+                    borderRadius: 999,
+                    whiteSpace: "nowrap",
+                    textTransform: "uppercase",
+                    boxShadow: "0 4px 16px rgba(204,0,0,0.5)",
+                  }}
+                >
+                  Most Popular
+                </div>
+              )}
+
+              {/* Speed */}
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', cursive",
+                  fontSize: 36,
+                  color: "#fff",
+                  letterSpacing: 1,
+                  marginBottom: 4,
+                }}
+              >
+                {plan.speed}
+              </div>
+
+              {/* OTT count — clickable to open popup */}
+              <button
+                onClick={() => setOttPopupOpen(true)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  display: "block",
+                  marginBottom: 16,
+                }}
+                title="Click to see OTT apps"
+              >
+                <span
+                  style={{
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    color: "#ff0000",
+                    letterSpacing: 1,
+                    textDecoration: "underline",
+                    textUnderlineOffset: 3,
+                    textDecorationStyle: "dotted",
+                  }}
+                >
+                  {plan.otts} OTT Apps 🎬
+                </span>
+              </button>
+
+              {/* Price */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 4,
+                  marginBottom: 20,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    color: "rgba(255,255,255,0.5)",
+                  }}
+                >
+                  ₹
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'Bebas Neue', cursive",
+                    fontSize: 52,
+                    color: "#fff",
+                    letterSpacing: 1,
+                    lineHeight: 1,
+                  }}
+                >
+                  {plan.price}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: 13,
+                    color: "rgba(255,255,255,0.4)",
+                  }}
+                >
+                  /mo
+                </span>
+              </div>
+
+              {/* Divider */}
+              <div
+                style={{
+                  height: 1,
+                  background: plan.popular
+                    ? "rgba(204,0,0,0.3)"
+                    : "rgba(255,255,255,0.08)",
+                  marginBottom: 20,
+                }}
+              />
+
+              {/* Features */}
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px 0" }}>
+                {plan.features.map((f, j) => (
+                  <li
+                    key={j}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 10,
+                      marginBottom: 10,
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.75)",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <CheckCircle
+                      size={14}
+                      color="#CC0000"
+                      style={{ marginTop: 2, flexShrink: 0 }}
+                    />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              <Link
+                href="/contact"
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  background: "#CC0000",
+                  color: "#fff",
+                  border: plan.popular ? "none" : "1px solid rgba(204,0,0,0.6)",
+                  fontFamily: "'Rajdhani', sans-serif",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  letterSpacing: 1.5,
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  padding: "12px 20px",
+                  borderRadius: 10,
+                  transition: "all 0.2s",
+                  boxShadow: plan.popular ? "0 6px 20px rgba(204,0,0,0.4)" : "none",
+                }}
+              >
+                Get This Plan
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* View all plans link */}
+        <div style={{ textAlign: "center", marginTop: 48 }}>
+          <Link
+            href="/plans"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background:"#CC0000",
+              fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700,
+              fontSize: 14,
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+              color: "#ffffff",
+              textDecoration: "none",
+              padding: "12px 32px",
+              borderRadius: 999,
+              border: "1px solid rgba(204,0,0,0.4)",
+              transition: "all 0.2s",
+            }}
+          >
+            View All Plans
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+
+      {/* OTT Popup Modal */}
+      {ottPopupOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+            backdropFilter: "blur(6px)",
+          }}
+          onClick={() => setOttPopupOpen(false)}
+        >
+          <div
+            style={{
+              position: "relative",
+              maxWidth: 700,
+              width: "100%",
+              borderRadius: 20,
+              overflow: "hidden",
+              boxShadow: "0 40px 100px rgba(0,0,0,0.8)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setOttPopupOpen(false)}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                zIndex: 10,
+                background: "rgba(0,0,0,0.6)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: "50%",
+                width: 36,
+                height: 36,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "#fff",
+              }}
+            >
+              <X size={18} />
+            </button>
+            <img
+              src="/images/ott1.png"
+              alt="OTT Apps included"
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                objectFit: "contain",
+              }}
+              onError={(e) => {
+                // Fallback if image not found
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+                const parent = (e.currentTarget as HTMLImageElement).parentElement;
+                if (parent) {
+                  parent.style.background = "#14213D";
+                  parent.style.padding = "60px 40px";
+                  parent.innerHTML = `<div style="text-align:center;color:#fff;font-family:'Rajdhani',sans-serif;font-size:20px;">OTT Apps image not found.<br/>Please add /images/ott1.png</div>`;
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
 
 // ─── WHY VBC ICONS ────────────────────────────────────────────────────────
 const whyIcons: Record<string, JSX.Element> = {
@@ -81,201 +556,6 @@ const whyIcons: Record<string, JSX.Element> = {
     </svg>
   ),
 };
-
-// ─── TRIPLE PLAY / PLANS TABLE ───────────────────────────────────────────────
-export function SpeedHighlight() {
-  return (
-    <section style={{ background: "#293451", padding: "110px 24px", position: "relative", overflow: "hidden" }}>
-      {/* subtle grid texture */}
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 0,
-        backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-        backgroundSize: "48px 48px",
-      }} />
-      <div style={{ position: "absolute", top: -160, left: "50%", transform: "translateX(-50%)", width: 700, height: 350, background: "radial-gradient(ellipse, rgba(204,0,0,0.12) 0%, transparent 70%)", zIndex: 0 }} />
-
-      <div style={{ maxWidth: 1320, margin: "0 auto", position: "relative", zIndex: 1 }}>
-
-        {/* ── Heading ── */}
-        <div style={{ textAlign: "center", marginBottom: 80 }}>
-          <p style={{
-            fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
-            fontSize: 22, letterSpacing: 4, textTransform: "uppercase",
-            color: "#CC0000", marginBottom: 14,
-          }}>Triple Play</p>
-          <h2 style={{
-            fontFamily: "'Bebas Neue', cursive",
-            fontSize: "clamp(52px, 7vw, 88px)",
-            letterSpacing: 2, lineHeight: 0.95, marginBottom: 24, color: "#FFFFFF",
-          }}>
-            INTERNET{" "}
-            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>·</span>
-            {" "}PHONE{" "}
-            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>·</span>
-            {" "}OTT
-          </h2>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
-            <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, transparent, #CC0000)" }} />
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CC0000" }} />
-            <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
-          </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#becada", maxWidth: 520, margin: "20px auto 0", lineHeight: 1.8 }}>
-            All plans include phone calls + high-speed fiber. Pick a plan, unlock your OTT bundle.
-          </p>
-        </div>
-
-        {/* ── TABLE ── */}
-        <div style={{ overflowX: "auto", borderRadius: 20, boxShadow: "0 24px 80px rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.07)" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 980 }}>
-            <thead>
-              <tr>
-                {/* Label column header */}
-                <th style={{
-                  background: "#060E1C",
-                  padding: "28px 28px", textAlign: "left",
-                  fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
-                  fontSize: 11, letterSpacing: 3, textTransform: "uppercase",
-                  color: "#becada", width: 180,
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  borderRight: "1px solid rgba(255,255,255,0.05)",
-                }}>Platform</th>
-
-                {plans.map((p, i) => (
-                  <th key={i} style={{
-                    background: p.popular ? "linear-gradient(160deg, #1a0808 0%, #2a0808 100%)" : "#060E1C",
-                    padding: "0", textAlign: "center", position: "relative",
-                    borderBottom: "1px solid rgba(255,255,255,0.06)",
-                    borderRight: i < plans.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
-                    verticalAlign: "top",
-                  }}>
-                    {p.popular && (
-                      <div style={{
-                        background: "linear-gradient(135deg, #CC0000, #E43B2C)",
-                        color: "#fff", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
-                        fontSize: 9, letterSpacing: 2, textTransform: "uppercase",
-                        padding: "6px 0", textAlign: "center",
-                        boxShadow: "0 4px 20px rgba(204,0,0,0.5)",
-                      }}>⭐ MOST POPULAR</div>
-                    )}
-                    <div style={{ padding: "24px 16px 28px" }}>
-                      {/* Price */}
-                      <div style={{
-                        fontFamily: "'Bebas Neue', cursive", fontSize: 40,
-                        color: p.color, letterSpacing: 1, lineHeight: 1,
-                        textShadow: `0 0 30px ${p.color}55`,
-                      }}>{p.price}</div>
-                      {/* Plan name */}
-                      <div style={{
-                        fontFamily: "'Rajdhani', sans-serif", fontWeight: 800,
-                        fontSize: 14, letterSpacing: 3, textTransform: "uppercase",
-                        color: "#FFFFFF", marginTop: 6,
-                      }}>{p.name}</div>
-                      {/* Speed chip */}
-                      <div style={{
-                        display: "inline-block", marginTop: 10,
-                        background: `${p.color}22`,
-                        border: `1px solid ${p.color}55`,
-                        borderRadius: 999, padding: "4px 14px",
-                        fontFamily: "'DM Sans', sans-serif", fontWeight: 700,
-                        fontSize: 12, color: p.color,
-                      }}>{p.speed}</div>
-                    </div>
-                    {/* bottom color stripe */}
-                    <div style={{ height: 3, background: `linear-gradient(90deg, transparent, ${p.color}, transparent)` }} />
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {ottColumns.map((col, ri) => (
-                <tr key={col}
-                  style={{ background: ri % 2 === 0 ? "#0D1A2D" : "#0A1525", transition: "background 0.15s" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLTableRowElement).style.background = "#132040")}
-                  onMouseLeave={e => ((e.currentTarget as HTMLTableRowElement).style.background = ri % 2 === 0 ? "#0D1A2D" : "#0A1525")}
-                >
-                  <td style={{
-                    padding: "14px 24px",
-                    borderRight: "1px solid rgba(255,255,255,0.05)",
-                    borderBottom: "1px solid rgba(255,255,255,0.04)",
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      {ottLogos[col] ? (
-                        <div style={{ width: 45, height: 45, background: "rgba(255,255,255,0.06)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 3 }}>
-                          <img src={ottLogos[col]} alt={col}
-                            style={{ maxWidth: 45, maxHeight: 45, objectFit: "contain" }}
-                            onError={e => ((e.currentTarget as HTMLImageElement).style.display = "none")}
-                          />
-                        </div>
-                      ) : (
-                        <div style={{
-                          width: 44, height: 26, borderRadius: 6,
-                          background: "linear-gradient(135deg, #14213D, #1e3a6e)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
-                          fontSize: 8, color: "#fff", letterSpacing: 0.5, flexShrink: 0,
-                        }}>IPTV</div>
-                      )}
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#C8D6E8", fontWeight: 600 }}>{col}</span>
-                    </div>
-                  </td>
-                  {plans.map((p, pi) => (
-                    <td key={pi} style={{
-                      padding: "14px 16px", textAlign: "center",
-                      background: p.popular ? "rgba(204,0,0,0.04)" : "transparent",
-                      borderRight: pi < plans.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                      borderBottom: "1px solid rgba(255,255,255,0.04)",
-                    }}>
-                      {p.ott[col as keyof typeof p.ott] ? (
-                        <span style={{
-                          display: "inline-flex", alignItems: "center", justifyContent: "center",
-                          width: 30, height: 30, borderRadius: "50%",
-                          background: "linear-gradient(135deg, rgba(204, 0, 0, 0.57), rgba(204,0,0,0.08))",
-                          border: "1px solid rgba(204,0,0,0.3)",
-                          color: "#E05C5C", fontSize: 14, fontWeight: 800,
-                        }}>✓</span>
-                      ) : (
-                        <span style={{ display: "inline-block", width: 20, height: 2, background: "rgba(255,255,255,0.08)", borderRadius: 1 }} />
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-              {/* CTA row */}
-              <tr style={{ background: "#060E1C" }}>
-                <td style={{
-                  padding: "24px 28px",
-                  fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
-                  fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: "#becada",
-                  borderTop: "1px solid rgba(255,255,255,0.07)",
-                }}>Get Started</td>
-                {plans.map((p, i) => (
-                  <td key={i} style={{
-                    padding: "18px 16px", textAlign: "center",
-                    background: p.popular ? "rgba(204,0,0,0.06)" : "transparent",
-                    borderTop: "1px solid rgba(255,255,255,0.07)",
-                  }}>
-                    <a href="/plans" style={{
-                      display: "inline-block",
-                      fontFamily: "'Rajdhani', sans-serif", fontWeight: 800,
-                      fontSize: 12, letterSpacing: 2, textTransform: "uppercase",
-                      textDecoration: "none",
-                      background: p.popular ? "linear-gradient(135deg, #CC0000, #E43B2C)" : "transparent",
-                      color: p.popular ? "#fff" : "#CC0000",
-                      border: p.popular ? "none" : "1px solid rgba(204, 0, 0, 0.77)",
-                      padding: "10px 24px", borderRadius: 999,
-                      boxShadow: p.popular ? "0 6px 20px rgba(204,0,0,0.4)" : "none",
-                      transition: "all 0.2s",
-                    }}>Select</a>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 const whyItems = [
   { img: "/images/why1.jpeg", iconKey: "lightning", title: "Lightning Fast Speeds", desc: "True fiber-optic infrastructure with symmetric upload and download speeds — no throttling, no fair usage caps." },
@@ -342,21 +622,17 @@ export function WhyVBC() {
                 (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
               }}
             >
-              {/* BG image — light transparent */}
               <img src={item.img} alt="" aria-hidden="true"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.80, filter: "grayscale(0%)" }}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.80 }}
                 onError={e => ((e.currentTarget as HTMLImageElement).style.display = "none")}
               />
-              {/* Dark overlay */}
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(46, 56, 78, 0.68) 0%, rgba(8, 14, 28, 0.59) 100%)" }} />
 
-              {/* Content — centered layout */}
               <div style={{
                 position: "relative", zIndex: 1,
                 padding: "44px 30px 40px",
                 display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
               }}>
-                {/* Icon centered */}
                 <div style={{
                   display: "flex", alignItems: "center", justifyContent: "center",
                   width: 68, height: 68, borderRadius: 18,
@@ -367,7 +643,6 @@ export function WhyVBC() {
                   {whyIcons[item.iconKey]}
                 </div>
 
-                {/* Red divider below icon */}
                 <div style={{ width: 36, height: 3, background: "linear-gradient(90deg, #CC0000, #E43B2C)", borderRadius: 2, marginBottom: 18 }} />
 
                 <h3 style={{
@@ -376,7 +651,6 @@ export function WhyVBC() {
                 }}>{item.title}</h3>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#dee8ff", lineHeight: 1.8 }}>{item.desc}</p>
 
-                {/* Bottom accent */}
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, transparent, #CC0000, transparent)" }} />
               </div>
             </div>

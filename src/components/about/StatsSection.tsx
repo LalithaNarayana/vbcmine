@@ -1,5 +1,5 @@
 const bigStats = [
-  { value: "50K+", label: "Active Subscribers", sub: "Homes & Businesses" },
+  { value: "30K+", label: "Active Subscribers", sub: "Homes & Businesses" },
   { value: "12+", label: "Years of Service", sub: "Est. 2012, Vizag" },
   { value: "50+", label: "Coverage Areas", sub: "Across all Vizag zones" },
   { value: "1 Gbps", label: "Max Speed", sub: "Fastest in the city" },

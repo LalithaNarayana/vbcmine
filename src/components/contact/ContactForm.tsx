@@ -3,7 +3,12 @@ import { useState } from "react";
 import { Send, CheckCircle } from "lucide-react";
 
 export default function ContactForm() {
-  const [form, setForm] = useState({ name: "", email: "", mobile: "", subject: "", message: "" });
+  const areas = [
+    "Visakhapatnam (City)", "MVP Colony", "Gajuwaka", "Madhurawada", "Rushikonda",
+    "Seethammadhara", "Dwaraka Nagar", "Yendada", "Kommadi", "Bheemunipatnam",
+    "Anakapalle", "Narsipatnam", "Bhimavaram", "Rajahmundry",
+  ];
+  const [form, setForm] = useState({ name: "", email: "", mobile: "", area: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -46,6 +51,13 @@ export default function ContactForm() {
         <div>
           <label style={labelStyle}>Email Address</label>
           <input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="your@email.com" style={inputStyle} onFocus={focus} onBlur={blur} />
+        </div>
+        <div>
+          <label style={labelStyle}>Select Area</label>
+          <select value={form.area} onChange={(e) => set("area", e.target.value)} style={{ ...inputStyle, appearance: "none" }} onFocus={focus} onBlur={blur}>
+            <option value="">Select your area</option>
+            {areas.map((a) => <option key={a}>{a}</option>)}
+          </select>
         </div>
         <div>
           <label style={labelStyle}>Subject</label>

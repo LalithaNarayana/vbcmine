@@ -97,7 +97,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
             }}
           >
             <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, color: "#152238", marginBottom: "6px" }}>Need help choosing a plan?</div>
-            <Link href="tel:+918910000000" onClick={onClose} style={{ color: "#CC0000", textDecoration: "none", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <Link href="tel:08916677123" onClick={onClose} style={{ color: "#CC0000", textDecoration: "none", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "8px" }}>
               <Phone size={16} /> Call support
             </Link>
           </div>

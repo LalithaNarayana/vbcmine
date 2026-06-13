@@ -1,223 +1,319 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { broadbandPlans, tvPlans, comboPlans } from "@/constants/plans";
-import { Check, Zap, Star } from "lucide-react";
+import { CheckCircle, Zap, Tv, Wifi } from "lucide-react";
 
-type Tab = "broadband" | "tv" | "combo";
+const planCategories = [
+  {
+    id: "internet",
+    label: "Only Internet",
+    icon: <Wifi size={20} />,
+    tagline: "Pure fiber speed, no extras",
+    accentColor: "#CC0000",
+    plans: [
+      {
+        speed: "40 Mbps",
+        price: 399,
+        features: [
+          "Unlimited Data",
+          "24/7 Support",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "50 Mbps",
+        price: 599,
+        features: [
+          "Unlimited Data",
+          "24/7 Support",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "100 Mbps",
+        price: 699,
+        popular: true,
+        features: [
+          "Unlimited Data",
+          "24/7 Support",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "150 Mbps",
+        price: 899,
+        features: [
+          "Unlimited Data",
+          "24/7 Support",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+    ],
+    offer: "6+1 or 12+2 months offer available. Router & Installation free on 6/12 month plans. Non-refundable installation: ₹1500 for monthly plans.",
+  },
+  {
+    id: "ott",
+    label: "Internet + OTT",
+    icon: <Tv size={20} />,
+    tagline: "Internet + streaming apps bundled",
+    accentColor: "#0055CC",
+    plans: [
+      {
+        speed: "30 Mbps",
+        price: 499,
+        otts: 20,
+        features: [
+          "20 OTT Apps",
+          "Unlimited Data",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "50 Mbps",
+        price: 599,
+        otts: 27,
+        features: [
+          "27 OTT Apps",
+          "Unlimited Data",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "100 Mbps",
+        price: 799,
+        popular: true,
+        otts: 30,
+        features: [
+          "30 OTT Apps",
+          "Unlimited Data",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "150 Mbps",
+        price: 899,
+        otts: 30,
+        features: [
+          "30 OTT Apps",
+          "Unlimited Data",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "200 Mbps",
+        price: 999,
+        otts: 30,
+        features: [
+          "30 OTT Apps",
+          "Unlimited Data",
+          "6+1 or 12+2 Months Offer",
+          "Router & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+    ],
+    offer: "6+1 or 12+2 months offer available. Router & Installation free on 6/12 month plans. Non-refundable installation: ₹1500 for monthly plans.",
+  },
+  {
+    id: "catv",
+    label: "Internet + CATV",
+    icon: <Tv size={20} />,
+    tagline: "Internet + Cable TV combo",
+    accentColor: "#006633",
+    plans: [
+      {
+        speed: "50 Mbps + SD",
+        price: 599,
+        features: [
+          "SD Cable TV",
+          "Unlimited Internet",
+          "6+1 or 12+2 Months Offer",
+          "Set-top box & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "100 Mbps + HD",
+        price: 799,
+        popular: true,
+        features: [
+          "HD Cable TV",
+          "Unlimited Internet",
+          "6+1 or 12+2 Months Offer",
+          "Set-top box & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "150 Mbps + HD",
+        price: 899,
+        features: [
+          "HD Cable TV",
+          "Unlimited Internet",
+          "6+1 or 12+2 Months Offer",
+          "Set-top box & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+      {
+        speed: "200 Mbps + HD",
+        price: 999,
+        features: [
+          "HD Cable TV",
+          "Unlimited Internet",
+          "6+1 or 12+2 Months Offer",
+          "Set-top box & Installation Free (6/12 months)",
+          "Non-refundable installation: ₹1500 (monthly)",
+        ],
+      },
+    ],
+    offer: "6+1 or 12+2 months offer available. Set-top box & Installation free on 6/12 month plans. Non-refundable installation: ₹1500 for monthly plans.",
+  },
+];
 
 export default function PlansPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("broadband");
-
-  const planMap = { broadband: broadbandPlans, tv: tvPlans, combo: comboPlans };
-  const plans = planMap[activeTab];
+  const [activeTab, setActiveTab] = useState("internet");
+  const active = planCategories.find((c) => c.id === activeTab)!;
 
   return (
-    <div style={{ paddingTop: "0px", background: "#ffffff", minHeight: "100vh" }}>
-
+    <div style={{ background: "#ffffff", minHeight: "100vh" }}>
       {/* Hero */}
-      <section
-        style={{
-          padding: "80px 24px 60px",
-          background: "linear-gradient(180deg, #fff7f5 0%, #ffffff 100%)",
-          textAlign: "center",
-        }}
-      >
-        <div className="badge-red" style={{ display: "inline-block", marginBottom: "16px" }}>Plans & Pricing</div>
-        <h1
-          style={{
-            fontFamily: "'Bebas Neue', cursive",
-            fontSize: "clamp(50px, 8vw, 90px)",
-            letterSpacing: "2px",
-            color: "#152238",
-            lineHeight: 1,
-            marginBottom: "16px",
-          }}
-        >
-          SIMPLE, TRANSPARENT
-          <br />
-          <span style={{ color: "#CC0000" }}>PRICING</span>
-        </h1>
-        <p style={{ color: "#475467", fontSize: "15px", maxWidth: "500px", margin: "0 auto 40px", lineHeight: "1.7" }}>
-          No contracts. No hidden fees. Just blazing fast internet and crystal-clear TV at prices that make sense.
-        </p>
-
-        {/* Tabs */}
-        <div
-          style={{
-            display: "inline-flex",
-            background: "#ffffff",
-            border: "1px solid rgba(204,0,0,0.16)",
-            padding: "4px",
-            gap: "4px",
-          }}
-        >
-          {(["broadband", "tv", "combo"] as Tab[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                padding: "10px 28px",
-                background: activeTab === tab ? "#CC0000" : "transparent",
-                color: activeTab === tab ? "white" : "#475467",
-                border: "none",
-                cursor: "pointer",
-                fontFamily: "'Rajdhani', sans-serif",
-                fontWeight: 700,
-                fontSize: "13px",
-                letterSpacing: "1.5px",
-                textTransform: "uppercase",
-                transition: "all 0.2s",
-                clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)",
-              }}
-            >
-              {tab === "broadband" ? "🌐 Broadband" : tab === "tv" ? "📺 TV / IPTV" : "⚡ Combo"}
-            </button>
-          ))}
+      <section style={{ padding: "80px 24px 40px", background: "linear-gradient(135deg, #fff7f5 0%, #ffffff 60%, #f7fafc 100%)", textAlign: "center" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <div className="badge-red" style={{ display: "inline-block", marginBottom: 16, fontSize: 13 }}>Broadband Plans</div>
+          <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(48px, 7vw, 88px)", letterSpacing: 2, color: "#14213D", lineHeight: 0.95, marginBottom: 20 }}>
+            PLANS & <span style={{ color: "#CC0000" }}>PRICING</span>
+          </h1>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#667085", lineHeight: 1.8, marginBottom: 24 }}>
+            Choose your perfect plan. All prices per month. <strong>GST @18% extra.</strong>
+          </p>
         </div>
       </section>
 
-      {/* Plans Grid */}
-      <section style={{ padding: "40px 24px 100px" }}>
-        <div
-          style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-          }}
-        >
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className="plan-card glass-card"
+      {/* Tabs */}
+      <div style={{ position: "sticky", top: 64, zIndex: 10, background: "#fff", borderBottom: "2px solid #f0f0f0" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", justifyContent: "center", gap: 0 }}>
+          {planCategories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveTab(cat.id)}
               style={{
-                background: "#2e2e2e",
-                border: plan.popular ? "1px solid rgba(204,0,0,0.55)" : "1px solid #242424",
-                padding: "36px 28px",
-                position: "relative",
-                boxShadow: plan.popular ? "0 22px 48px rgba(204, 0, 0, 0.18)" : "0 18px 42px rgba(0, 0, 0, 0.18)",
+                padding: "16px 32px",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                fontFamily: "'Rajdhani', sans-serif",
+                fontWeight: 700,
+                fontSize: 15,
+                letterSpacing: 0.5,
+                color: activeTab === cat.id ? "#CC0000" : "#667085",
+                borderBottom: activeTab === cat.id ? "3px solid #CC0000" : "3px solid transparent",
+                display: "flex", alignItems: "center", gap: 8,
+                transition: "all 0.2s",
+                marginBottom: -2,
               }}
             >
-              {/* Popular badge */}
-              {plan.tag && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "-12px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    background: plan.popular ? "#CC0000" : "#1F1F1F",
-                    color: "white",
-                    border: plan.popular ? "none" : "1px solid #333333",
-                    padding: "4px 20px",
-                    fontFamily: "'Rajdhani', sans-serif",
-                    fontWeight: 700,
-                    fontSize: "11px",
-                    letterSpacing: "1.5px",
-                    textTransform: "uppercase",
-                    whiteSpace: "nowrap",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)",
-                  }}
-                >
-                  {plan.popular && <Star size={10} fill="white" />} {plan.tag}
-                </div>
-              )}
-
-              {/* Plan name */}
-              <div
-                style={{
-                  fontFamily: "'Rajdhani', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "13px",
-                  color: "#CC0000",
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                  marginBottom: "8px",
-                }}
-              >
-                {plan.name}
-              </div>
-
-              {/* Speed/Channel */}
-              <div
-                style={{
-                  fontFamily: "'Bebas Neue', cursive",
-                  fontSize: "clamp(36px,4vw,48px)",
-                  letterSpacing: "2px",
-                  color: "#FFFFFF",
-                  lineHeight: 1,
-                  marginBottom: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
-              >
-                <Zap size={24} color="#CC0000" />
-                {plan.speed}
-              </div>
-
-              {/* Price */}
-              <div style={{ marginBottom: "24px", marginTop: "16px" }}>
-                <span
-                  style={{
-                    fontFamily: "'Bebas Neue', cursive",
-                    fontSize: "clamp(40px,5vw,56px)",
-                    color: plan.popular ? "#FF3333" : "#CC0000",
-                    letterSpacing: "1px",
-                  }}
-                >
-                  ₹{plan.price}
-                </span>
-                <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "13px", color: "#A7AEB8", marginLeft: "6px" }}>
-                  / {plan.duration}
-                </span>
-              </div>
-
-              {/* Divider */}
-              <div style={{ height: "1px", background: "rgba(255,255,255,0.12)", marginBottom: "20px" }} />
-
-              {/* Features */}
-              <ul style={{ listStyle: "none", marginBottom: "28px" }}>
-                {plan.features.map((f, i) => (
-                  <li
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "7px 0",
-                      color: "#D7DCE3",
-                      fontSize: "13px",
-                      borderBottom: i < plan.features.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
-                    }}
-                  >
-                    <Check size={14} color="#CC0000" style={{ flexShrink: 0 }} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA */}
-              <Link
-                href="/login"
-                className={plan.popular ? "btn-primary" : "btn-outline"}
-                style={{ display: "block", textDecoration: "none", textAlign: "center" }}
-              >
-                {plan.popular ? "Get This Plan" : "Select Plan"}
-              </Link>
-            </div>
+              {cat.icon} {cat.label}
+            </button>
           ))}
         </div>
+      </div>
 
-        {/* Annual note */}
-        <div style={{ maxWidth: "1280px", margin: "40px auto 0", textAlign: "center" }}>
-          <p style={{ color: "#475467", fontSize: "13px" }}>
-            💡 Annual plans available with up to 2 months FREE. Contact us or log into your account for long-term pricing.
+      {/* Plans Grid */}
+      <section style={{ padding: "60px 24px 100px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+          {/* Offer banner */}
+          <div style={{ background: "rgba(204,0,0,0.05)", border: "1px solid rgba(204,0,0,0.15)", borderRadius: 8, padding: "14px 20px", marginBottom: 40, display: "flex", alignItems: "center", gap: 12 }}>
+            <Zap size={18} color="#CC0000" />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#475467" }}>{active.offer}</span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24 }}>
+            {active.plans.map((plan, i) => (
+              <div
+                key={i}
+                style={{
+                  background: plan.popular ? "linear-gradient(135deg, #14213D 0%, #1e3a5f 100%)" : "#fff4f4",
+                  border: plan.popular ? "2px solid #CC0000" : "1px solid rgba(20,33,61,0.1)",
+                  borderRadius: 16,
+                  padding: "32px 28px",
+                  position: "relative",
+                  boxShadow: plan.popular ? "0 20px 60px rgba(204,0,0,0.15)" : "0 4px 20px rgba(20,33,61,0.06)",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ""; }}
+              >
+                {plan.popular && (
+                  <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "#CC0000", color: "#fff", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: 1.5, padding: "4px 16px", borderRadius: 999, whiteSpace: "nowrap", textTransform: "uppercase" }}>
+                    Most Popular
+                  </div>
+                )}
+                <div style={{ fontFamily: "'Bebas Neue', cursive", fontSize: 32, color: plan.popular ? "#fff" : "#14213D", letterSpacing: 1, marginBottom: 4 }}>
+                  {plan.speed}
+                </div>
+                {"otts" in plan && (
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, color: "#CC0000", letterSpacing: 1, marginBottom: 8 }}>
+                    {(plan as { otts: number }).otts} OTT Apps Included
+                  </div>
+                )}
+                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 24 }}>
+                  <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, color: plan.popular ? "rgba(255,255,255,0.6)" : "#667085" }}>₹</span>
+                  <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: 52, color: plan.popular ? "#fff" : "#14213D", letterSpacing: 1, lineHeight: 1 }}>{plan.price}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: plan.popular ? "rgba(255,255,255,0.5)" : "#9CA3AF" }}>/mo</span>
+                </div>
+                <div style={{ height: 1, background: plan.popular ? "rgba(255,255,255,0.1)" : "rgba(20,33,61,0.08)", marginBottom: 20 }} />
+                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px 0" }}>
+                  {plan.features.map((f, j) => (
+                    <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10, fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: plan.popular ? "rgba(255,255,255,0.8)" : "#475467", lineHeight: 1.5 }}>
+                      <CheckCircle size={14} color="#CC0000" style={{ marginTop: 2, flexShrink: 0 }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/contact"
+                  style={{
+                    display: "block",
+                    textAlign: "center",
+                    background: plan.popular ? "#CC0000" : "transparent",
+                    color: plan.popular ? "#fff" : "#CC0000",
+                    border: plan.popular ? "none" : "1px solid #CC0000",
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    letterSpacing: 1.5,
+                    textTransform: "uppercase",
+                    textDecoration: "none",
+                    padding: "12px 20px",
+                    borderRadius: 8,
+                    transition: "all 0.2s",
+                  }}
+                >
+                  Get This Plan
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <p style={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "#9CA3AF", marginTop: 40 }}>
+            * All prices are exclusive of GST @18%. Non-refundable installation charges: ₹1500 (for monthly plans). For 6/12 month plans, router & installation charges free — confirm at time of booking.
           </p>
         </div>
       </section>

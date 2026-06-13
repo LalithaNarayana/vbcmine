@@ -2,361 +2,232 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, CheckCircle } from "lucide-react";
 
+const cities = ["Visakhapatnam", "Gajuwaka", "Pendurthi", "Bheemunipatnam"];
+const areas: Record<string, string[]> = {
+  "Visakhapatnam": ["MVP Colony", "Dwaraka Nagar", "Seethammadhara", "Rushikonda", "Maddilapalem", "Akkayyapalem", "Gopalapatnam", "Waltair Uplands", "Siripuram", "Kommadi"],
+  "Gajuwaka": ["Gajuwaka Main", "Steel Plant Area", "NAD Junction"],
+  "Pendurthi": ["Pendurthi Main", "Kommadi", "Gambheeram"],
+  "Bheemunipatnam": ["Beach Road", "Bheemunipatnam Main"],
+};
+
+const fieldStyle = {
+  width: "100%",
+  padding: "10px 14px",
+  border: "1px solid #E4E7EC",
+  borderRadius: 8,
+  fontSize: 14,
+  color: "#344054",
+  fontFamily: "'DM Sans', sans-serif",
+  background: "#fff",
+  boxSizing: "border-box" as const,
+};
+
+const labelStyle = {
+  display: "block",
+  fontFamily: "'Rajdhani', sans-serif",
+  fontWeight: 600,
+  fontSize: 11,
+  color: "#667085",
+  letterSpacing: 1.5,
+  textTransform: "uppercase" as const,
+  marginBottom: 6,
+};
+
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", mobile: "", subject: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [activeTab, setActiveTab] = useState<"sales" | "support">("sales");
+  const [salesForm, setSalesForm] = useState({ city: "", area: "", mobile: "", message: "" });
+  const [supportForm, setSupportForm] = useState({ city: "", area: "", mobile: "", type: "complaint", message: "" });
+  const [salesSubmitted, setSalesSubmitted] = useState(false);
+  const [supportSubmitted, setSupportSubmitted] = useState(false);
 
-  const handleSubmit = () => {
-    if (form.name && form.mobile && form.message) {
-      setSubmitted(true);
-    }
+  const handleSalesSubmit = () => {
+    if (salesForm.city && salesForm.mobile && salesForm.message) setSalesSubmitted(true);
   };
-
-  const contactItems = [
-    {
-      icon: <MapPin size={20} />,
-      title: "Visit Us",
-      lines: ["VBC House, MVP Colony,", "Visakhapatnam – 530017", "Andhra Pradesh, India"],
-    },
-    {
-      icon: <Phone size={20} />,
-      title: "Call Us",
-      lines: ["1800-XXX-XXXX (Toll Free)", "+91 891 000 0000", "+91 891 000 0001"],
-    },
-    {
-      icon: <Mail size={20} />,
-      title: "Email Us",
-      lines: ["support@vbconfiber.com", "billing@vbconfiber.com", "sales@vbconfiber.com"],
-    },
-    {
-      icon: <Clock size={20} />,
-      title: "Working Hours",
-      lines: ["Mon–Sat: 9:00 AM – 8:00 PM", "Sun: 10:00 AM – 5:00 PM", "Support: 24/7"],
-    },
-  ];
+  const handleSupportSubmit = () => {
+    if (supportForm.city && supportForm.mobile && supportForm.message) setSupportSubmitted(true);
+  };
 
   return (
     <div style={{ background: "#ffffff", minHeight: "100vh" }}>
-
-      {/* ── Hero ── */}
-      <section className="contact-hero">
-        <div className="contact-hero-inner">
-          <div className="badge-red" style={{ display: "inline-block", marginBottom: "16px" }}>
-            Get in Touch
-          </div>
-          <h1 className="contact-hero-title">
-            WE'RE HERE
-            <br />
-            <span style={{ color: "#CC0000" }}>TO HELP</span>
+      {/* Hero */}
+      <section style={{ padding: "80px 24px 60px", background: "linear-gradient(135deg, #14213D 0%, #1e3a5f 100%)", textAlign: "center" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ display: "inline-block", background: "rgb(255, 255, 255)", color: "#ff0000", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: 2, padding: "6px 16px", borderRadius: 999, textTransform: "uppercase", marginBottom: 16 }}>Contact Us</div>
+          <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(48px, 7vw, 80px)", letterSpacing: 2, color: "#fff", lineHeight: 0.95, marginBottom: 20 }}>
+            WE&apos;RE HERE <span style={{ color: "#CC0000" }}>TO HELP</span>
           </h1>
         </div>
       </section>
 
-      {/* ── Main grid ── */}
-      <section className="contact-main">
-        <div className="contact-grid">
+      {/* Main */}
+      <section style={{ padding: "60px 24px 100px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 2fr", gap: 48 }} className="contact-grid">
 
-          {/* ── Left: Contact Info ── */}
-          <div className="contact-info-col">
-            {contactItems.map((item, i) => (
-              <div key={i} className="contact-info-row">
-                <div className="contact-icon-box">
+          {/* Left: Info */}
+          <div>
+            {[
+              { icon: <MapPin size={20} />, title: "Visit Us", lines: ["VIZAG BROADCASTING COMPANY PVT. LTD. (VBC on Fiber)", "#47-10-20, 401, 4th Floor, Dwaraka Plaza,", "Dwaraka Nagar, Visakhapatnam – 530016"] },
+              { icon: <Phone size={20} />, title: "Call Us", lines: ["(0891) 6677-123", "(0891) 6677-124"] },
+              { icon: <Mail size={20} />, title: "Email Us", lines: ["sales@vbctv.in", "support@vbctv.in"] },
+              { icon: <Clock size={20} />, title: "Working Hours", lines: ["Mon–Sat: 9:00 AM – 8:00 PM", "Sun: 10:00 AM – 5:00 PM", "Support: 24/7"] },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 16, padding: "20px 0", borderBottom: "1px solid rgba(20,33,61,0.08)", alignItems: "flex-start" }}>
+                <div style={{ width: 44, height: 44, minWidth: 44, background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#CC0000", borderRadius: 8 }}>
                   {item.icon}
                 </div>
                 <div>
-                  <div className="contact-item-label">{item.title}</div>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, color: "#CC0000", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>{item.title}</div>
                   {item.lines.map((line, j) => (
-                    <div key={j} style={{ fontSize: "13px", color: "#475467", lineHeight: "1.8" }}>
-                      {line}
-                    </div>
+                    <div key={j} style={{ fontSize: 13, color: "#475467", lineHeight: 1.8 }}>{line}</div>
                   ))}
                 </div>
               </div>
             ))}
 
-            {/* WhatsApp CTA */}
-            <a
-              href="https://wa.me/91XXXXXXXXXX"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="whatsapp-btn"
-            >
+            <a href="https://wa.me/918790999649" target="_blank" rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 24, padding: "16px 20px", background: "rgba(37,211,102,0.08)", border: "1px solid rgba(37,211,102,0.2)", textDecoration: "none", borderRadius: 8 }}>
               <MessageCircle size={24} color="#25D366" />
               <div>
-                <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "14px", color: "#25D366" }}>
-                  Chat on WhatsApp
-                </div>
-                <div style={{ fontSize: "12px", color: "#667085" }}>Quick replies during business hours</div>
+                <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14, color: "#25D366" }}>Chat on WhatsApp</div>
+                <div style={{ fontSize: 12, color: "#667085" }}>Quick replies during business hours</div>
               </div>
             </a>
           </div>
 
-          {/* ── Right: Contact Form ── */}
-          <div className="contact-form-card">
-            {!submitted ? (
-              <>
-                <h2 className="contact-form-title">Send us a Message</h2>
-                <p style={{ color: "#667085", fontSize: "13px", marginBottom: "28px" }}>
-                  Have a question or need support? Fill the form and we'll get back to you within 2 hours.
-                </p>
-
-                {/* Name + Mobile — stacked on mobile, side-by-side on desktop */}
-                <div className="form-row-2col">
-                  <div>
-                    <label className="form-label">Full Name *</label>
-                    <input
-                      type="text"
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      placeholder="Your name"
-                      className="vbc-input"
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label">Mobile Number *</label>
-                    <input
-                      type="tel"
-                      value={form.mobile}
-                      onChange={(e) => setForm({ ...form, mobile: e.target.value })}
-                      placeholder="+91 XXXXX XXXXX"
-                      className="vbc-input"
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: "16px" }}>
-                  <label className="form-label">Subject</label>
-                  <select
-                    value={form.subject}
-                    onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                    className="vbc-input"
-                    style={{ background: "#ffffff", color: form.subject ? "#152238" : "#667085" }}
-                  >
-                    <option value="">Select a topic</option>
-                    <option value="new-connection">New Connection</option>
-                    <option value="technical">Technical Support</option>
-                    <option value="billing">Billing Query</option>
-                    <option value="upgrade">Plan Upgrade</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div style={{ marginBottom: "28px" }}>
-                  <label className="form-label">Message *</label>
-                  <textarea
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    placeholder="Describe your issue or query..."
-                    rows={5}
-                    className="vbc-input"
-                    style={{ resize: "vertical" }}
-                  />
-                </div>
-
-                <button
-                  onClick={handleSubmit}
-                  disabled={!form.name || !form.mobile || !form.message}
-                  className="btn-primary contact-submit-btn"
-                  style={{
-                    opacity: !form.name || !form.mobile || !form.message ? 0.5 : 1,
-                    cursor: !form.name || !form.mobile || !form.message ? "not-allowed" : "pointer",
-                  }}
-                >
-                  <Send size={16} />
-                  Send Message
+          {/* Right: Tabbed forms */}
+          <div style={{ background: "#ffffff", border: "1px solid rgba(20,33,61,0.08)", boxShadow: "0 18px 40px rgba(20,33,61,0.06)", borderRadius: 12, overflow: "hidden" }}>
+            {/* Tab bar */}
+            <div style={{ display: "flex", borderBottom: "2px solid #f0f0f0" }}>
+              {(["sales", "support"] as const).map((tab) => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  style={{ flex: 1, padding: "18px", border: "none", background: "none", cursor: "pointer", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 15, letterSpacing: 0.5, color: activeTab === tab ? "#CC0000" : "#667085", borderBottom: activeTab === tab ? "3px solid #CC0000" : "3px solid transparent", marginBottom: -2, textTransform: "capitalize" }}>
+                  {tab === "sales" ? "📋 Sales Enquiry" : "🛠️ Support Request"}
                 </button>
-              </>
-            ) : (
-              <div style={{ textAlign: "center", padding: "40px 0" }}>
-                <div className="contact-success-icon">
-                  <CheckCircle size={32} color="#CC0000" />
+              ))}
+            </div>
+
+            <div style={{ padding: "36px 40px" }}>
+              {/* SALES FORM */}
+              {activeTab === "sales" && !salesSubmitted && (
+                <>
+                  <h2 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 22, color: "#152238", marginBottom: 6 }}>New Connection / Sales</h2>
+                  <p style={{ color: "#667085", fontSize: 13, marginBottom: 28 }}>Interested in a new connection? Fill this form and our sales team will contact you.</p>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                    <div>
+                      <label style={labelStyle}>Select City *</label>
+                      <select value={salesForm.city} onChange={(e) => setSalesForm({ ...salesForm, city: e.target.value, area: "" })} style={fieldStyle}>
+                        <option value="">Choose city...</option>
+                        {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Select Area</label>
+                      <select value={salesForm.area} onChange={(e) => setSalesForm({ ...salesForm, area: e.target.value })} style={{ ...fieldStyle, color: salesForm.area ? "#344054" : "#9CA3AF" }} disabled={!salesForm.city}>
+                        <option value="">{salesForm.city ? "Choose area..." : "Select city first"}</option>
+                        {(areas[salesForm.city] || []).map((a) => <option key={a} value={a}>{a}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>Mobile Number *</label>
+                    <input type="tel" placeholder="+91 XXXXX XXXXX" value={salesForm.mobile}
+                      onChange={(e) => setSalesForm({ ...salesForm, mobile: e.target.value })}
+                      style={fieldStyle} />
+                  </div>
+                  <div style={{ marginBottom: 24 }}>
+                    <label style={labelStyle}>Message *</label>
+                    <textarea rows={4} placeholder="Tell us about your requirements..." value={salesForm.message}
+                      onChange={(e) => setSalesForm({ ...salesForm, message: e.target.value })}
+                      style={{ ...fieldStyle, resize: "vertical" }} />
+                  </div>
+                  <button onClick={handleSalesSubmit}
+                    style={{ display: "flex", alignItems: "center", gap: 8, background: "#CC0000", color: "#fff", border: "none", borderRadius: 8, padding: "13px 32px", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: 1.5, textTransform: "uppercase", cursor: "pointer" }}>
+                    <Send size={16} /> Submit to Sales
+                  </button>
+                  <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 12 }}>Form will be sent to sales@vbctv.in</p>
+                </>
+              )}
+              {activeTab === "sales" && salesSubmitted && (
+                <div style={{ textAlign: "center", padding: "40px 20px" }}>
+                  <div style={{ width: 64, height: 64, background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+                    <CheckCircle size={28} color="#CC0000" />
+                  </div>
+                  <h3 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: 28, color: "#14213D", marginBottom: 10 }}>Enquiry Submitted!</h3>
+                  <p style={{ color: "#667085", fontSize: 13 }}>Our sales team will call you within 2 hours.</p>
                 </div>
-                <h3 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", letterSpacing: "2px", color: "#152238", marginBottom: "10px" }}>
-                  MESSAGE SENT!
-                </h3>
-                <p style={{ color: "#475467", fontSize: "14px", lineHeight: "1.7" }}>
-                  Thank you, <strong style={{ color: "#152238" }}>{form.name}</strong>! We've received your
-                  message and will respond within 2 hours to{" "}
-                  <strong style={{ color: "#CC0000" }}>{form.mobile}</strong>.
-                </p>
-                <button
-                  onClick={() => { setSubmitted(false); setForm({ name: "", mobile: "", subject: "", message: "" }); }}
-                  className="btn-outline"
-                  style={{ marginTop: "24px", cursor: "pointer" }}
-                >
-                  Send Another
-                </button>
-              </div>
-            )}
+              )}
+
+              {/* SUPPORT FORM */}
+              {activeTab === "support" && !supportSubmitted && (
+                <>
+                  <h2 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 22, color: "#152238", marginBottom: 6 }}>Support Request</h2>
+                  <p style={{ color: "#667085", fontSize: 13, marginBottom: 28 }}>Facing an issue? Raise a request and our support team will assist you.</p>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                    <div>
+                      <label style={labelStyle}>Select City *</label>
+                      <select value={supportForm.city} onChange={(e) => setSupportForm({ ...supportForm, city: e.target.value, area: "" })} style={fieldStyle}>
+                        <option value="">Choose city...</option>
+                        {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Select Area</label>
+                      <select value={supportForm.area} onChange={(e) => setSupportForm({ ...supportForm, area: e.target.value })} style={{ ...fieldStyle, color: supportForm.area ? "#344054" : "#9CA3AF" }} disabled={!supportForm.city}>
+                        <option value="">{supportForm.city ? "Choose area..." : "Select city first"}</option>
+                        {(areas[supportForm.city] || []).map((a) => <option key={a} value={a}>{a}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>Mobile Number *</label>
+                    <input type="tel" placeholder="+91 XXXXX XXXXX" value={supportForm.mobile}
+                      onChange={(e) => setSupportForm({ ...supportForm, mobile: e.target.value })}
+                      style={fieldStyle} />
+                  </div>
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>Request Type</label>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      {["complaint", "I need help", "feedback"].map((t) => (
+                        <button key={t} onClick={() => setSupportForm({ ...supportForm, type: t })}
+                          style={{ padding: "8px 18px", borderRadius: 999, border: "1px solid", borderColor: supportForm.type === t ? "#CC0000" : "#E4E7EC", background: supportForm.type === t ? "rgba(204,0,0,0.08)" : "#fff", color: supportForm.type === t ? "#CC0000" : "#667085", fontFamily: "'Rajdhani', sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer", textTransform: "capitalize" }}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 24 }}>
+                    <label style={labelStyle}>Message *</label>
+                    <textarea rows={4} placeholder="Describe your issue..." value={supportForm.message}
+                      onChange={(e) => setSupportForm({ ...supportForm, message: e.target.value })}
+                      style={{ ...fieldStyle, resize: "vertical" }} />
+                  </div>
+                  <button onClick={handleSupportSubmit}
+                    style={{ display: "flex", alignItems: "center", gap: 8, background: "#14213D", color: "#fff", border: "none", borderRadius: 8, padding: "13px 32px", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: 1.5, textTransform: "uppercase", cursor: "pointer" }}>
+                    <Send size={16} /> Submit Request
+                  </button>
+                  <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 12 }}>Form will be sent to support@vbctv.in</p>
+                </>
+              )}
+              {activeTab === "support" && supportSubmitted && (
+                <div style={{ textAlign: "center", padding: "40px 20px" }}>
+                  <div style={{ width: 64, height: 64, background: "rgba(204,0,0,0.1)", border: "1px solid rgba(204,0,0,0.3)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+                    <CheckCircle size={28} color="#CC0000" />
+                  </div>
+                  <h3 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: 28, color: "#14213D", marginBottom: 10 }}>Request Submitted!</h3>
+                  <p style={{ color: "#667085", fontSize: 13 }}>Our support team will respond within 2 hours.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Scoped CSS ── */}
       <style>{`
-        /* Hero */
-        .contact-hero {
-  padding: 72px 24px 48px;
-  background: linear-gradient(180deg, #fff7f5 0%, #ffffff 100%);
-}
-.contact-hero-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-.contact-hero-title {
-  font-family: 'Bebas Neue', cursive;
-  font-size: clamp(48px, 7vw, 90px);
-  letter-spacing: 2px;
-  color: #152238;
-  line-height: 1;
-}
-
-        /* Main section */
-        .contact-main {
-          padding: 32px 20px 100px;
-        }
-
-        /* Grid: single column on mobile → two columns on desktop */
-        .contact-grid {
-          max-width: 1280px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 32px;
-        }
-        @media (min-width: 900px) {
-          .contact-main { padding: 40px 24px 100px; }
-          .contact-grid { grid-template-columns: 1fr 2fr; gap: 48px; }
-        }
-
-        /* Info column */
-        .contact-info-col {
-          display: flex;
-          flex-direction: column;
-        }
-
-        /* Each info row */
-        .contact-info-row {
-          display: flex;
-          gap: 16px;
-          padding: 20px 0;
-          border-bottom: 1px solid rgba(20,33,61,0.08);
-          align-items: flex-start;
-        }
-
-        /* Icon box */
-        .contact-icon-box {
-          width: 44px;
-          height: 44px;
-          min-width: 44px;
-          background: rgba(204,0,0,0.1);
-          border: 1px solid rgba(204,0,0,0.2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #CC0000;
-          clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-        }
-
-        .contact-item-label {
-          font-family: 'Rajdhani', sans-serif;
-          font-weight: 700;
-          font-size: 13px;
-          color: #CC0000;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          margin-bottom: 6px;
-        }
-
-        /* WhatsApp button */
-        .whatsapp-btn {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-top: 24px;
-          padding: 16px 20px;
-          background: rgba(37,211,102,0.08);
-          border: 1px solid rgba(37,211,102,0.2);
-          text-decoration: none;
-          transition: background 0.2s;
-          border-radius: 4px;
-        }
-        .whatsapp-btn:hover {
-          background: rgba(37,211,102,0.15);
-        }
-
-        /* Form card */
-        .contact-form-card {
-          background: #ffffff;
-          border: 1px solid rgba(20,33,61,0.08);
-          box-shadow: 0 18px 40px rgba(20,33,61,0.06);
-          padding: 24px 20px;
-          border-radius: 4px;
-        }
-        @media (min-width: 480px) {
-          .contact-form-card { padding: 32px 28px; }
-        }
-        @media (min-width: 900px) {
-          .contact-form-card { padding: 40px; }
-        }
-
-        .contact-form-title {
-          font-family: 'Rajdhani', sans-serif;
-          font-weight: 700;
-          font-size: 22px;
-          color: #152238;
-          margin-bottom: 8px;
-        }
-
-        /* Form label */
-        .form-label {
-          display: block;
-          font-family: 'Rajdhani', sans-serif;
-          font-weight: 600;
-          font-size: 11px;
-          color: #667085;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          margin-bottom: 6px;
-        }
-
-        /* 2-col row → stacked on mobile, side-by-side on sm+ */
-        .form-row-2col {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 16px;
-          margin-bottom: 16px;
-        }
-        @media (min-width: 500px) {
-          .form-row-2col { grid-template-columns: 1fr 1fr; }
-        }
-
-        /* Submit button — full-width on mobile */
-        .contact-submit-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          clip-path: none;
-          padding: 14px 32px;
-          width: 100%;
-        }
-        @media (min-width: 500px) {
-          .contact-submit-btn { width: auto; }
-        }
-
-        /* Success icon */
-        .contact-success-icon {
-          width: 64px;
-          height: 64px;
-          background: rgba(204,0,0,0.1);
-          border: 1px solid rgba(204,0,0,0.3);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 20px;
-        }
+        @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr !important; } }
       `}</style>
     </div>
   );

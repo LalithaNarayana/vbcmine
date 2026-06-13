@@ -1,16 +1,17 @@
 export const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Services", href: "/services" },
-  { label: "Plans", href: "/plans" },
-  { label: "Sales", href: "/sales" },
-  { label: "City Coverage", href: "/city-selection" },
+  { label: "About Us", href: "/about" },
+  { label: "Broadband Services", href: "/plans" },
+  { label: "Business Services", href: "/services" },
   { label: "Contact", href: "/contact" },
+  { label: "FAQ", href: "/faq" },
 ];
 
 export const mobileMenuLinks = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Plans", href: "/plans" },
+  { label: "About Us", href: "/about" },
+  { label: "Broadband Services", href: "/plans" },
+  { label: "Business Services", href: "/services" },
+  { label: "Contact", href: "/contact" },
+  { label: "FAQ", href: "/faqs" },
   { label: "My Account", href: "/login" },
 ];

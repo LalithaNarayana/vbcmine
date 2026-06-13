@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, ArrowRight, Shield, RefreshCw } from "lucide-react";
 
 type Step = "mobile" | "otp";
@@ -62,14 +63,18 @@ export default function LoginPage() {
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: "64px",
-              height: "64px",
-              background: "linear-gradient(135deg, #CC0000, #880000)",
-              clipPath: "polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)",
+              width: "80px",
+              height: "80px",
               marginBottom: "16px",
             }}
           >
-            <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "24px", color: "white" }}>VBC</span>
+            <Image
+              src="/images/logo.png"
+              alt="VBC Logo"
+              width={80}
+              height={80}
+              style={{ objectFit: "contain" }}
+            />
           </div>
           <h1
             style={{
@@ -215,7 +220,7 @@ export default function LoginPage() {
                 Enter OTP
               </h2>
               <p style={{ color: "#667085", fontSize: "13px", marginBottom: "32px", lineHeight: "1.6" }}>
-                We've sent a 6-digit OTP to <strong style={{ color: "#152238" }}>+91 {mobile}</strong>
+                We&apos;ve sent a 6-digit OTP to <strong style={{ color: "#152238" }}>+91 {mobile}</strong>
               </p>
 
               {/* OTP Boxes */}
@@ -264,7 +269,7 @@ export default function LoginPage() {
               </Link>
 
               <p style={{ textAlign: "center", color: "#667085", fontSize: "13px", marginTop: "20px" }}>
-                Didn't receive?{" "}
+                Didn&apos;t receive?{" "}
                 <button
                   style={{ background: "none", border: "none", color: "#CC0000", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}
                 >
