@@ -4,13 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle, Zap, X } from "lucide-react";
 
-// ─── INTERNET + OTT PLANS (from plans page) ─────────────────────────────────
 const ottPlans = [
   {
     speed: "30 Mbps",
     price: 499,
     otts: 20,
     popular: false,
+    ottImage: "ott1.jpg",
     features: [
       "20 OTT Apps",
       "Unlimited Data",
@@ -24,6 +24,7 @@ const ottPlans = [
     price: 599,
     otts: 27,
     popular: false,
+    ottImage: "ott2.jpg",
     features: [
       "27 OTT Apps",
       "Unlimited Data",
@@ -37,6 +38,7 @@ const ottPlans = [
     price: 799,
     otts: 30,
     popular: true,
+    ottImage: "ott3.jpg",
     features: [
       "30 OTT Apps",
       "Unlimited Data",
@@ -50,6 +52,7 @@ const ottPlans = [
     price: 899,
     otts: 30,
     popular: false,
+    ottImage: "ott3.jpg",
     features: [
       "30 OTT Apps",
       "Unlimited Data",
@@ -63,6 +66,7 @@ const ottPlans = [
     price: 999,
     otts: 30,
     popular: false,
+    ottImage: "ott3.jpg",
     features: [
       "30 OTT Apps",
       "Unlimited Data",
@@ -73,9 +77,8 @@ const ottPlans = [
   },
 ];
 
-// ─── PLANS SECTION ────────────────────────────────────────────────────────────
 export function SpeedHighlight() {
-  const [ottPopupOpen, setOttPopupOpen] = useState(false);
+  const [ottPopupIndex, setOttPopupIndex] = useState<number | null>(null);
 
   return (
     <section
@@ -177,7 +180,6 @@ export function SpeedHighlight() {
             border: "1px solid rgba(204,0,0,0.25)",
             borderRadius: 10,
             padding: "14px 20px",
-            marginBottom: 48,
             display: "flex",
             alignItems: "center",
             gap: 12,
@@ -277,7 +279,7 @@ export function SpeedHighlight() {
 
               {/* OTT count — clickable to open popup */}
               <button
-                onClick={() => setOttPopupOpen(true)}
+                onClick={() => setOttPopupIndex(i)}
                 style={{
                   background: "none",
                   border: "none",
@@ -417,7 +419,7 @@ export function SpeedHighlight() {
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
-              background:"#CC0000",
+              background: "#CC0000",
               fontFamily: "'Rajdhani', sans-serif",
               fontWeight: 700,
               fontSize: 14,
@@ -440,7 +442,7 @@ export function SpeedHighlight() {
       </div>
 
       {/* OTT Popup Modal */}
-      {ottPopupOpen && (
+      {ottPopupIndex !== null && (
         <div
           style={{
             position: "fixed",
@@ -453,7 +455,7 @@ export function SpeedHighlight() {
             padding: 24,
             backdropFilter: "blur(6px)",
           }}
-          onClick={() => setOttPopupOpen(false)}
+          onClick={() => setOttPopupIndex(null)}
         >
           <div
             style={{
@@ -466,9 +468,9 @@ export function SpeedHighlight() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
+            {/* Close button — fixed: was calling stopPropagation instead of closing */}
             <button
-              onClick={() => setOttPopupOpen(false)}
+              onClick={() => setOttPopupIndex(null)}
               style={{
                 position: "absolute",
                 top: 16,
@@ -488,8 +490,10 @@ export function SpeedHighlight() {
             >
               <X size={18} />
             </button>
+
+            {/* Image — uses per-plan ottImage filename */}
             <img
-              src="/images/ott1.png"
+              src={`/images/${ottPlans[ottPopupIndex].ottImage}`}
               alt="OTT Apps included"
               style={{
                 width: "100%",
@@ -498,13 +502,12 @@ export function SpeedHighlight() {
                 objectFit: "contain",
               }}
               onError={(e) => {
-                // Fallback if image not found
                 (e.currentTarget as HTMLImageElement).style.display = "none";
                 const parent = (e.currentTarget as HTMLImageElement).parentElement;
                 if (parent) {
                   parent.style.background = "#14213D";
                   parent.style.padding = "60px 40px";
-                  parent.innerHTML = `<div style="text-align:center;color:#fff;font-family:'Rajdhani',sans-serif;font-size:20px;">OTT Apps image not found.<br/>Please add /images/ott1.png</div>`;
+                  parent.innerHTML = `<div style="text-align:center;color:#fff;font-family:'Rajdhani',sans-serif;font-size:20px;">Image not found.</div>`;
                 }
               }}
             />
@@ -576,7 +579,7 @@ export function WhyVBC() {
 
       <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
-        {/* ── Heading ── */}
+        {/* Heading */}
         <div style={{ textAlign: "center", marginBottom: 80 }}>
           <p style={{
             fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
@@ -602,7 +605,7 @@ export function WhyVBC() {
           </p>
         </div>
 
-        {/* ── Cards grid ── */}
+        {/* Cards grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 26 }}>
           {whyItems.map((item, i) => (
             <div
