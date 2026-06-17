@@ -2,21 +2,42 @@
 
 const services = [
   {
-    img: "/images/service1.jpeg",
+    img: "/images/service1h.jpeg",
     tag: "Broadband",
     title: "FTTH Broadband",
     desc: "VBC's Fiber-to-the-Home (FTTH) technology delivers ultra-fast, stable internet directly to your premises via pure fiber optic cables — no copper, no compromise. Experience symmetric speeds ideal for 4K streaming, remote work, and gaming.",
     highlight: "#CC0000",
   },
   {
+    img: "/images/service1.jpeg",
+    tag: "Enterprise",
+    title: "Internet Leased Lines",
+    desc: "Dedicated high-speed symmetric connectivity with guaranteed bandwidth, static public IP addresses, and SLA-backed uptime of 99%+. Ideal for businesses requiring uninterrupted, mission-critical internet access with 24/7 monitoring and technical support.",
+    highlight: "#0055CC",
+  },
+  {
     img: "/images/service2.jpeg",
+    tag: "Networking",
+    title: "MPLS P2P and P2MP",
+    desc: "Multi-Protocol Label Switching (MPLS) connectivity offering Layer 2 & 3 Point-to-Point and Point-to-Multipoint services. Enjoy dedicated private connectivity, Quality of Service (QoS), high availability, and scalable infrastructure for enterprise networks.",
+    highlight: "#CC6600",
+  },
+  {
+    img: "/images/service3.jpeg",
+    tag: "Hosting",
+    title: "Hosting & Server Colocation",
+    desc: "Secure data center services including dedicated servers, Virtual Private Servers (VPS), private & hybrid cloud, rack space & power, high-speed fiber connectivity, and remote hands & managed services — all in a reliable, enterprise-grade environment.",
+    highlight: "#006633",
+  },
+  {
+    img: "/images/why3.jpeg",
     tag: "Television",
     title: "IPTV / Digital TV",
     desc: "Internet Protocol Television (IPTV) brings you 550+ live channels in HD/4K, on-demand content, time-shift viewing, and multi-screen support — all delivered over your fiber connection with crystal-clear picture quality.",
     highlight: "#0055CC",
   },
   {
-    img: "/images/service3.jpeg",
+    img: "/images/service4.jpeg",
     tag: "Business",
     title: "VoIP / IBS Solutions",
     desc: "Voice-over-Internet Protocol (VoIP) and Internet Business Solutions from VBC empower enterprises with scalable communication infrastructure, SIP trunking, PBX systems, and dedicated leased lines for mission-critical operations.",
@@ -109,22 +130,6 @@ export default function ServicesSection() {
               <div style={{ padding: "28px 28px 32px" }}>
                 <div style={{ width: 48, height: 4, background: `linear-gradient(90deg, ${svc.highlight}, ${svc.highlight}55)`, borderRadius: 2, marginBottom: 18 }} />
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: "#4a5568", lineHeight: 1.8, marginBottom: 26 }}>{svc.desc}</p>
-                {/* <a href="#" style={{
-                  fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13,
-                  letterSpacing: 1.5, textTransform: "uppercase", color: svc.highlight,
-                  textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8,
-                  padding: "8px 20px", border: `1.5px solid ${svc.highlight}44`,
-                  borderRadius: 999, background: `${svc.highlight}08`, transition: "all 0.25s",
-                }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLAnchorElement;
-                    el.style.background = svc.highlight; el.style.color = "#fff";
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLAnchorElement;
-                    el.style.background = `${svc.highlight}08`; el.style.color = svc.highlight;
-                  }}
-                >Learn More <span style={{ fontSize: 16 }}>→</span></a> */}
               </div>
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${svc.highlight}, ${svc.highlight}22, transparent)` }} />
             </div>

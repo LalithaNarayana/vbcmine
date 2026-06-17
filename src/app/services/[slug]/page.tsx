@@ -37,7 +37,7 @@ function Para({ children, mb = 20 }: { children: React.ReactNode; mb?: number })
 }
 
 const ill: ServiceContent = {
-  badge: "ILL", badgeBg: "rgb(255,255,255)", badgeColor: "#ff0000",
+  badge: "ILL", badgeBg: "rgba(221, 81, 81, 0.14)", badgeColor: "#ff0000",
   heroTitle: <>INTERNET LEASED <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>LINES (ILL)</span></>,
   heroSubtitle: "Dedicated High-Speed Symmetric Connectivity",
   image: "/images/service1.jpeg", phone: "(0891) 6677-123, 6677-124", email: "sales@vbctv.in",
@@ -48,13 +48,13 @@ const ill: ServiceContent = {
       <Para>At VBC, we provide an Internet Leased Line (ILL) with a dedicated, high-speed, and symmetric internet connectivity service provided by an Internet Service Provider (ISP) to enterprises, government organizations, educational institutions, and data centers.</Para>
       <Para mb={28}>Unlike broadband connections that are shared among multiple users, a leased line offers exclusive bandwidth between the customer premises and the ISP network, ensuring consistent performance, reliability, and service quality.</Para>
       <H3>Key Features</H3>
-      <Bullet items={["Dedicated Bandwidth","Symmetrical Upload & Download Speeds","Static Public IP Addresses","SLA-backed uptime guarantee","99%+ network availability"]} />
+      <Bullet items={["Dedicated Bandwidth", "Symmetrical Upload & Download Speeds", "Static Public IP Addresses", "SLA-backed uptime guarantee", "99%+ network availability"]} />
     </>
   ),
 };
 
 const mpls: ServiceContent = {
-  badge: "MPLS", badgeBg: "rgb(255,255,255)", badgeColor: "#ff0000",
+  badge: "MPLS", badgeBg: "rgba(221, 81, 81, 0.14)", badgeColor: "#ff0000",
   heroTitle: <>MPLS <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>CONNECTIVITY</span></>,
   heroSubtitle: "Point-to-Point and Point-to-Multipoint",
   image: "/images/service2.jpeg", phone: "(0891) 6677-123, 6677-124", email: "sales@vbctv.in",
@@ -65,23 +65,23 @@ const mpls: ServiceContent = {
       <Para>VBC provides customers with P2P and P2MP connectivity. MPLS Point-to-Point (P2P) services provide Layer 2 or Layer 3 connectivity over a service provider&apos;s MPLS backbone, enabling organizations to transport mission-critical data, voice, video, and application traffic with guaranteed performance and security.</Para>
       <Para mb={24}>Unlike traditional internet-based connectivity, MPLS P2P circuits are isolated from the public internet, providing enhanced security, predictable latency, and Quality of Service (QoS) capabilities.</Para>
       <H3>MPLS P2P — Service Types</H3>
-      <div style={{ marginBottom: 20 }}><Bullet items={["Layer 2 MPLS P2P","Layer 3 MPLS P2P VPN"]} /></div>
+      <div style={{ marginBottom: 20 }}><Bullet items={["Layer 2 MPLS P2P", "Layer 3 MPLS P2P VPN"]} /></div>
       <H3>MPLS P2P — Key Features</H3>
-      <div style={{ marginBottom: 24 }}><Bullet items={["Dedicated Private Connectivity","Quality of Service (QoS)","Scalability","High Availability"]} /></div>
+      <div style={{ marginBottom: 24 }}><Bullet items={["Dedicated Private Connectivity", "Quality of Service (QoS)", "Scalability", "High Availability"]} /></div>
       <div style={{ borderTop: "1px solid rgba(204,0,0,0.15)", paddingTop: 24, marginBottom: 20 }}>
         <H3>MPLS P2MP — Overview</H3>
         <Para>MPLS Point-to-Multipoint (P2MP) connectivity enables data transmission from a single source location (hub) to multiple destination locations (spokes) across a service provider&apos;s MPLS backbone network. It efficiently distributes the same traffic stream to multiple remote sites while optimizing bandwidth utilization.</Para>
         <H3>P2MP Service Types</H3>
-        <div style={{ marginBottom: 16 }}><Bullet items={["Layer 2 P2MP Service","Layer 3 P2MP VPN Service"]} /></div>
+        <div style={{ marginBottom: 16 }}><Bullet items={["Layer 2 P2MP Service", "Layer 3 P2MP VPN Service"]} /></div>
         <H3>P2MP Key Features</H3>
-        <Bullet items={["Efficient Traffic Distribution","Bandwidth Optimization","Quality of Service (QoS)","Scalability"]} />
+        <Bullet items={["Efficient Traffic Distribution", "Bandwidth Optimization", "Quality of Service (QoS)", "Scalability"]} />
       </div>
     </>
   ),
 };
 
 const hosting: ServiceContent = {
-  badge: "Data Center", badgeBg: "rgb(255,255,255)", badgeColor: "#ff0000",
+  badge: "Data Center", badgeBg: "rgba(221, 81, 81, 0.14)", badgeColor: "#ff0000",
   heroTitle: <>HOSTING &amp; <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>COLOCATION</span></>,
   heroSubtitle: "Secure Data Center Services for Your Business",
   image: "/images/service3.jpeg", phone: "(0891) 6677-123, 6677-124", email: "sales@vbctv.in",
@@ -93,13 +93,12 @@ const hosting: ServiceContent = {
       <H3>Hosting Services</H3>
       <Para>Hosting services provide customers with computing, storage, networking, and application infrastructure hosted within a service provider&apos;s data center. The provider manages the underlying infrastructure while customers utilize the resources to run applications and services.</Para>
       <Para>Hosting solutions can be delivered through:</Para>
-      <div style={{ marginBottom: 25 }}><Bullet items={["Dedicated Servers","Virtual Private Servers (VPS)","Private Cloud","Public Cloud","Hybrid Cloud Environments"]} /></div>
+      <div style={{ marginBottom: 25 }}><Bullet items={["Dedicated Servers", "Virtual Private Servers (VPS)", "Private Cloud", "Public Cloud", "Hybrid Cloud Environments"]} /></div>
       <H3>Types of Hosting Services</H3>
       {[
-        { title: "Shared Hosting", desc: "Multiple customers share the same server resources.", label: "Suitable for:", items: ["Small websites","Blogs","Low-traffic applications"] },
-        { title: "Virtual Private Server (VPS) Hosting", desc: "Virtualized environments with dedicated resource allocation.", label: "Features:", items: ["Independent operating systems","Resource isolation","Cost-effective scalability"] },
-        { title: "Dedicated Server Hosting", desc: "A physical server exclusively allocated to a single customer.", label: "Benefits:", items: ["Maximum performance","Enhanced security","Full administrative control"] },
-        { title: "Cloud Hosting", desc: "Resources are dynamically allocated from a shared cloud infrastructure.", label: "Advantages:", items: ["Elastic scalability","High availability","Pay-as-you-use model"] },
+        { title: "Shared Hosting", desc: "Multiple customers share the same server resources.", label: "Suitable for:", items: ["Small websites", "Blogs", "Low-traffic applications"] },
+        { title: "Virtual Private Server (VPS) Hosting", desc: "Virtualized environments with dedicated resource allocation.", label: "Features:", items: ["Independent operating systems", "Resource isolation", "Cost-effective scalability"] },
+        { title: "Dedicated Server Hosting", desc: "A physical server exclusively allocated to a single customer.", label: "Benefits:", items: ["Maximum performance", "Enhanced security", "Full administrative control"] },
       ].map((s, i) => (
         <div key={i} style={{ marginBottom: 20 }}>
           <h4 style={{ color: "#CC0000", marginBottom: 8 }}>{s.title}</h4>
@@ -111,10 +110,10 @@ const hosting: ServiceContent = {
       <H3>Server Colocation Services</H3>
       <Para>Server Colocation is a service where customers deploy and manage their own servers, storage devices, and networking equipment within a third-party data center facility.</Para>
       <p style={{ color: "#475467", fontSize: 14, marginBottom: 10 }}>The data center provider supplies:</p>
-      <div style={{ marginBottom: 25 }}><Bullet items={["Rack Space","Power","Cooling","Physical Security","Network Connectivity","Environmental Monitoring"]} /></div>
+      <div style={{ marginBottom: 25 }}><Bullet items={["Rack Space", "Power", "Cooling", "Physical Security", "Network Connectivity", "Environmental Monitoring"]} /></div>
       <Para>Customers retain ownership and management control of their equipment.</Para>
       <H3>Network Infrastructure</H3>
-      <div style={{ marginBottom: 25 }}><Bullet items={["Internet Leased Lines","MPLS VPN","Dedicated Fiber Connectivity","Cross Connect Services","Cloud Connectivity"]} /></div>
+      <div style={{ marginBottom: 25 }}><Bullet items={["Internet Leased Lines", "MPLS VPN", "Dedicated Fiber Connectivity", "Cross Connect Services", "Cloud Connectivity"]} /></div>
       <H3>Remote Hands and Managed Services</H3>
       <Para>VBC provides remote hands support and managed services to assist customers with server monitoring, troubleshooting, equipment installation, maintenance, upgrades, and operational support without requiring on-site visits.</Para>
       <H3>Managed Hosting Services</H3>
@@ -124,7 +123,7 @@ const hosting: ServiceContent = {
 };
 
 const voip: ServiceContent = {
-  badge: "VoIP / IBS", badgeBg: "rgb(255,255,255)", badgeColor: "#ff0000",
+  badge: "VoIP / IBS", badgeBg: "rgba(221, 81, 81, 0.14)", badgeColor: "#ff0000",
   heroTitle: <>VOIP / <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>IBS SOLUTIONS</span></>,
   heroSubtitle: "Voice over IP and Enterprise Telephony",
   image: "/images/service4.jpeg", phone: "(0891) 6677-123, 6677-124", email: "sales@vbctv.in",
@@ -135,30 +134,15 @@ const voip: ServiceContent = {
       <Para>VoIP services leverage broadband internet, MPLS networks, and dedicated IP infrastructure to deliver cost-effective, scalable, and feature-rich telephony solutions for enterprises, government organizations, educational institutions, and service providers.</Para>
       <Para mb={24}>For Internet Service Providers (ISPs), VoIP services represent a value-added offering that integrates voice communication with existing data connectivity services, providing unified communication solutions to customers.</Para>
       <H3>Core Components</H3>
-      <div style={{ marginBottom: 20 }}><Bullet items={["IP Phones","Soft Phones","IP PBX"]} /></div>
+      <div style={{ marginBottom: 20 }}><Bullet items={["IP Phones", "Soft Phones", "IP PBX"]} /></div>
       <H3>VoIP Service Types</H3>
-      <Bullet items={["Hosted VoIP","SIP Trunking Services","IP Centrex Services","Unified Communications"]} />
-    </>
-  ),
-};
-
-const fiber: ServiceContent = {
-  badge: "Fiber FTTH", badgeBg: "rgba(204,0,0,0.2)", badgeColor: "#ff6b6b",
-  heroTitle: "FIBER BROADBAND (FTTH)",
-  heroSubtitle: "Lightning-Fast Home and Business Internet",
-  image: "/images/service6.png", phone: "(0891) 6677-123, 6677-124", email: "sales@vbctv.in",
-  body: (
-    <>
-      <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: 30, color: "#14213D", marginBottom: 16 }}>FIBER BROADBAND (FTTH)</h2>
-      <Para mb={24}>VBC delivers true Fiber-to-the-Home (FTTH) connectivity with symmetric upload and download speeds. With no throttling and no fair usage policy caps, you get the internet speeds you pay for — every single day. Our fiber network spans 160 Km across Visakhapatnam with 99%+ uptime.</Para>
-      <H3>Key Features</H3>
-      <Bullet items={["True Fiber-to-the-Home (FTTH)","Symmetric Upload & Download","No Throttling or FUP Caps","Plans from 30 Mbps to 1 Gbps","Free Installation","24/7 Local Support"]} />
+      <Bullet items={["Hosted VoIP", "SIP Trunking Services", "IP Centrex Services", "Unified Communications"]} />
     </>
   ),
 };
 
 const opticalFiber: ServiceContent = {
-  badge: "Optical Fiber Lease", badgeBg: "rgb(255, 255, 255)", badgeColor: "#ff0000",
+  badge: "Optical Fiber Lease", badgeBg: "rgba(221, 81, 81, 0.14)", badgeColor: "#ff0000",
   heroTitle: "OPTICAL FIBER LEASE SERVICES",
   heroSubtitle: "Dedicated Fiber Connectivity for Business",
   image: "/images/service5.jpeg", phone: "(0891) 6677-123, 6677-124", email: "sales@vbctv.in",
@@ -184,7 +168,7 @@ const opticalFiber: ServiceContent = {
 };
 
 const servicesMap: Record<string, ServiceContent> = {
-  ill, mpls, hosting, voip, fiber,
+  ill, mpls, hosting, voip,
   "optical-fiber": opticalFiber,
 };
 
@@ -261,16 +245,120 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div style={{ background: "#ffffff", minHeight: "100vh" }}>
-      <section style={{ padding: "80px 24px 60px", background: "linear-gradient(135deg, #14213D 0%, #1e3a5f 100%)", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <Link href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#CC0000", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: 1, textTransform: "uppercase", textDecoration: "none", marginBottom: 24 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      <section
+        style={{
+          padding: "80px 24px 60px",
+          background: "linear-gradient(135deg, #fff7f5 0%, #ffffff 55%, #f7fafc 100%)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            backgroundImage:
+              "linear-gradient(rgba(20,33,61,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(20,33,61,0.025) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        <div
+          style={{
+            position: "absolute",
+            top: -120,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 700,
+            height: 350,
+            background:
+              "radial-gradient(ellipse, rgba(204,0,0,0.10) 0%, transparent 70%)",
+            zIndex: 0,
+          }}
+        />
+
+        <div
+          style={{
+            maxWidth: 1100,
+            margin: "0 auto",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          <Link
+            href="/services"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              color: "#CC0000",
+              fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700,
+              fontSize: 13,
+              letterSpacing: 1,
+              textTransform: "uppercase",
+              textDecoration: "none",
+              marginBottom: 24,
+            }}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
             Back to Services
-          </Link><br />
-          <div style={{ display: "inline-block", background: service.badgeBg || "rgba(204,0,0,0.2)", color: service.badgeColor || "#ff6b6b", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: 2, padding: "5px 14px", borderRadius: 999, textTransform: "uppercase", marginBottom: 16 }}>{service.badge}</div>
-          <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(42px, 6vw, 80px)", letterSpacing: 2, color: "#fff", lineHeight: 0.95, marginBottom: 16 }}>{service.heroTitle}</h1>
-          <p style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14, color: "#CC0000", letterSpacing: 1.5, textTransform: "uppercase" }}>{service.heroSubtitle}</p>
+          </Link>
+          <br />
+
+          <div
+            style={{
+              display: "inline-block",
+              background: service.badgeBg || "rgba(204,0,0,0.08)",
+              color: service.badgeColor || "#CC0000",
+              fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700,
+              fontSize: 11,
+              letterSpacing: 2,
+              padding: "5px 14px",
+              borderRadius: 999,
+              textTransform: "uppercase",
+              marginBottom: 16,
+            }}
+          >
+            {service.badge}
+          </div>
+
+          <h1
+            style={{
+              fontFamily: "'Bebas Neue', cursive",
+              fontSize: "clamp(42px, 6vw, 80px)",
+              letterSpacing: 2,
+              color: "#152238",
+              lineHeight: 0.95,
+              marginBottom: 16,
+            }}
+          >
+            {service.heroTitle}
+          </h1>
+
+          <p
+            style={{
+              fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700,
+              fontSize: 14,
+              color: "#CC0000",
+              letterSpacing: 1.5,
+              textTransform: "uppercase",
+            }}
+          >
+            {service.heroSubtitle}
+          </p>
         </div>
       </section>
 
@@ -279,7 +367,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "start" }} className="service-detail-grid">
             <div>
               <div style={{ position: "relative", borderRadius: 16, overflow: "hidden", marginBottom: 32, height: 260, background: "linear-gradient(135deg, #14213D, #1e3a5f)" }}>
-                <Image src={service.image} alt={service.badge} fill style={{ objectFit: "cover", opacity: 0.8 }} onError={() => {}} />
+                <Image src={service.image} alt={service.badge} fill style={{ objectFit: "cover", opacity: 0.8 }} onError={() => { }} />
               </div>
               <div style={{ padding: "24px", background: "rgba(204,0,0,0.04)", border: "1px solid rgba(204,0,0,0.15)", borderRadius: 10 }}>
                 <strong style={{ color: "#CC0000", fontFamily: "'Rajdhani', sans-serif", fontSize: 13, display: "block", marginBottom: 10 }}>For more details:</strong>
@@ -373,7 +461,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
           <div style={{ marginTop: 36, textAlign: "center" }}>
             <Link href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: 1.5, textTransform: "uppercase", color: "#CC0000", textDecoration: "none", borderBottom: "1px solid rgba(204,0,0,0.3)", paddingBottom: 2 }}>
               View All Business Services
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
             </Link>
           </div>
         </div>

@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import { Phone, X } from "lucide-react";
-import { navLinks } from "@/constants/nav";
+import { usePathname } from "next/navigation";
+import { Phone, Smartphone, X } from "lucide-react";
+import { navLinks, androidAppUrl } from "@/constants/nav";
 import { useEffect } from "react";
 
 interface MobileMenuProps {
@@ -10,6 +11,8 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ open, onClose }: MobileMenuProps) {
+  const pathname = usePathname();
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -65,28 +68,68 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
         </div>
 
         <nav style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={onClose}
-              style={{
-                textDecoration: "none",
-                color: "#152238",
-                fontSize: "18px",
-                fontWeight: 600,
-                padding: "14px 16px",
-                borderRadius: "16px",
-                background: "#F8FAFC",
-                border: "1px solid #EEF2F6",
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={onClose}
+                style={{
+                  textDecorationLine: active ? "underline" : "none",
+                  textDecorationColor: "#CC0000",
+                  textDecorationThickness: "2px",
+                  textUnderlineOffset: "4px",
+                  color: active ? "#CC0000" : "#152238",
+                  fontSize: "18px",
+                  fontWeight: 600,
+                  padding: "14px 16px",
+                  borderRadius: "16px",
+                  background: active ? "rgba(204,0,0,0.06)" : "#F8FAFC",
+                  border: active ? "1px solid rgba(204,0,0,0.25)" : "1px solid #EEF2F6",
+                }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div style={{ marginTop: "auto", paddingTop: "28px" }}>
+          <a
+            href={androidAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              textDecoration: "none",
+              borderRadius: "20px",
+              background: "#F8FAFC",
+              border: "1px solid #EEF2F6",
+              padding: "14px 16px",
+              marginBottom: "14px",
+            }}
+          >
+            <span style={{
+              width: "38px",
+              height: "38px",
+              borderRadius: "10px",
+              background: "rgba(204,0,0,0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <Smartphone size={18} color="#CC0000" />
+            </span>
+            <span>
+              <span style={{ display: "block", fontSize: "11px", color: "#667085" }}>Get the VBC app</span>
+              <span style={{ display: "block", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "14px", color: "#152238" }}>Download for Android</span>
+            </span>
+          </a>
           <div
             style={{
               borderRadius: "20px",

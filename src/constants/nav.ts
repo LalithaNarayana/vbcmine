@@ -3,7 +3,7 @@ export const navLinks = [
   { label: "Broadband Services", href: "/plans" },
   { label: "Business Services", href: "/services" },
   { label: "Contact", href: "/contact" },
-  { label: "FAQ", href: "/faq" },
+  { label: "Pay Online", href: "/pay-online" },
 ];
 
 export const mobileMenuLinks = [
@@ -12,6 +12,10 @@ export const mobileMenuLinks = [
   { label: "Broadband Services", href: "/plans" },
   { label: "Business Services", href: "/services" },
   { label: "Contact", href: "/contact" },
-  { label: "FAQ", href: "/faqs" },
+  { label: "Pay Online", href: "/pay-online" },
   { label: "My Account", href: "/login" },
 ];
+
+// Link to the Android app on the Play Store. Replace with the real
+// package URL once the app is published (e.g. https://play.google.com/store/apps/details?id=com.vbc.onfiber)
+export const androidAppUrl = "https://play.google.com/store";

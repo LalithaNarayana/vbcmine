@@ -140,13 +140,13 @@ export default function Footer() {
         >
           <p>(c) {new Date().getFullYear()} VBC On Fiber. All rights reserved.</p>
           <p style={{ color: "#9CA3AF", fontSize: "13px" }}>
-            Designed and developed by{" "}
+            Designed and Developed by{" "}
             <a href="https://www.thecolourmoon.com/" target="_blank" rel="noopener noreferrer" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>Colourmoon Technologies</a>
           </p>
           <div style={{ display: "flex", gap: "18px", flexWrap: "wrap" }}>
-            <Link href="#" style={{ color: "#9CA3AF", textDecoration: "none" }}>Privacy Policy</Link>
-            <Link href="#" style={{ color: "#9CA3AF", textDecoration: "none" }}>Terms of Service</Link>
-            <Link href="#" style={{ color: "#9CA3AF", textDecoration: "none" }}>Refund Policy</Link>
+            <Link href="/privacy-policy" style={{ color: "#9CA3AF", textDecoration: "none" }}>Privacy Policy</Link>
+            <Link href="/terms-conditions" style={{ color: "#9CA3AF", textDecoration: "none" }}>Terms of Service</Link>
+            <Link href="/refund-policy" style={{ color: "#9CA3AF", textDecoration: "none" }}>Refund Policy</Link>
           </div>
         </div>
       </div>

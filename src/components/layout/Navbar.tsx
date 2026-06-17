@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, Phone } from "lucide-react";
-import { navLinks } from "@/constants/nav";
+import { usePathname } from "next/navigation";
+import { Menu, Phone, Smartphone } from "lucide-react";
+import { navLinks, androidAppUrl } from "@/constants/nav";
 import MobileMenu from "@/components/layout/MobileMenu";
 import Image from "next/image";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 12);
@@ -30,7 +32,7 @@ export default function Navbar() {
         letterSpacing: "0.3px",
       }}>
         <Link href="/plans" style={{ color: "#fff", textDecoration: "none" }}>
-          📶 Click here to book connection online
+         👉🏻 Click here to book connection online
         </Link>
         <span style={{ margin: "0 16px", opacity: 0.6 }}>|</span>
         <Link href="tel:08916677123" style={{ color: "#fff", textDecoration: "none" }}>
@@ -73,26 +75,61 @@ export default function Navbar() {
           </Link>
 
           <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "28px" }}>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{
-                  color: "#344054",
-                  textDecoration: "none",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  transition: "color 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#CC0000")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#344054")}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const active = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  style={{
+                    color: active ? "#CC0000" : "#344054",
+                    textDecorationLine: active ? "underline" : "none",
+                    textDecorationColor: "#CC0000",
+                    textDecorationThickness: "2px",
+                    textUnderlineOffset: "6px",
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    transition: "color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#CC0000")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = active ? "#CC0000" : "#344054")}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
-          <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <a
+              href={androidAppUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                textDecoration: "none",
+                color: "#152238",
+              }}
+            >
+              <span style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "8px",
+                background: "rgba(20,33,61,0.06)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                <Smartphone size={16} color="#CC0000" />
+              </span>
+              <span style={{ lineHeight: 1.2 }}>
+                <span style={{ display: "block", fontSize: "9px", color: "#667085", fontFamily: "'DM Sans', sans-serif" }}>Get our App</span>
+                <span style={{ display: "block", fontSize: "12px", fontWeight: 700, fontFamily: "'Rajdhani', sans-serif" }}>Download for Android</span>
+              </span>
+            </a>
             <Link href="/login" className="btn-outline" style={{ textDecoration: "none", padding: "10px 20px" }}>
               My Account
             </Link>

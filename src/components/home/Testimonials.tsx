@@ -2,19 +2,19 @@
 
 const testimonials = [
   {
-    name: "Rajesh Kumar", initials: "RK", plan: "Gold Plan — ₹699/mo", color: "#CC0000",
+    name: "Rajesh Kumar", initials: "RK", plan: "Popular — ₹699/mo", color: "#CC0000",
     review: "Switched from a cable operator to VBC last year. The speeds are consistently good and the OTT bundling is genuinely convenient. Support team sorted my setup issue within 2 hours.",
   },
   {
-    name: "Priya Sharma", initials: "PS", plan: "Ultimate Plan — ₹999/mo", color: "#0055CC",
-    review: "Our whole family uses streaming and work-from-home simultaneously — zero buffering. The IPTV channels are crystal clear too. Best decision we made for our home.",
+    name: "Priya Sharma", initials: "PS", plan: "Ultra — ₹999/mo", color: "#0055CC",
+    review: "Our whole family uses streaming and work-from-home simultaneously — zero buffering. The OTV channels are crystal clear too. Best decision we made for our home.",
   },
   {
-    name: "Venkat Rao", initials: "VR", plan: "Silver Plan — ₹599/mo", color: "#006633",
+    name: "Venkat Rao", initials: "VR", plan: "Basic — ₹599/mo", color: "#006633",
     review: "Affordable and reliable. Disney+ Hotstar and Sony LIV bundled at this price is unbeatable in Vizag. Highly recommend VBC to anyone looking to upgrade their connection.",
   },
   {
-    name: "Anitha Reddy", initials: "AR", plan: "Premium Plan — ₹799/mo", color: "#CC8800",
+    name: "Anitha Reddy", initials: "AR", plan: "Popular — ₹799/mo", color: "#CC8800",
     review: "I run a small business from home and the symmetric speeds VBC offers are a game-changer. Video calls are flawless. The 24/7 support gives me real peace of mind every single day.",
   },
 ];

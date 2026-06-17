@@ -75,6 +75,48 @@ const ottPlans = [
       "Non-refundable installation: ₹1500 (monthly)",
     ],
   },
+  {
+    speed: "300 Mbps",
+    price: 1499,
+    otts: 30,
+    popular: false,
+    ottImage: "ott3.jpg",
+    features: [
+      "30 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
+  },
+  {
+    speed: "500 Mbps",
+    price: 1999,
+    otts: 30,
+    popular: false,
+    ottImage: "ott3.jpg",
+    features: [
+      "30 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
+  },
+  {
+    speed: "1 Gbps",
+    price: 3999,
+    otts: 30,
+    popular: false,
+    ottImage: "ott3.jpg",
+    features: [
+      "30 OTT Apps",
+      "Unlimited Data",
+      "6+1 or 12+2 Months Offer",
+      "Router & Installation Free (6/12 months)",
+      "Non-refundable installation: ₹1500 (monthly)",
+    ],
+  },
 ];
 
 export function SpeedHighlight() {
@@ -200,217 +242,220 @@ export function SpeedHighlight() {
         </div>
 
         {/* Plan Cards */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
-            gap: 24,
-            alignItems: "start",
-          }}
-        >
-          {ottPlans.map((plan, i) => (
-            <div
-              key={i}
-              style={{
-                background: plan.popular
-                  ? "linear-gradient(135deg, #1a0505 0%, #2a0808 100%)"
-                  : "rgba(255,255,255,0.04)",
-                border: plan.popular
-                  ? "2px solid #CC0000"
-                  : "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 18,
-                padding: "32px 24px",
-                position: "relative",
-                boxShadow: plan.popular
-                  ? "0 24px 60px rgba(204,0,0,0.25)"
-                  : "0 4px 20px rgba(0,0,0,0.2)",
-                transition: "transform 0.25s ease, box-shadow 0.25s ease",
-                cursor: "default",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = "translateY(-6px)";
-                (e.currentTarget as HTMLDivElement).style.boxShadow = plan.popular
-                  ? "0 32px 80px rgba(204,0,0,0.35)"
-                  : "0 20px 60px rgba(0,0,0,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = "";
-                (e.currentTarget as HTMLDivElement).style.boxShadow = plan.popular
-                  ? "0 24px 60px rgba(204,0,0,0.25)"
-                  : "0 4px 20px rgba(0,0,0,0.2)";
-              }}
-            >
-              {plan.popular && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -13,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    background: "linear-gradient(135deg, #CC0000, #E43B2C)",
-                    color: "#fff",
-                    fontFamily: "'Rajdhani', sans-serif",
-                    fontWeight: 700,
-                    fontSize: 10,
-                    letterSpacing: 2,
-                    padding: "4px 18px",
-                    borderRadius: 999,
-                    whiteSpace: "nowrap",
-                    textTransform: "uppercase",
-                    boxShadow: "0 4px 16px rgba(204,0,0,0.5)",
-                  }}
-                >
-                  Most Popular
-                </div>
-              )}
-
-              {/* Speed */}
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 24,
+              justifyContent: "center",
+              alignItems: "start",
+              maxWidth: 1320,
+            }}
+          >
+            {ottPlans.map((plan, i) => (
               <div
+                key={i}
                 style={{
-                  fontFamily: "'Bebas Neue', cursive",
-                  fontSize: 36,
-                  color: "#fff",
-                  letterSpacing: 1,
-                  marginBottom: 4,
-                }}
-              >
-                {plan.speed}
-              </div>
-
-              {/* OTT count — clickable to open popup */}
-              <button
-                onClick={() => setOttPopupIndex(i)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                  display: "block",
-                  marginBottom: 16,
-                }}
-                title="Click to see OTT apps"
-              >
-                <span
-                  style={{
-                    fontFamily: "'Rajdhani', sans-serif",
-                    fontWeight: 700,
-                    fontSize: 14,
-                    color: "#ff0000",
-                    letterSpacing: 1,
-                    textDecoration: "underline",
-                    textUnderlineOffset: 3,
-                    textDecorationStyle: "dotted",
-                  }}
-                >
-                  {plan.otts} OTT Apps 🎬
-                </span>
-              </button>
-
-              {/* Price */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  gap: 4,
-                  marginBottom: 20,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'Rajdhani', sans-serif",
-                    fontWeight: 700,
-                    fontSize: 14,
-                    color: "rgba(255,255,255,0.5)",
-                  }}
-                >
-                  ₹
-                </span>
-                <span
-                  style={{
-                    fontFamily: "'Bebas Neue', cursive",
-                    fontSize: 52,
-                    color: "#fff",
-                    letterSpacing: 1,
-                    lineHeight: 1,
-                  }}
-                >
-                  {plan.price}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 13,
-                    color: "rgba(255,255,255,0.4)",
-                  }}
-                >
-                  /mo
-                </span>
-              </div>
-
-              {/* Divider */}
-              <div
-                style={{
-                  height: 1,
                   background: plan.popular
-                    ? "rgba(204,0,0,0.3)"
-                    : "rgba(255,255,255,0.08)",
-                  marginBottom: 20,
+                    ? "linear-gradient(135deg, #1a0505 0%, #2a0808 100%)"
+                    : "rgba(255,255,255,0.04)",
+                  border: plan.popular
+                    ? "2px solid #CC0000"
+                    : "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: 18,
+                  padding: "32px 24px",
+                  position: "relative",
+                  boxShadow: plan.popular
+                    ? "0 24px 60px rgba(204,0,0,0.25)"
+                    : "0 4px 20px rgba(0,0,0,0.2)",
+                  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                  cursor: "default",
                 }}
-              />
-
-              {/* Features */}
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px 0" }}>
-                {plan.features.map((f, j) => (
-                  <li
-                    key={j}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-6px)";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = plan.popular
+                    ? "0 32px 80px rgba(204,0,0,0.35)"
+                    : "0 20px 60px rgba(0,0,0,0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = plan.popular
+                    ? "0 24px 60px rgba(204,0,0,0.25)"
+                    : "0 4px 20px rgba(0,0,0,0.2)";
+                }}
+              >
+                {plan.popular && (
+                  <div
                     style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: 10,
-                      marginBottom: 10,
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: 13,
-                      color: "rgba(255,255,255,0.75)",
-                      lineHeight: 1.5,
+                      position: "absolute",
+                      top: -13,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      background: "linear-gradient(135deg, #CC0000, #E43B2C)",
+                      color: "#fff",
+                      fontFamily: "'Rajdhani', sans-serif",
+                      fontWeight: 700,
+                      fontSize: 10,
+                      letterSpacing: 2,
+                      padding: "4px 18px",
+                      borderRadius: 999,
+                      whiteSpace: "nowrap",
+                      textTransform: "uppercase",
+                      boxShadow: "0 4px 16px rgba(204,0,0,0.5)",
                     }}
                   >
-                    <CheckCircle
-                      size={14}
-                      color="#CC0000"
-                      style={{ marginTop: 2, flexShrink: 0 }}
-                    />
-                    {f}
-                  </li>
-                ))}
-              </ul>
+                    Most Popular
+                  </div>
+                )}
 
-              {/* CTA */}
-              <Link
-                href="/contact"
-                style={{
-                  display: "block",
-                  textAlign: "center",
-                  background: "#CC0000",
-                  color: "#fff",
-                  border: plan.popular ? "none" : "1px solid rgba(204,0,0,0.6)",
-                  fontFamily: "'Rajdhani', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  letterSpacing: 1.5,
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  padding: "12px 20px",
-                  borderRadius: 10,
-                  transition: "all 0.2s",
-                  boxShadow: plan.popular ? "0 6px 20px rgba(204,0,0,0.4)" : "none",
-                }}
-              >
-                Get This Plan
-              </Link>
-            </div>
-          ))}
+                {/* Speed */}
+                <div
+                  style={{
+                    fontFamily: "'Bebas Neue', cursive",
+                    fontSize: 36,
+                    color: "#fff",
+                    letterSpacing: 1,
+                    marginBottom: 4,
+                  }}
+                >
+                  {plan.speed}
+                </div>
+
+                {/* OTT count — clickable to open popup */}
+                <button
+                  onClick={() => setOttPopupIndex(i)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    display: "block",
+                    marginBottom: 16,
+                  }}
+                  title="Click to see OTT apps"
+                >
+                  <span
+                    style={{
+                      fontFamily: "'Rajdhani', sans-serif",
+                      fontWeight: 700,
+                      fontSize: 14,
+                      color: "#ff0000",
+                      letterSpacing: 1,
+                      textDecoration: "underline",
+                      textUnderlineOffset: 3,
+                      textDecorationStyle: "dotted",
+                    }}
+                  >
+                    {plan.otts} OTT Apps 🎬
+                  </span>
+                </button>
+
+                {/* Price */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: 4,
+                    marginBottom: 20,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'Rajdhani', sans-serif",
+                      fontWeight: 700,
+                      fontSize: 14,
+                      color: "rgba(255,255,255,0.5)",
+                    }}
+                  >
+                    ₹
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Bebas Neue', cursive",
+                      fontSize: 52,
+                      color: "#fff",
+                      letterSpacing: 1,
+                      lineHeight: 1,
+                    }}
+                  >
+                    {plan.price}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    /mo
+                  </span>
+                </div>
+
+                {/* Divider */}
+                <div
+                  style={{
+                    height: 1,
+                    background: plan.popular
+                      ? "rgba(204,0,0,0.3)"
+                      : "rgba(255,255,255,0.08)",
+                    marginBottom: 20,
+                  }}
+                />
+
+                {/* Features */}
+                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px 0" }}>
+                  {plan.features.map((f, j) => (
+                    <li
+                      key={j}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 10,
+                        marginBottom: 10,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 13,
+                        color: "rgba(255,255,255,0.75)",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <CheckCircle
+                        size={14}
+                        color="#CC0000"
+                        style={{ marginTop: 2, flexShrink: 0 }}
+                      />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <Link
+                  href="/contact"
+                  style={{
+                    display: "block",
+                    textAlign: "center",
+                    background: "#CC0000",
+                    color: "#fff",
+                    border: plan.popular ? "none" : "1px solid rgba(204,0,0,0.6)",
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    letterSpacing: 1.5,
+                    textTransform: "uppercase",
+                    textDecoration: "none",
+                    padding: "12px 20px",
+                    borderRadius: 10,
+                    transition: "all 0.2s",
+                    boxShadow: plan.popular ? "0 6px 20px rgba(204,0,0,0.4)" : "none",
+                  }}
+                >
+                  Get This Plan
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
-
         {/* View all plans link */}
         <div style={{ textAlign: "center", marginTop: 48 }}>
           <Link
@@ -564,8 +609,8 @@ const whyItems = [
   { img: "/images/why1.jpeg", iconKey: "lightning", title: "Lightning Fast Speeds", desc: "True fiber-optic infrastructure with symmetric upload and download speeds — no throttling, no fair usage caps." },
   { img: "/images/why2.jpeg", iconKey: "shield", title: "99.9% Uptime SLA", desc: "Our redundant network architecture and 24/7 NOC monitoring guarantee near-zero downtime for homes and businesses." },
   { img: "/images/why4.jpeg", iconKey: "film", title: "21+ OTT Platforms", desc: "Disney+ Hotstar, Sony LIV, ZEE5, Aha, Sun NXT, Amazon Prime and more — bundled at no extra subscription cost." },
-  { img: "/images/why5.jpeg", iconKey: "headset", title: "24/7 Expert Support", desc: "Our local Vizag-based support team is available round the clock via phone, WhatsApp, and in-person visits." },
-  { img: "/images/why6.jpeg", iconKey: "globe", title: "City-Wide Coverage", desc: "50+ zones across Visakhapatnam covered with our fiber backbone — expanding every quarter to new areas." },
+  { img: "/images/why5.png", iconKey: "headset", title: "24/7 Expert Support", desc: "Our local Vizag-based support team is available round the clock via phone, WhatsApp, and in-person visits." },
+  { img: "/images/why6.jpeg", iconKey: "globe", title: "State-wide coverage", desc: "50+ zones across Visakhapatnam covered with our fiber backbone — expanding every quarter to new areas." },
   { img: "/images/why3.jpeg", iconKey: "tv", title: "Home Connection", desc: "Fast fiber internet for your home with free installation and same-day activation. Symmetric speeds, no throttling, no hidden charges." },
   { img: "/images/why7.jpeg", iconKey: "lightning", title: "Business Connection", desc: "Dedicated leased lines, static IPs, and SLA-backed plans tailored for businesses. Priority support and guaranteed uptime around the clock." },
   { img: "/images/why8.png", iconKey: "shield", title: "Bulk / Apartments", desc: "Special group packages for apartments, hostels, and commercial complexes. One connection, whole building — managed effortlessly." },

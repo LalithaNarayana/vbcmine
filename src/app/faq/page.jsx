@@ -75,7 +75,7 @@ const faqs = [
       },
       {
         q: "What equipment is provided?",
-        a: "VBC provides a fiber ONT (Optical Network Terminal) and a Wi-Fi router. On 6 and 12-month plans, these are provided free of cost. For monthly plans, a refundable deposit or the ₹1,500 installation fee covers these.",
+        a: "VBC provides a fiber ONT (Optical Network Terminal) and a Wi-Fi router. On 6 and 12-month plans, these are provided free of cost. Non-refundable installation charges of 1500 for monthly plans",
       },
       {
         q: "How do I know if my area is covered?",
@@ -117,7 +117,7 @@ export default function FAQPage() {
       <section
         style={{
           padding: "100px 24px 80px",
-          background: "linear-gradient(135deg, #14213D 0%, #1e3a5f 100%)",
+          background: "linear-gradient(135deg, #fff7f5 0%, #ffffff 55%, #f7fafc 100%)",
           textAlign: "center",
           position: "relative",
           overflow: "hidden",
@@ -128,7 +128,7 @@ export default function FAQPage() {
             position: "absolute",
             inset: 0,
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+              "linear-gradient(rgba(20,33,61,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(20,33,61,0.025) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
@@ -141,26 +141,12 @@ export default function FAQPage() {
             width: 700,
             height: 350,
             background:
-              "radial-gradient(ellipse, rgba(204,0,0,0.12) 0%, transparent 70%)",
+              "radial-gradient(ellipse, rgba(204,0,0,0.10) 0%, transparent 70%)",
             zIndex: 0,
           }}
         />
         <div style={{ maxWidth: 900, margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <div
-            style={{
-              display: "inline-block",
-              background: "rgba(204,0,0,0.15)",
-              color: "#ff6b6b",
-              fontFamily: "'Rajdhani', sans-serif",
-              fontWeight: 700,
-              fontSize: 13,
-              letterSpacing: 2,
-              padding: "6px 16px",
-              borderRadius: 999,
-              textTransform: "uppercase",
-              marginBottom: 20,
-            }}
-          >
+          <div className="badge-red" style={{ display: "inline-block", marginBottom: 20 }}>
             Help Center
           </div>
           <h1
@@ -168,7 +154,7 @@ export default function FAQPage() {
               fontFamily: "'Bebas Neue', cursive",
               fontSize: "clamp(48px, 7vw, 88px)",
               letterSpacing: 2,
-              color: "#fff",
+              color: "#152238",
               lineHeight: 0.95,
               marginBottom: 20,
             }}
@@ -195,7 +181,7 @@ export default function FAQPage() {
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: 16,
-              color: "rgba(255,255,255,0.75)",
+              color: "#475467",
               lineHeight: 1.8,
             }}
           >

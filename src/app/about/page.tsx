@@ -1,9 +1,9 @@
 import { Award, MapPin, Calendar, Users, CheckCircle } from "lucide-react";
 
 const stats = [
-  { value: "12+", label: "Years of Service" },
+  { value: "14+", label: "Years of Service" },
   { value: "30K+", label: "Broadband Customers" },
-  { value: "160 Km", label: "Fiber Network" },
+  { value: "640 Km", label: "Fiber Network" },
   { value: "99%+", label: "Uptime" },
   { value: "Class B", label: "ISP License" },
   { value: "24/7", label: "Support" },
@@ -35,7 +35,7 @@ const timelineItems = [
   { year: "2018", event: "Introduced IPTV and expanded fiber backbone across Vizag. Launched full IPTV platform with 400+ channels and VOD library." },
   { year: "2020", event: "Expanded to enterprise services — Leased Lines, MPLS & VoIP. Upgraded network infrastructure to deliver 1 Gbps speeds citywide." },
   { year: "2022", event: "20,000+ subscribers. Major network expansion across the city. Launched enterprise hosting for businesses." },
-  { year: "2025", event: "Expanded 160 Km fiber network. Increased to 30,000+ broadband customers. 30% increase in ILL and MPLS business. Increased backbone capacity and redundancy links." },
+  { year: "2025", event: "Expanded 640 Km fiber network. Increased to 30,000+ broadband customers. 30% increase in ILL and MPLS business. Increased backbone capacity and redundancy links." },
 ];
 
 export default function AboutPage() {
@@ -53,12 +53,12 @@ export default function AboutPage() {
           <div className="badge-red" style={{ display: "inline-block", marginBottom: "16px", fontSize: 13 }}>About VBC</div>
           <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(50px, 8vw, 100px)", letterSpacing: "2px", lineHeight: 0.95, color: "#152238", maxWidth: "700px" }}>
             CONNECTING<br />
-            <span style={{ color: "#CC0000" }}>VIZAG</span><br />
+            <span style={{ color: "#CC0000" }}>Andhra Pradesh</span><br />
             SINCE 2012
           </h1>
           <div className="red-divider" style={{ marginTop: "20px", marginBottom: "24px" }} />
           <p style={{ color: "#475467", fontSize: "15px", lineHeight: "1.8", maxWidth: "600px" }}>
-            VBC on Fiber (Vizag Broadcasting Company Pvt. Ltd.) started with a single mission: give Visakhapatnam the internet it deserves. Today we&apos;re the city&apos;s most trusted ISP, serving over 30,000 homes and businesses with fiber broadband, Digital TV, and IPTV.
+            VBC on Fiber (Vizag Broadcasting Company Pvt. Ltd.) started with a single mission: give Andhra Pradesh the internet it deserves. Today we&apos;re the state&apos;s most trusted ISP, serving over 30,000 homes and businesses with fiber broadband, Digital TV, and IPTV.
           </p>
         </div>
       </section>
@@ -141,7 +141,7 @@ export default function AboutPage() {
             <div className="badge-red" style={{ display: "inline-block", marginBottom: "16px", fontSize: 13 }}>Our Success Story</div>
             <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(36px, 5vw, 60px)", letterSpacing: "2px", color: "#152238", marginBottom: "24px", lineHeight: 1 }}>
               FROM A SMALL SETUP<br />
-              <span style={{ color: "#CC0000" }}>TO VIZAG&apos;S BACKBONE</span>
+              <span style={{ color: "#CC0000" }}>TO AP&apos;S BACKBONE</span>
             </h2>
             <p style={{ color: "#475467", fontSize: "14px", lineHeight: "1.9", marginBottom: "16px" }}>
               Established in 2012 in Visakhapatnam, VBC on Fiber began with a vision to provide reliable, high-speed internet connectivity to homes and businesses across Andhra Pradesh. At a time when quality broadband infrastructure was limited in many regions, the company focused on building a strong and future-ready optical fiber network capable of delivering uninterrupted digital connectivity.
@@ -191,7 +191,7 @@ export default function AboutPage() {
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px", background: "rgba(204,0,0,0.15)" }}>
             {[
-              { icon: <Award size={28} />, title: "Our Mission", desc: "To provide Visakhapatnam with world-class connectivity at affordable prices, empowering every household and business to thrive in the digital age." },
+              { icon: <Award size={28} />, title: "Our Mission", desc: "To provide Andhra Pradesh with world-class connectivity at affordable prices, empowering every household and business to thrive in the digital age." },
               { icon: <CheckCircle size={28} />, title: "Our Vision", desc: "To be Andhra Pradesh's most trusted broadband and media provider — known for speed, reliability, and exceptional customer care." },
               { icon: <Users size={28} />, title: "Our Values", desc: "Transparency in pricing. Accountability in service. Commitment to the communities we serve. Local heart, global standards." },
             ].map((item, i) => (

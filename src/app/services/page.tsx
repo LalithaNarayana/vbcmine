@@ -110,26 +110,26 @@ const services = [
 
 export default function ServicesPage() {
   return (
-    <div style={{ background: "#14213D", minHeight: "100vh" }}>
+    <div style={{ background: "#ffffff", minHeight: "100vh" }}>
       {/* Hero */}
       <section style={{
         padding: "100px 24px 80px",
-        background: "linear-gradient(135deg, #14213D 0%, #1e3a5f 100%)",
+        background: "linear-gradient(135deg, #fff7f5 0%, #ffffff 55%, #f7fafc 100%)",
         textAlign: "center",
         position: "relative",
         overflow: "hidden",
       }}>
         <div style={{
           position: "absolute", inset: 0, zIndex: 0,
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundImage: "linear-gradient(rgba(20,33,61,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(20,33,61,0.025) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
         }} />
-        <div style={{ position: "absolute", top: -120, left: "50%", transform: "translateX(-50%)", width: 700, height: 350, background: "radial-gradient(ellipse, rgba(204,0,0,0.12) 0%, transparent 70%)", zIndex: 0 }} />
+        <div style={{ position: "absolute", top: -120, left: "50%", transform: "translateX(-50%)", width: 700, height: 350, background: "radial-gradient(ellipse, rgba(204,0,0,0.10) 0%, transparent 70%)", zIndex: 0 }} />
         <div style={{ maxWidth: 900, margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <div style={{ display: "inline-block", background: "rgb(233, 216, 216)", color: "#ff0000", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, letterSpacing: 2, padding: "6px 16px", borderRadius: 999, textTransform: "uppercase", marginBottom: 20 }}>
+          <div className="badge-red" style={{ display: "inline-block", marginBottom: 20 }}>
             Business Services
           </div>
-          <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(48px, 7vw, 88px)", letterSpacing: 2, color: "#fff", lineHeight: 0.95, marginBottom: 20 }}>
+          <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(48px, 7vw, 88px)", letterSpacing: 2, color: "#152238", lineHeight: 0.95, marginBottom: 20 }}>
             ENTERPRISE <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>SOLUTIONS</span>
           </h1>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 20 }}>
@@ -137,7 +137,7 @@ export default function ServicesPage() {
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#CC0000" }} />
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "rgb(255, 255, 255)", lineHeight: 1.8 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#475467", lineHeight: 1.8 }}>
             Reliable, high-performance connectivity and infrastructure services for businesses across Andhra Pradesh.
           </p>
         </div>
