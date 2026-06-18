@@ -17,6 +17,7 @@ export default function HeroSection() {
   const [active, setActive] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [prev, setPrev] = useState<number | null>(null);
+  const [hoveredBtn, setHoveredBtn] = useState<"prev" | "next" | null>(null);
 
   const goTo = useCallback((idx: number) => {
     if (animating || idx === active) return;
@@ -61,9 +62,8 @@ export default function HeroSection() {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#fff",
     fontSize: 22,
-    transition: "background 0.2s ease",
+    transition: "color 0.2s ease",
   };
 
   return (
@@ -102,11 +102,14 @@ export default function HeroSection() {
       <button
         onClick={goPrev}
         aria-label="Previous slide"
-        style={{ ...arrowButtonStyle, left: 16 }}
-        onMouseEnter={e => (e.currentTarget.style.background = "rgba(204,0,0,0.75)")}
-        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+        style={{
+          ...arrowButtonStyle,
+          left: 16,
+          color: hoveredBtn === "prev" ? "#ef4444" : "#fff",
+        }}
+        onMouseEnter={() => setHoveredBtn("prev")}
+        onMouseLeave={() => setHoveredBtn(null)}
       >
-        {/* Left chevron */}
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
@@ -116,11 +119,14 @@ export default function HeroSection() {
       <button
         onClick={goNext}
         aria-label="Next slide"
-        style={{ ...arrowButtonStyle, right: 16 }}
-        onMouseEnter={e => (e.currentTarget.style.background = "rgba(204,0,0,0.75)")}
-        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+        style={{
+          ...arrowButtonStyle,
+          right: 16,
+          color: hoveredBtn === "next" ? "#ef4444" : "#fff",
+        }}
+        onMouseEnter={() => setHoveredBtn("next")}
+        onMouseLeave={() => setHoveredBtn(null)}
       >
-        {/* Right chevron */}
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6" />
         </svg>
