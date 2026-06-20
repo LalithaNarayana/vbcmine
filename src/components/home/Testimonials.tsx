@@ -7,7 +7,7 @@ const testimonials = [
   },
   {
     name: "Priya Sharma", initials: "PS", plan: "Ultra — ₹999/mo", color: "#0055CC",
-    review: "Our whole family uses streaming and work-from-home simultaneously — zero buffering. The OTV channels are crystal clear too. Best decision we made for our home.",
+    review: "Our whole family uses streaming and work-from-home simultaneously — zero buffering. The OTT channels are crystal clear too. Best decision we made for our home.",
   },
   {
     name: "Venkat Rao", initials: "VR", plan: "Basic — ₹599/mo", color: "#006633",
