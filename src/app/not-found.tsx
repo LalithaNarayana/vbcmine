@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Home, Search, Wifi } from "lucide-react";
 
+export const metadata = {
+  title: "Page Not Found — VBC On Fiber",
+  description: "The page you're looking for doesn't exist. Return to VBC On Fiber's homepage.",
+};
+
 export default function NotFound() {
   return (
     <div style={{ minHeight: "100vh", background: "#0A0A0A", display: "flex", alignItems: "center", justifyContent: "center", padding: "100px 24px", position: "relative", overflow: "hidden" }}>

@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { Award, MapPin, Calendar, Users, CheckCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "About Us — VBC On Fiber | Vizag's Trusted ISP Since 2012",
+  description:
+    "Learn about VBC (Vizag Broadcasting Company) — 14+ years serving Visakhapatnam with fiber broadband, IPTV, and enterprise connectivity. 640 km fiber network, 30K+ customers, 99%+ uptime.",
+};
 
 const stats = [
   { value: "14+", label: "Years of Service" },
@@ -13,7 +20,7 @@ const profileServices = [
   "Fixed Broadband Services with FTTH connectivity",
   "Wireless Broadband Solutions",
   "Internet Leased Lines (ILL)",
-  "MPLS Point-to-Point Connectivity",
+  "MPLS P2P & P2MP Connectivity",
   "VOIP / IBS Solutions",
   "Hosting / Co-location Services",
   "CATV / IPTV Services",
@@ -23,7 +30,7 @@ const successServices = [
   "Fiber Broadband Services",
   "Wireless Broadband Connectivity",
   "Internet Leased Lines (ILL)",
-  "MPLS Point-to-Point Connectivity",
+  "MPLS P2P & P2MP Connectivity",
   "VOIP / IBS Solutions",
   "Server Co-location Services",
   "CATV / IPTV Services",

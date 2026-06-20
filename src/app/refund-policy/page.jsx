@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 
+export const metadata = {
+  title: "Refund Policy — VBC On Fiber",
+  description:
+    "Understand VBC On Fiber's refund and cancellation policy for broadband, IPTV, and business connectivity plans.",
+};
+
 const refundChecklist = [
   "Mobile number and Account ID",
   "Transaction date",

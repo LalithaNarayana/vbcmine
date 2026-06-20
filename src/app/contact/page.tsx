@@ -60,10 +60,10 @@ export default function ContactPage() {
     // complaint fields
     accountId: "",
     mobile: "",
+    message: "",
     // I need help / feedback fields
     address: "",
     helpMobile: "",
-    message: "",
   });
 
   const [salesSubmitted, setSalesSubmitted] = useState(false);
@@ -76,7 +76,8 @@ export default function ContactPage() {
 
   const handleSupportSubmit = () => {
     if (supportForm.type === "complaint") {
-      if (supportForm.accountId && supportForm.mobile) setSupportSubmitted(true);
+      if (supportForm.accountId && supportForm.mobile && supportForm.message)
+        setSupportSubmitted(true);
     } else {
       if (supportForm.helpMobile && supportForm.message) setSupportSubmitted(true);
     }
@@ -368,9 +369,6 @@ export default function ContactPage() {
                   >
                     <Send size={16} /> Submit to Sales
                   </button>
-                  <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 12 }}>
-                    Form will be sent to sales@vbctv.in
-                  </p>
                 </>
               )}
 
@@ -437,9 +435,9 @@ export default function ContactPage() {
                               type: t,
                               accountId: "",
                               mobile: "",
+                              message: "",
                               address: "",
                               helpMobile: "",
-                              message: "",
                             })
                           }
                           style={{
@@ -477,7 +475,7 @@ export default function ContactPage() {
                           style={fieldStyle}
                         />
                       </div>
-                      <div style={{ marginBottom: 24 }}>
+                      <div style={{ marginBottom: 16 }}>
                         <label style={labelStyle}>Mobile Number *</label>
                         <input
                           type="tel"
@@ -487,6 +485,18 @@ export default function ContactPage() {
                             setSupportForm({ ...supportForm, mobile: e.target.value })
                           }
                           style={fieldStyle}
+                        />
+                      </div>
+                      <div style={{ marginBottom: 24 }}>
+                        <label style={labelStyle}>Message *</label>
+                        <textarea
+                          rows={4}
+                          placeholder="Describe your complaint..."
+                          value={supportForm.message}
+                          onChange={(e) =>
+                            setSupportForm({ ...supportForm, message: e.target.value })
+                          }
+                          style={{ ...fieldStyle, resize: "vertical" }}
                         />
                       </div>
                     </>
@@ -560,9 +570,6 @@ export default function ContactPage() {
                   >
                     <Send size={16} /> Submit Request
                   </button>
-                  <p style={{ fontSize: 11, color: "#9CA3AF", marginTop: 12 }}>
-                    Form will be sent to support@vbctv.in
-                  </p>
                 </>
               )}
 

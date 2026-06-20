@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+export const metadata = {
+  title: "Privacy Policy — VBC On Fiber",
+  description:
+    "Read VBC On Fiber's privacy policy to understand how we collect, use, and protect your personal information.",
+};
+
 const collectionPurposes = [
   "Verify your identity",
   "Complete transactions effectively and bill for products and services",
@@ -170,28 +176,6 @@ export default function PrivacyPolicyPage() {
             periodically for contemporary information and changes.
           </p>
 
-          <div
-            style={{
-              marginTop: 32,
-              padding: "20px 24px",
-              background: "rgba(204,0,0,0.04)",
-              border: "1px solid rgba(204,0,0,0.12)",
-              borderRadius: 10,
-              fontSize: 13.5,
-              color: "#475467",
-              lineHeight: 1.8,
-            }}
-          >
-            Questions about this policy? Reach our team at{" "}
-            <a href="mailto:support@vbctv.in" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>
-              support@vbctv.in
-            </a>{" "}
-            or visit our{" "}
-            <Link href="/contact" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>
-              Contact page
-            </Link>
-            .
-          </div>
         </div>
       </section>
 

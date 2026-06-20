@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+export const metadata = {
+  title: "Terms & Conditions — VBC On Fiber",
+  description:
+    "Review the terms and conditions for VBC On Fiber broadband, IPTV, and business connectivity services.",
+};
+
 const terms = [
   "Installation is subject to on-ground feasibility at the installation address and availability of valid documents as per TRAI guidelines.",
   "Post expiry of data quota, internet speed will be throttled at 512 kbps with no additional charging.",
@@ -97,29 +103,6 @@ export default function TermsConditionsPage() {
               </li>
             ))}
           </ol>
-
-          <div
-            style={{
-              marginTop: 32,
-              padding: "20px 24px",
-              background: "rgba(204,0,0,0.04)",
-              border: "1px solid rgba(204,0,0,0.12)",
-              borderRadius: 10,
-              fontSize: 13.5,
-              color: "#475467",
-              lineHeight: 1.8,
-            }}
-          >
-            Need clarification on any of these terms? Contact us at{" "}
-            <a href="mailto:support@vbctv.in" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>
-              support@vbctv.in
-            </a>{" "}
-            or visit our{" "}
-            <Link href="/contact" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>
-              Contact page
-            </Link>
-            .
-          </div>
         </div>
       </section>
 

@@ -75,7 +75,7 @@ const faqs = [
       },
       {
         q: "What equipment is provided?",
-        a: "VBC provides a fiber ONT (Optical Network Terminal) and a Wi-Fi router. On 6 and 12-month plans, these are provided free of cost. Non-refundable installation charges of 1500 for monthly plans",
+        a: "VBC provides a fiber ONT (Optical Network Terminal) and a Wi-Fi router. On 6 and 12-month plans, these are provided free of cost. Non-refundable installation charges of ₹1,500 for monthly plans",
       },
       {
         q: "How do I know if my area is covered?",

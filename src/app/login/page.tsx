@@ -183,7 +183,7 @@ export default function LoginPage() {
                 <p style={{ color: "#667085", fontSize: "13px" }}>
                   New customer?{" "}
                   <Link href="/register" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>
-                    Request Connection
+                    Register Here
                   </Link>
                 </p>
               </div>

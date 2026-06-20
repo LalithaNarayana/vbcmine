@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Phone, Smartphone, X } from "lucide-react";
-import { navLinks, androidAppUrl } from "@/constants/nav";
+import { navLinks } from "@/constants/nav";
 import { useEffect } from "react";
 
 interface MobileMenuProps {
@@ -96,11 +96,8 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
         </nav>
 
         <div style={{ marginTop: "auto", paddingTop: "28px" }}>
-          <a
-            href={androidAppUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onClose}
+          <div
+            title="Android app coming soon"
             style={{
               display: "flex",
               alignItems: "center",
@@ -111,6 +108,8 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
               border: "1px solid #EEF2F6",
               padding: "14px 16px",
               marginBottom: "14px",
+              cursor: "default",
+              opacity: 0.7,
             }}
           >
             <span style={{
@@ -127,9 +126,9 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
             </span>
             <span>
               <span style={{ display: "block", fontSize: "11px", color: "#667085" }}>Get the VBC app</span>
-              <span style={{ display: "block", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "14px", color: "#152238" }}>Download for Android</span>
+              <span style={{ display: "block", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "14px", color: "#152238" }}>Coming Soon for Android</span>
             </span>
-          </a>
+          </div>
           <div
             style={{
               borderRadius: "20px",

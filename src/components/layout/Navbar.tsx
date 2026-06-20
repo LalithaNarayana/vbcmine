@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Phone, Smartphone } from "lucide-react";
-import { navLinks, androidAppUrl } from "@/constants/nav";
+import { navLinks } from "@/constants/nav";
 import MobileMenu from "@/components/layout/MobileMenu";
 import Image from "next/image";
 
@@ -101,16 +101,16 @@ export default function Navbar() {
           </div>
 
           <div className="navbar-desktop" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <a
-              href={androidAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <div
+              title="Android app coming soon"
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
                 textDecoration: "none",
                 color: "#152238",
+                cursor: "default",
+                opacity: 0.7,
               }}
             >
               <span style={{
@@ -127,9 +127,9 @@ export default function Navbar() {
               </span>
               <span style={{ lineHeight: 1.2 }}>
                 <span style={{ display: "block", fontSize: "9px", color: "#667085", fontFamily: "'DM Sans', sans-serif" }}>Get our App</span>
-                <span style={{ display: "block", fontSize: "12px", fontWeight: 700, fontFamily: "'Rajdhani', sans-serif" }}>Download for Android</span>
+                <span style={{ display: "block", fontSize: "12px", fontWeight: 700, fontFamily: "'Rajdhani', sans-serif" }}>Coming Soon for Android</span>
               </span>
-            </a>
+            </div>
             <Link href="/login" className="btn-outline" style={{ textDecoration: "none", padding: "10px 20px" }}>
               My Account
             </Link>

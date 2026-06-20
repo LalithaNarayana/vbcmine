@@ -646,7 +646,7 @@ export function WhyVBC() {
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
           </div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#becada", maxWidth: 520, margin: "20px auto 0", lineHeight: 1.8 }}>
-            12+ years of delivering Vizag&apos;s most trusted fiber broadband experience.
+            14+ years of delivering Vizag&apos;s most trusted fiber broadband experience.
           </p>
         </div>
 

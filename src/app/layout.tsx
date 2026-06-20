@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import BottomTabBar from "@/components/layout/BottomTabBar";
 import Footer from "@/components/layout/Footer";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export const metadata: Metadata = {
   title: "VBC On Fiber - Vizag's Fastest Internet & TV Provider",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <Footer />
         <BottomTabBar />
+        <ScrollToTop />
       </body>
     </html>
   );
