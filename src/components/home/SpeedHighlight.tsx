@@ -245,11 +245,10 @@ export function SpeedHighlight() {
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div
             style={{
-              display: "flex",
-              flexWrap: "wrap",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
               gap: 24,
-              justifyContent: "center",
-              alignItems: "start",
+              width: "100%",
               maxWidth: 1320,
             }}
           >
