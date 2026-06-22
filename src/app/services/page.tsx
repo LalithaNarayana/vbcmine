@@ -95,7 +95,7 @@ const services = [
         <line x1="12" y1="22.08" x2="12" y2="12" />
       </svg>
     ),
-    image: "/images/service2.jpeg",
+    image: "/images/service5.jpeg",
     highlights: [
       "Dark Fiber Leasing",
       "Point-to-Point Connectivity",

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle, Zap, Tv, Wifi } from "lucide-react";
+import { CheckCircle, Zap, Tv, Wifi, X } from "lucide-react";
 
 const planCategories = [
   {
@@ -68,6 +68,7 @@ const planCategories = [
     plans: [
       {
         speed: "30 Mbps",
+        ottImage: "ott1.jpg",
         price: 499,
         otts: 20,
         features: [
@@ -80,6 +81,7 @@ const planCategories = [
       },
       {
         speed: "50 Mbps",
+        ottImage: "ott2.jpg",
         price: 599,
         otts: 27,
         features: [
@@ -92,6 +94,7 @@ const planCategories = [
       },
       {
         speed: "100 Mbps",
+        ottImage: "ott3.jpg",
         price: 799,
         popular: true,
         otts: 30,
@@ -105,6 +108,7 @@ const planCategories = [
       },
       {
         speed: "150 Mbps",
+        ottImage: "ott3.jpg",
         price: 899,
         otts: 30,
         features: [
@@ -117,6 +121,7 @@ const planCategories = [
       },
       {
         speed: "200 Mbps",
+        ottImage: "ott3.jpg",
         price: 999,
         otts: 30,
         features: [
@@ -129,6 +134,7 @@ const planCategories = [
       },
       {
         speed: "300 Mbps",
+        ottImage: "ott3.jpg",
         price: 1499,
         otts: 30,
         features: [
@@ -141,6 +147,7 @@ const planCategories = [
       },
       {
         speed: "500 Mbps",
+        ottImage: "ott3.jpg",
         price: 1999,
         otts: 30,
         features: [
@@ -153,6 +160,7 @@ const planCategories = [
       },
       {
         speed: "1 Gbps",
+        ottImage: "ott3.jpg",
         price: 3999,
         otts: 30,
         features: [
@@ -225,6 +233,7 @@ const planCategories = [
 
 export default function PlansPage() {
   const [activeTab, setActiveTab] = useState("internet");
+  const [ottPopupIndex, setOttPopupIndex] = useState<number | null>(null);
   const active = planCategories.find((c) => c.id === activeTab)!;
 
   return (
@@ -248,7 +257,7 @@ export default function PlansPage() {
           {planCategories.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => setActiveTab(cat.id)}
+              onClick={() => { setActiveTab(cat.id); setOttPopupIndex(null); }}
               style={{
                 padding: "16px 32px",
                 border: "none",
@@ -305,9 +314,23 @@ export default function PlansPage() {
                   {plan.speed}
                 </div>
                 {"otts" in plan && (
-                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, color: "#CC0000", letterSpacing: 1, marginBottom: 8 }}>
-                    {(plan as { otts: number }).otts} OTT Apps Included
-                  </div>
+                  <button
+                    onClick={() => setOttPopupIndex(i)}
+                    title="Click to see OTT apps"
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: 0,
+                      display: "block",
+                      marginBottom: 8,
+                      textAlign: "left",
+                    }}
+                  >
+                    <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, color: "#CC0000", letterSpacing: 1, textDecoration: "underline", textUnderlineOffset: 3, textDecorationStyle: "dotted" }}>
+                      {(plan as { otts: number }).otts} OTT Apps Included 🎬
+                    </span>
+                  </button>
                 )}
                 <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 24 }}>
                   <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 13, color: plan.popular ? "rgba(255,255,255,0.6)" : "#667085" }}>₹</span>
@@ -353,6 +376,78 @@ export default function PlansPage() {
           </p>
         </div>
       </section>
+
+      {/* OTT Apps Image Popup */}
+      {ottPopupIndex !== null && active.plans[ottPopupIndex] && "ottImage" in active.plans[ottPopupIndex] && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+            backdropFilter: "blur(6px)",
+          }}
+          onClick={() => setOttPopupIndex(null)}
+        >
+          <div
+            style={{
+              position: "relative",
+              maxWidth: 700,
+              width: "100%",
+              borderRadius: 20,
+              overflow: "hidden",
+              boxShadow: "0 40px 100px rgba(0,0,0,0.8)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setOttPopupIndex(null)}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                zIndex: 10,
+                background: "rgba(0,0,0,0.6)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: "50%",
+                width: 36,
+                height: 36,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "#fff",
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <img
+              src={`/images/${(active.plans[ottPopupIndex] as { ottImage: string }).ottImage}`}
+              alt="OTT Apps included"
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                objectFit: "contain",
+              }}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+                const parent = (e.currentTarget as HTMLImageElement).parentElement;
+                if (parent) {
+                  parent.style.background = "#14213D";
+                  parent.style.padding = "60px 40px";
+                  parent.innerHTML = `<div style="text-align:center;color:#fff;font-family:'Rajdhani',sans-serif;font-size:20px;">Image not found.</div>`;
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
