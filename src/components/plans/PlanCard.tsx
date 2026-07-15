@@ -1,6 +1,9 @@
+"use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Check, Star, Zap } from "lucide-react";
-import { Plan } from "@/constants/plans";
+import type { Plan, PlanDuration, PlanBullet } from "@/types/plan";
+import { usePlanRequest } from "./PlanRequestProvider";
 
 interface PlanCardProps {
   plan: Plan;
@@ -8,12 +11,26 @@ interface PlanCardProps {
 }
 
 export default function PlanCard({ plan, showRenew }: PlanCardProps) {
+  const { openPlanRequest } = usePlanRequest();
+  // prices/bullets are populated server-side, so duration/text are objects, not ids
+  const sortedPrices = [...plan.prices].sort((a, b) => {
+    const aMonths = typeof a.duration === "object" ? (a.duration as PlanDuration).months : 0;
+    const bMonths = typeof b.duration === "object" ? (b.duration as PlanDuration).months : 0;
+    return aMonths - bMonths;
+  });
+  const primary = sortedPrices[0];
+  const alternates = sortedPrices.slice(1);
+
+  const bullets = (plan.bullets as (string | PlanBullet)[]).filter(
+    (b): b is PlanBullet => typeof b === "object"
+  );
+
   return (
     <div
       className="plan-card"
       style={{
         background: "#ffffff",
-        border: plan.popular ? "1px solid rgba(204,0,0,0.3)" : "1px solid rgba(20,33,61,0.08)",
+        border: plan.mostPopular ? "1px solid rgba(204,0,0,0.3)" : "1px solid rgba(20,33,61,0.08)",
         padding: "36px 28px",
         position: "relative",
         display: "flex",
@@ -21,19 +38,15 @@ export default function PlanCard({ plan, showRenew }: PlanCardProps) {
         boxShadow: "0 16px 36px rgba(20, 33, 61, 0.06)",
       }}
     >
-      {plan.popular && (
+      {plan.mostPopular && (
         <div style={{ position: "absolute", top: "-1px", right: "24px" }}>
           <div style={{ background: "linear-gradient(135deg, #CC0000, #880000)", padding: "6px 16px", display: "flex", alignItems: "center", gap: "6px" }}>
             <Star size={11} fill="white" color="white" />
             <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "11px", color: "white", letterSpacing: "1px", textTransform: "uppercase" }}>
-              {plan.tag || "Most Popular"}
+              Most Popular
             </span>
           </div>
         </div>
-      )}
-
-      {!plan.popular && plan.tag && (
-        <div className="badge-red" style={{ display: "inline-block", marginBottom: "12px", fontSize: "10px" }}>{plan.tag}</div>
       )}
 
       <div style={{ marginBottom: "8px" }}>
@@ -44,32 +57,84 @@ export default function PlanCard({ plan, showRenew }: PlanCardProps) {
 
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
         <Zap size={16} color="#CC0000" />
-        <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", color: plan.popular ? "#FF3333" : "#CC0000", letterSpacing: "1px" }}>
-          {plan.speed}
+        <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", color: plan.mostPopular ? "#FF3333" : "#CC0000", letterSpacing: "1px" }}>
+          {plan.speed} {plan.speedUnit}
         </span>
       </div>
 
-      <div style={{ marginBottom: "24px" }}>
-        <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "48px", color: "#152238", letterSpacing: "1px" }}>Rs. {plan.price}</span>
-        <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "13px", color: "#667085" }}>/{plan.duration.toLowerCase()}</span>
-      </div>
+      {primary && (
+        <div style={{ marginBottom: "12px" }}>
+          <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "48px", color: "#152238", letterSpacing: "1px" }}>
+            ₹{primary.price}
+          </span>
+          <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "13px", color: "#667085" }}>
+            /{typeof primary.duration === "object" ? (primary.duration as PlanDuration).label : ""}
+          </span>
+        </div>
+      )}
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px", marginBottom: "28px" }}>
-        {plan.features.map((f) => (
-          <div key={f} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      {alternates.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "24px" }}>
+          {alternates.map((p, i) => (
+            <span
+              key={i}
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "11px",
+                color: "#667085",
+                background: "#F2F4F7",
+                borderRadius: "999px",
+                padding: "4px 10px",
+              }}
+            >
+              ₹{p.price}/{typeof p.duration === "object" ? (p.duration as PlanDuration).label : ""}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+        {bullets.map((b) => (
+          <div key={b._id} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <Check size={14} color="#CC0000" strokeWidth={3} />
-            <span style={{ fontSize: "13px", color: "#475467" }}>{f}</span>
+            <span style={{ fontSize: "13px", color: "#475467" }}>{b.text}</span>
           </div>
         ))}
       </div>
 
-      <Link
-        href={showRenew ? "/renew" : "/login"}
-        className={plan.popular ? "btn-primary" : "btn-outline"}
-        style={{ textDecoration: "none", display: "block", textAlign: "center" }}
-      >
-        {showRenew ? "Renew Now" : "Get Started"}
-      </Link>
+      {plan.ottList && plan.ottList.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "28px" }}>
+          {plan.ottList.map((ott, i) => (
+            <div
+              key={i}
+              title={ott.name}
+              style={{ width: "32px", height: "32px", borderRadius: "6px", overflow: "hidden", background: "#F2F4F7", border: "1px solid rgba(20,33,61,0.06)" }}
+            >
+              {ott.image && (
+                <Image src={ott.image} alt={ott.name} width={32} height={32} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showRenew ? (
+        <Link
+          href="/renew"
+          className="btn-primary"
+          style={{ textDecoration: "none", display: "block", textAlign: "center" }}
+        >
+          Renew Now
+        </Link>
+      ) : (
+        <button
+          onClick={() => openPlanRequest(plan._id)}
+          className={plan.mostPopular ? "btn-primary" : "btn-outline"}
+          style={{ display: "block", width: "100%", textAlign: "center", border: plan.mostPopular ? "none" : undefined, cursor: "pointer" }}
+        >
+          Get Started
+        </button>
+      )}
     </div>
   );
 }

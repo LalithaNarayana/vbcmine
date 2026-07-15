@@ -1,44 +1,75 @@
 import Link from "next/link";
-import { Home, Search, Wifi } from "lucide-react";
-
-export const metadata = {
-  title: "Page Not Found — VBC On Fiber",
-  description: "The page you're looking for doesn't exist. Return to VBC On Fiber's homepage.",
-};
 
 export default function NotFound() {
   return (
-    <div style={{ minHeight: "100vh", background: "#0A0A0A", display: "flex", alignItems: "center", justifyContent: "center", padding: "100px 24px", position: "relative", overflow: "hidden" }}>
-      {/* Background */}
-      <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(204,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(204,0,0,0.03) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "600px", height: "600px", background: "radial-gradient(circle, rgba(204,0,0,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-
-      <div style={{ textAlign: "center", position: "relative", zIndex: 1, maxWidth: "600px" }}>
-        <div style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(120px,20vw,220px)", color: "rgba(204,0,0,0.1)", lineHeight: 1, letterSpacing: "8px", userSelect: "none", marginBottom: "-20px" }}>404</div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "24px" }}>
-          <Wifi size={24} color="#CC0000" />
-          <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(28px,4vw,48px)", letterSpacing: "3px", color: "#E8E8E8" }}>CONNECTION LOST</h1>
-        </div>
-        <p style={{ color: "#555", fontSize: "15px", lineHeight: "1.7", marginBottom: "40px" }}>
-          The page you're looking for has gone offline. It may have been moved, deleted, or never existed. Let's get you back on track.
-        </p>
-        <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/" className="btn-primary" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px" }}>
-            <Home size={15} /> Back to Home
-          </Link>
-          <Link href="/plans" className="btn-outline" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px" }}>
-            <Search size={15} /> Browse Plans
-          </Link>
-        </div>
-        <div style={{ marginTop: "48px", padding: "20px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <p style={{ fontSize: "12px", color: "#444" }}>
-            Need help? Call us at{" "}
-            <a href="tel:+918910000000" style={{ color: "#CC0000", textDecoration: "none" }}>+91 891 000 0000</a>
-            {" "}or{" "}
-            <Link href="/contact" style={{ color: "#CC0000", textDecoration: "none" }}>contact our team</Link>
-          </p>
-        </div>
+    <section
+      style={{
+        minHeight: "70vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "80px 24px",
+        background: "#0D0D0D",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "'Bebas Neue', cursive",
+          fontSize: "clamp(80px, 14vw, 160px)",
+          letterSpacing: "4px",
+          lineHeight: 0.9,
+          color: "#CC0000",
+          WebkitTextStroke: "2px #CC0000",
+        }}
+      >
+        404
       </div>
-    </div>
+      <h1
+        style={{
+          fontFamily: "'Rajdhani', sans-serif",
+          fontWeight: 700,
+          fontSize: "22px",
+          letterSpacing: "2px",
+          textTransform: "uppercase",
+          color: "#E8E8E8",
+          marginTop: "16px",
+          marginBottom: "12px",
+        }}
+      >
+        Page Not Found
+      </h1>
+      <p
+        style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "14px",
+          color: "#888",
+          maxWidth: "420px",
+          lineHeight: 1.8,
+          marginBottom: "32px",
+        }}
+      >
+        The page you&apos;re looking for doesn&apos;t exist or may have been moved.
+      </p>
+      <Link
+        href="/"
+        style={{
+          display: "inline-block",
+          background: "#CC0000",
+          color: "#fff",
+          fontFamily: "'Rajdhani', sans-serif",
+          fontWeight: 700,
+          fontSize: "13px",
+          letterSpacing: "1.5px",
+          textTransform: "uppercase",
+          textDecoration: "none",
+          padding: "13px 36px",
+          borderRadius: "999px",
+        }}
+      >
+        Back to Home
+      </Link>
+    </section>
   );
 }

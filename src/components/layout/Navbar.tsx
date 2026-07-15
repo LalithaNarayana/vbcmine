@@ -7,10 +7,24 @@ import { navLinks } from "@/constants/nav";
 import MobileMenu from "@/components/layout/MobileMenu";
 import Image from "next/image";
 
-export default function Navbar() {
+interface NavbarProps {
+  siteName?: string;
+  logo?: string;
+  contact1?: string;
+  topBarTitle?: string;
+  topBarNumber?: string;
+}
+
+export default function Navbar({ siteName, logo, contact1, topBarTitle, topBarNumber }: NavbarProps = {}) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  const barTitle = topBarTitle || "👉🏻 Click here to book connection online";
+  const barNumber = topBarNumber || contact1 || "(0891) 6677-123";
+  const telHref = `tel:${(barNumber || "08916677123").replace(/[\s-]/g, "")}`;
+  const logoSrc = logo || "/images/logo.png";
+  const siteLabel = siteName || "VBC On Fiber";
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 12);
@@ -32,12 +46,12 @@ export default function Navbar() {
         letterSpacing: "0.3px",
       }}>
         <Link href="/plans" style={{ color: "#fff", textDecoration: "none" }}>
-         👉🏻 Click here to book connection online
+         {barTitle}
         </Link>
         <span style={{ margin: "0 16px", opacity: 0.6 }}>|</span>
-        <Link href="tel:08916677123" style={{ color: "#fff", textDecoration: "none" }}>
+        <Link href={telHref} style={{ color: "#fff", textDecoration: "none" }}>
           <Phone size={12} style={{ display: "inline", marginRight: 4 }} />
-          Call 0891 - 6677-123
+          Call {barNumber}
         </Link>
       </div>
 
@@ -65,8 +79,8 @@ export default function Navbar() {
         >
           <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
             <Image
-              src="/images/logo.png"
-              alt="VBC On Fiber"
+              src={logoSrc}
+              alt={siteLabel}
               width={180}
               height={60}
               priority

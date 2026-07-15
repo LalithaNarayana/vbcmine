@@ -1,51 +1,39 @@
 "use client";
 
-const services = [
-  {
-    img: "/images/service1h.jpeg",
-    tag: "Broadband",
-    title: "FTTH Broadband",
-    desc: "VBC's Fiber-to-the-Home (FTTH) technology delivers ultra-fast, stable internet directly to your premises via pure fiber optic cables — no copper, no compromise. Experience symmetric speeds ideal for 4K streaming, remote work, and gaming.",
-    highlight: "#CC0000",
-  },
-  {
-    img: "/images/service1.jpeg",
-    tag: "Enterprise",
-    title: "Internet Leased Lines",
-    desc: "Dedicated high-speed symmetric connectivity with guaranteed bandwidth, static public IP addresses, and SLA-backed uptime of 99%+. Ideal for businesses requiring uninterrupted, mission-critical internet access with 24/7 monitoring and technical support.",
-    highlight: "#0055CC",
-  },
-  {
-    img: "/images/service2.jpeg",
-    tag: "Networking",
-    title: "MPLS P2P and P2MP",
-    desc: "Multi-Protocol Label Switching (MPLS) connectivity offering Layer 2 & 3 Point-to-Point and Point-to-Multipoint services. Enjoy dedicated private connectivity, Quality of Service (QoS), high availability, and scalable infrastructure for enterprise networks.",
-    highlight: "#CC6600",
-  },
-  {
-    img: "/images/service3.jpeg",
-    tag: "Hosting",
-    title: "Hosting & Server Colocation",
-    desc: "Secure data center services including dedicated servers, Virtual Private Servers (VPS), private & hybrid cloud, rack space & power, high-speed fiber connectivity, and remote hands & managed services — all in a reliable, enterprise-grade environment.",
-    highlight: "#006633",
-  },
-  {
-    img: "/images/why3.jpeg",
-    tag: "Television",
-    title: "IPTV / Digital TV",
-    desc: "Internet Protocol Television (IPTV) brings you 550+ live channels in HD/4K, on-demand content, time-shift viewing, and multi-screen support — all delivered over your fiber connection with crystal-clear picture quality.",
-    highlight: "#0055CC",
-  },
-  {
-    img: "/images/service4.jpeg",
-    tag: "Business",
-    title: "VoIP / IBS Solutions",
-    desc: "Voice-over-Internet Protocol (VoIP) and Internet Business Solutions from VBC empower enterprises with scalable communication infrastructure, SIP trunking, PBX systems, and dedicated leased lines for mission-critical operations.",
-    highlight: "#006633",
-  },
-];
+export interface OfferCardItem {
+  title: string;
+  description: string;
+  badge?: string;
+  image: string;
+}
 
-export default function ServicesSection() {
+interface ServicesSectionProps {
+  items?: OfferCardItem[];
+  tag?: string;
+  titlePart1?: string;
+  titlePart2?: string;
+  titlePart3?: string;
+  description?: string;
+}
+
+const HIGHLIGHT_PALETTE = ["#CC0000", "#0055CC", "#CC6600", "#006633"];
+
+export default function ServicesSection({
+  items,
+  tag,
+  titlePart1,
+  titlePart2,
+  titlePart3,
+  description,
+}: ServicesSectionProps = {}) {
+  const services = (items || []).map((item, i) => ({
+    img: item.image || "",
+    tag: item.badge || "",
+    title: item.title,
+    desc: item.description,
+    highlight: HIGHLIGHT_PALETTE[i % HIGHLIGHT_PALETTE.length],
+  }));
+
   return (
     <section style={{ background: "#ffffff", padding: "110px 24px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
@@ -56,18 +44,18 @@ export default function ServicesSection() {
             fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
             fontSize: 22, letterSpacing: 4, textTransform: "uppercase",
             color: "#CC0000", marginBottom: 14,
-          }}>What We Offer</p>
+          }}>{tag || "What We Offer"}</p>
           <h2 style={{
             fontFamily: "'Bebas Neue', cursive",
             fontSize: "clamp(52px, 7vw, 88px)",
             letterSpacing: 2, lineHeight: 0.95, marginBottom: 24, color: "#14213D",
           }}>
-            COMPLETE{" "}
+            {titlePart1 || "COMPLETE"}{" "}
             <span style={{
               WebkitTextStroke: "2px #CC0000",
               color: "transparent",
-            }}>CONNECTIVITY</span>
-            <br />SOLUTIONS
+            }}>{titlePart2 || "CONNECTIVITY"}</span>
+            <br />{titlePart3 || "SOLUTIONS"}
           </h2>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, transparent, #CC0000)" }} />
@@ -75,11 +63,16 @@ export default function ServicesSection() {
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
           </div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#667085", maxWidth: 520, margin: "20px auto 0", lineHeight: 1.8 }}>
-            From high-speed fiber internet to enterprise-grade business solutions — VBC delivers it all under one roof.
+            {description || "From high-speed fiber internet to enterprise-grade business solutions — VBC delivers it all under one roof."}
           </p>
         </div>
 
         {/* Service Cards */}
+        {services.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#98A2B3", fontFamily: "'DM Sans', sans-serif", fontSize: 14 }}>
+            Service cards will appear here once added from the admin panel.
+          </p>
+        ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 32 }}>
           {services.map((svc, i) => (
             <div
@@ -113,14 +106,16 @@ export default function ServicesSection() {
                   onMouseLeave={e => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
                 />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.05) 60%)" }} />
-                <div style={{
-                  position: "absolute", top: 18, left: 18,
-                  background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
-                  padding: "5px 16px", fontFamily: "'Rajdhani', sans-serif",
-                  fontWeight: 700, fontSize: 11, letterSpacing: 2.5,
-                  textTransform: "uppercase", color: "#fff",
-                }}>{svc.tag}</div>
+                {svc.tag ? (
+                  <div style={{
+                    position: "absolute", top: 18, left: 18,
+                    background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
+                    padding: "5px 16px", fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700, fontSize: 11, letterSpacing: 2.5,
+                    textTransform: "uppercase", color: "#fff",
+                  }}>{svc.tag}</div>
+                ) : null}
                 <div style={{
                   position: "absolute", bottom: 18, left: 24,
                   fontFamily: "'Bebas Neue', cursive", fontSize: 26,
@@ -135,6 +130,7 @@ export default function ServicesSection() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

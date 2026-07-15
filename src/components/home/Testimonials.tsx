@@ -1,25 +1,43 @@
 "use client";
 
-const testimonials = [
-  {
-    name: "Rajesh Kumar", initials: "RK", plan: "Popular — ₹699/mo", color: "#CC0000",
-    review: "Switched from a cable operator to VBC last year. The speeds are consistently good and the OTT bundling is genuinely convenient. Support team sorted my setup issue within 2 hours.",
-  },
-  {
-    name: "Priya Sharma", initials: "PS", plan: "Ultra — ₹999/mo", color: "#0055CC",
-    review: "Our whole family uses streaming and work-from-home simultaneously — zero buffering. The OTT channels are crystal clear too. Best decision we made for our home.",
-  },
-  {
-    name: "Venkat Rao", initials: "VR", plan: "Basic — ₹599/mo", color: "#006633",
-    review: "Affordable and reliable. Disney+ Hotstar and Sony LIV bundled at this price is unbeatable in Vizag. Highly recommend VBC to anyone looking to upgrade their connection.",
-  },
-  {
-    name: "Anitha Reddy", initials: "AR", plan: "Popular — ₹799/mo", color: "#CC8800",
-    review: "I run a small business from home and the symmetric speeds VBC offers are a game-changer. Video calls are flawless. The 24/7 support gives me real peace of mind every single day.",
-  },
-];
+export interface TestimonialItem {
+  name: string;
+  role?: string;
+  image?: string;
+  quote: string;
+  rating: number;
+}
 
-export function Testimonials() {
+interface TestimonialsProps {
+  items?: TestimonialItem[];
+  tag?: string;
+  titlePart1?: string;
+  titlePart2?: string;
+  titlePart3?: string;
+  description?: string;
+}
+
+const PALETTE = ["#CC0000", "#0055CC", "#006633", "#CC8800"];
+
+function initialsOf(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
+}
+
+export function Testimonials({ items, tag, titlePart1, titlePart2, titlePart3, description }: TestimonialsProps = {}) {
+  const cards = (items || []).map((item, i) => ({
+    name: item.name,
+    initials: initialsOf(item.name),
+    plan: item.role || "",
+    color: PALETTE[i % PALETTE.length],
+    review: item.quote,
+    image: item.image,
+  }));
+
   return (
     <section style={{ background: "#ffffff", padding: "110px 24px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
@@ -30,15 +48,15 @@ export function Testimonials() {
             fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
             fontSize: 22, letterSpacing: 4, textTransform: "uppercase",
             color: "#CC0000", marginBottom: 14,
-          }}>Customer Stories</p>
+          }}>{tag || "Customer Stories"}</p>
           <h2 style={{
             fontFamily: "'Bebas Neue', cursive",
             fontSize: "clamp(52px, 7vw, 88px)",
             letterSpacing: 2, lineHeight: 0.95, marginBottom: 24, color: "#14213D",
           }}>
-            TRUSTED BY{" "}
-            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>30,000+</span>
-            <br />HOUSEHOLDS
+            {titlePart1 || "TRUSTED BY"}{" "}
+            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>{titlePart2 || "30,000+"}</span>
+            <br />{titlePart3 || "HOUSEHOLDS"}
           </h2>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, transparent, #CC0000)" }} />
@@ -46,13 +64,18 @@ export function Testimonials() {
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
           </div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#667085", maxWidth: 520, margin: "20px auto 0", lineHeight: 1.8 }}>
-            Real experiences from VBC subscribers across Visakhapatnam.
+            {description || "Real experiences from VBC subscribers across Visakhapatnam."}
           </p>
         </div>
 
         {/* Cards */}
+        {cards.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#98A2B3", fontFamily: "'DM Sans', sans-serif", fontSize: 14 }}>
+            Customer testimonials will appear here once added from the admin panel.
+          </p>
+        ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 26 }}>
-          {testimonials.map((t, i) => (
+          {cards.map((t, i) => (
             <div key={i}
               style={{
                 background: "#ffeeeed3", borderRadius: 18, padding: "36px 30px",
@@ -77,11 +100,16 @@ export function Testimonials() {
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${t.color}, ${t.color}99)`,
+                  background: t.image ? "transparent" : `linear-gradient(135deg, ${t.color}, ${t.color}99)`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 15,
                   color: "#fff", flexShrink: 0, boxShadow: `0 4px 12px ${t.color}44`,
-                }}>{t.initials}</div>
+                  overflow: "hidden",
+                }}>
+                  {t.image ? (
+                    <img src={t.image} alt={t.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : t.initials}
+                </div>
                 <div>
                   <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 16, color: "#14213D", letterSpacing: 0.5 }}>{t.name}</div>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: t.color, fontWeight: 600, marginTop: 3 }}>{t.plan}</div>
@@ -90,12 +118,28 @@ export function Testimonials() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );
 }
 
-export function CTABanner() {
+interface CTABannerProps {
+  title?: string;
+  description?: string;
+  ctaLabel?: string;
+  ctaLink?: string;
+}
+
+export function CTABanner({ title, description, ctaLabel, ctaLink }: CTABannerProps = {}) {
+  const heading = title || "READY TO EXPERIENCE\nREAL FIBER SPEED?";
+  const [headingLine1, headingLine2] = heading.split("\n");
+  const desc =
+    description ||
+    "Join 30,000+ happy subscribers in Vizag. Installation in as little as 24 hours.";
+  const primaryLabel = ctaLabel || "Get Connected";
+  const primaryLink = ctaLink || "/contact";
+
   return (
     <section style={{
       background: "linear-gradient(135deg, #CC0000 0%, #8B1A1A 60%, #14213D 100%)",
@@ -108,13 +152,13 @@ export function CTABanner() {
       }} />
       <div style={{ position: "relative", zIndex: 1, maxWidth: 700, margin: "0 auto" }}>
         <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(36px, 5vw, 60px)", letterSpacing: 2, color: "#fff", lineHeight: 1.05, marginBottom: 16 }}>
-          READY TO EXPERIENCE<br />REAL FIBER SPEED?
+          {headingLine1}{headingLine2 ? <><br />{headingLine2}</> : null}
         </h2>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "rgba(255,255,255,0.75)", marginBottom: 36, lineHeight: 1.7 }}>
-          Join 30,000+ happy subscribers in Vizag. Installation in as little as 24 hours.
+          {desc}
         </p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-          <a href="/plans" style={{
+          <a href={primaryLink} style={{
             display: "inline-block", background: "#fff", color: "#CC0000",
             fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14,
             letterSpacing: 1.5, textTransform: "uppercase", textDecoration: "none",
@@ -122,17 +166,7 @@ export function CTABanner() {
           }}
             onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.2)")}
             onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.boxShadow = "none")}
-          >View Plans</a>
-          <a href="/contact" style={{
-            display: "inline-block", background: "transparent", color: "#fff",
-            fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 14,
-            letterSpacing: 1.5, textTransform: "uppercase", textDecoration: "none",
-            padding: "13px 35px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.4)",
-            transition: "all 0.2s",
-          }}
-            onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.1)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.background = "transparent")}
-          >Contact Us</a>
+          >{primaryLabel}</a>
         </div>
       </div>
     </section>

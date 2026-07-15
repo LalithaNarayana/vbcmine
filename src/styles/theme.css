@@ -1,11 +1,27 @@
-/* VBC Theme CSS Variables — see globals.css for full token set */
+/*
+ * Shared design-token layer referenced across public components that
+ * still use inline styles for the brand's dark/red aesthetic. Kept
+ * separate from globals.css so component-level inline styles and
+ * Tailwind utility classes can both reference the same palette.
+ */
+
 :root {
-  --vbc-red: #CC0000;
-  --vbc-red-bright: #FF1A1A;
-  --vbc-red-dark: #990000;
-  --vbc-black: #0A0A0A;
-  --vbc-dark: #141414;
-  --vbc-gray: #1E1E1E;
-  --vbc-muted: #666666;
-  --vbc-text: #E8E8E8;
+  --font-display: "Bebas Neue", cursive;
+  --font-heading: "Rajdhani", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+
+  --color-red: #cc0000;
+  --color-red-dark: #880000;
+  --color-navy: #152238;
+  --color-black: #0d0d0d;
+  --color-panel: #141414;
+  --color-muted: #667085;
+  --color-border-red: rgba(204, 0, 0, 0.15);
+}
+
+.container-max {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
 }

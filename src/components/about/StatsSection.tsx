@@ -1,4 +1,6 @@
-const bigStats = [
+"use client";
+
+const defaultStats = [
   { value: "30K+", label: "Active Subscribers", sub: "Homes & Businesses" },
   { value: "12+", label: "Years of Service", sub: "Est. 2012, Vizag" },
   { value: "50+", label: "Coverage Areas", sub: "Across all Vizag zones" },
@@ -9,7 +11,19 @@ const bigStats = [
   { value: "2 hrs", label: "Avg. Response Time", sub: "Technical complaints" },
 ];
 
-export default function StatsSection() {
+export interface AboutStatItem {
+  value: string;
+  label: string;
+  sub?: string;
+}
+
+interface StatsSectionProps {
+  stats?: AboutStatItem[];
+}
+
+export default function StatsSection({ stats }: StatsSectionProps = {}) {
+  const bigStats = stats && stats.length > 0 ? stats : defaultStats;
+
   return (
     <section style={{ background: "#0D0D0D", padding: "80px 24px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>

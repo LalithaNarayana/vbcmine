@@ -13,14 +13,15 @@ const actions = [
 export default function QuickActions() {
   return (
     <div>
-      <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "2px", textTransform: "uppercase", color: "#555", marginBottom: "16px" }}>Quick Actions</h3>
+      <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "2px", textTransform: "uppercase", color: "var(--vbc-muted)", marginBottom: "16px" }}>Quick Actions</h3>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
         {actions.map((a, i) => (
           <Link key={i} href={a.href} style={{
             display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
             padding: "20px 12px", textDecoration: "none",
-            background: a.primary ? "linear-gradient(135deg, rgba(204,0,0,0.15), rgba(136,0,0,0.1))" : "rgba(255,255,255,0.02)",
-            border: a.primary ? "1px solid rgba(204,0,0,0.3)" : "1px solid rgba(255,255,255,0.05)",
+            background: a.primary ? "rgba(204,0,0,0.06)" : "var(--vbc-surface)",
+            border: a.primary ? "1px solid rgba(204,0,0,0.3)" : "1px solid var(--vbc-border)",
+            boxShadow: a.primary ? "none" : "var(--vbc-shadow)",
             transition: "all 0.2s",
           }}
             onMouseEnter={(e) => {
@@ -28,12 +29,12 @@ export default function QuickActions() {
               (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(204,0,0,0.3)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLAnchorElement).style.background = a.primary ? "linear-gradient(135deg, rgba(204,0,0,0.15), rgba(136,0,0,0.1))" : "rgba(255,255,255,0.02)";
-              (e.currentTarget as HTMLAnchorElement).style.borderColor = a.primary ? "rgba(204,0,0,0.3)" : "rgba(255,255,255,0.05)";
+              (e.currentTarget as HTMLAnchorElement).style.background = a.primary ? "rgba(204,0,0,0.06)" : "var(--vbc-surface)";
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = a.primary ? "rgba(204,0,0,0.3)" : "var(--vbc-border)";
             }}
           >
-            <span style={{ color: a.primary ? "#CC0000" : "#666" }}>{a.icon}</span>
-            <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 600, fontSize: "11px", letterSpacing: "0.5px", textTransform: "uppercase", color: a.primary ? "#E8E8E8" : "#555", textAlign: "center" }}>{a.label}</span>
+            <span style={{ color: a.primary ? "#CC0000" : "var(--vbc-muted)" }}>{a.icon}</span>
+            <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 600, fontSize: "11px", letterSpacing: "0.5px", textTransform: "uppercase", color: a.primary ? "var(--vbc-red-dark)" : "var(--vbc-muted)", textAlign: "center" }}>{a.label}</span>
           </Link>
         ))}
       </div>

@@ -1,24 +1,30 @@
 import { Target, Eye, Heart } from "lucide-react";
 
-export default function MissionVision() {
+interface MissionVisionProps {
+  mission?: string; // CKEditor HTML
+  vision?: string; // CKEditor HTML
+  values?: string; // CKEditor HTML
+}
+
+export default function MissionVision({ mission, vision, values }: MissionVisionProps = {}) {
   const items = [
     {
       icon: <Target size={28} />,
       label: "Our Mission",
       title: "Connect Every Home in Vizag",
-      desc: "To provide world-class fiber internet, TV, and communication services to every home and business in Visakhapatnam — making digital inclusion a reality for all.",
+      desc: mission || "To provide world-class fiber internet, TV, and communication services to every home and business in Visakhapatnam — making digital inclusion a reality for all.",
     },
     {
       icon: <Eye size={28} />,
       label: "Our Vision",
       title: "Vizag's Digital Backbone",
-      desc: "To be the undisputed digital infrastructure provider of Visakhapatnam — the network that powers the city's homes, businesses, smart infrastructure, and future growth.",
+      desc: vision || "To be the undisputed digital infrastructure provider of Visakhapatnam — the network that powers the city's homes, businesses, smart infrastructure, and future growth.",
     },
     {
       icon: <Heart size={28} />,
       label: "Our Values",
       title: "Reliability, Transparency, Community",
-      desc: "We believe in delivering what we promise, pricing that's fair and clear, and investing in the communities where our customers live and work.",
+      desc: values || "We believe in delivering what we promise, pricing that's fair and clear, and investing in the communities where our customers live and work.",
     },
   ];
 
@@ -41,7 +47,11 @@ export default function MissionVision() {
               <div style={{ color: "#CC0000", marginBottom: "16px" }}>{item.icon}</div>
               <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 600, fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", color: "#667085", marginBottom: "8px" }}>{item.label}</div>
               <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "20px", color: "#152238", marginBottom: "16px" }}>{item.title}</h3>
-              <p style={{ color: "#475467", fontSize: "13px", lineHeight: "1.8" }}>{item.desc}</p>
+              <div
+                className="ck-content"
+                style={{ color: "#475467", fontSize: "13px", lineHeight: "1.8" }}
+                dangerouslySetInnerHTML={{ __html: item.desc }}
+              />
             </div>
           ))}
         </div>

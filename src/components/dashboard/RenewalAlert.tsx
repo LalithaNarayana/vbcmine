@@ -23,8 +23,8 @@ export default function RenewalAlert({ daysLeft, planName }: RenewalAlertProps) 
           <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "14px", color: isUrgent ? "#FF3333" : "#FFB400" }}>
             {isUrgent ? "URGENT: Plan Expiring Soon!" : "Plan Renewal Reminder"}
           </div>
-          <div style={{ fontSize: "12px", color: "#666" }}>
-            Your {planName} plan expires in <strong style={{ color: "#E8E8E8" }}>{daysLeft} day{daysLeft !== 1 ? "s" : ""}</strong>. Renew to stay connected.
+          <div style={{ fontSize: "12px", color: "var(--vbc-muted)" }}>
+            Your {planName} plan expires in <strong style={{ color: "var(--vbc-text)" }}>{daysLeft} day{daysLeft !== 1 ? "s" : ""}</strong>. Renew to stay connected.
           </div>
         </div>
       </div>

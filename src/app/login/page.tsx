@@ -1,21 +1,66 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { Phone, ArrowRight, Shield, RefreshCw } from "lucide-react";
 
 type Step = "mobile" | "otp";
 
-export default function LoginPage() {
+function LoginContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("mobile");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [debugOtp, setDebugOtp] = useState(""); // shown only while mock OTP provider is active
 
-  const handleSendOTP = () => {
-    if (mobile.length === 10) {
-      setLoading(true);
-      setTimeout(() => { setLoading(false); setStep("otp"); }, 1200);
+  const handleSendOTP = async () => {
+    if (mobile.length !== 10 || loading) return;
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, purpose: "login" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail ? `${data.error} (${data.detail})` : data.error || "Failed to send OTP.");
+        return;
+      }
+      if (data.debugOtp) setDebugOtp(data.debugOtp);
+      setStep("otp");
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    const code = otp.join("");
+    if (code.length !== 6 || loading) return;
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, otp: code, purpose: "login" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail ? `${data.error} (${data.detail})` : data.error || "OTP verification failed.");
+        return;
+      }
+      router.push(searchParams.get("next") || "/dashboard");
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,24 +103,6 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "80px",
-              height: "80px",
-              marginBottom: "16px",
-            }}
-          >
-            <Image
-              src="/images/logo.png"
-              alt="VBC Logo"
-              width={80}
-              height={80}
-              style={{ objectFit: "contain" }}
-            />
-          </div>
           <h1
             style={{
               fontFamily: "'Bebas Neue', cursive",
@@ -159,6 +186,10 @@ export default function LoginPage() {
                 />
               </div>
 
+              {error && (
+                <p style={{ color: "#CC0000", fontSize: "12px", marginBottom: "12px", fontFamily: "'DM Sans', sans-serif" }}>{error}</p>
+              )}
+
               <button
                 onClick={handleSendOTP}
                 disabled={mobile.length !== 10 || loading}
@@ -191,7 +222,7 @@ export default function LoginPage() {
           ) : (
             <>
               <button
-                onClick={() => setStep("mobile")}
+                onClick={() => { setStep("mobile"); setOtp(["", "", "", "", "", ""]); setError(""); setDebugOtp(""); }}
                 style={{
                   background: "none",
                   border: "none",
@@ -249,28 +280,42 @@ export default function LoginPage() {
                 ))}
               </div>
 
-              <Link
-                href="/dashboard"
+              {debugOtp && (
+                <p style={{ textAlign: "center", color: "#00C864", fontSize: "12px", marginBottom: "12px", fontFamily: "'DM Sans', sans-serif" }}>
+                  Dev mode — OTP: {debugOtp} (SMS provider not yet connected)
+                </p>
+              )}
+              {error && (
+                <p style={{ textAlign: "center", color: "#CC0000", fontSize: "12px", marginBottom: "12px", fontFamily: "'DM Sans', sans-serif" }}>{error}</p>
+              )}
+
+              <button
+                onClick={handleVerifyOTP}
+                disabled={otp.join("").length !== 6 || loading}
                 className="btn-primary"
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: "8px",
-                  textDecoration: "none",
+                  border: "none",
                   padding: "14px",
                   clipPath: "none",
                   width: "100%",
                   textAlign: "center",
+                  opacity: otp.join("").length !== 6 || loading ? 0.6 : 1,
+                  cursor: otp.join("").length !== 6 || loading ? "not-allowed" : "pointer",
                 }}
               >
                 <Shield size={16} />
-                Verify & Login
-              </Link>
+                {loading ? "Verifying..." : "Verify & Login"}
+              </button>
 
               <p style={{ textAlign: "center", color: "#667085", fontSize: "13px", marginTop: "20px" }}>
                 Didn&apos;t receive?{" "}
                 <button
+                  onClick={handleSendOTP}
+                  disabled={loading}
                   style={{ background: "none", border: "none", color: "#CC0000", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}
                 >
                   Resend OTP
@@ -279,15 +324,17 @@ export default function LoginPage() {
             </>
           )}
         </div>
-
-        {/* Security note */}
-        <div style={{ textAlign: "center", marginTop: "20px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-          <Shield size={12} color="#667085" />
-          <span style={{ color: "#667085", fontSize: "11px" }}>Secured with 256-bit encryption</span>
-        </div>
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

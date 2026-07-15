@@ -19,22 +19,22 @@ export default function UsageStats({ download, upload, sessionTime, currentSpeed
 
   return (
     <div>
-      <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "2px", textTransform: "uppercase", color: "#555", marginBottom: "16px" }}>Usage Stats</h3>
+      <h3 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "2px", textTransform: "uppercase", color: "var(--vbc-muted)", marginBottom: "16px" }}>Usage Stats</h3>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
         {stats.map((s, i) => (
-          <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: "20px" }}>
+          <div key={i} style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", boxShadow: "var(--vbc-shadow)", padding: "20px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
               <span style={{ color: s.color }}>{s.icon}</span>
-              <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "11px", color: "#555", letterSpacing: "1px", textTransform: "uppercase" }}>{s.label}</span>
+              <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "11px", color: "var(--vbc-muted)", letterSpacing: "1px", textTransform: "uppercase" }}>{s.label}</span>
             </div>
-            <div style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "24px", color: "#E8E8E8", letterSpacing: "1px", lineHeight: 1, marginBottom: "4px" }}>{s.value}</div>
-            <div style={{ fontSize: "11px", color: "#444", marginBottom: s.pct !== null ? "12px" : "0" }}>{s.sub}</div>
+            <div style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "24px", color: "var(--vbc-text)", letterSpacing: "1px", lineHeight: 1, marginBottom: "4px" }}>{s.value}</div>
+            <div style={{ fontSize: "11px", color: "var(--vbc-muted)", marginBottom: s.pct !== null ? "12px" : "0" }}>{s.sub}</div>
             {s.pct !== null && (
               <div>
-                <div style={{ height: "3px", background: "rgba(255,255,255,0.05)" }}>
+                <div style={{ height: "3px", background: "var(--vbc-gray)" }}>
                   <div style={{ height: "100%", width: `${Math.min(s.pct, 100)}%`, background: `linear-gradient(90deg, ${s.color}, ${s.color}99)`, transition: "width 0.5s ease" }} />
                 </div>
-                <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "10px", color: "#444", marginTop: "4px" }}>{Math.round(s.pct)}% used</div>
+                <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "10px", color: "var(--vbc-muted)", marginTop: "4px" }}>{Math.round(s.pct)}% used</div>
               </div>
             )}
           </div>

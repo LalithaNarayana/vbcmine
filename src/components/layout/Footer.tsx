@@ -1,15 +1,8 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, Phone, Radio, ShieldCheck, Tv, Wifi, Server, PhoneCall, Globe } from "lucide-react";
-
-const businessServices = [
-  { label: "Internet Leased Lines (ILL)", icon: Wifi, href: "/services/ill" },
-  { label: "MPLS Connectivity", icon: Globe, href: "/services/mpls" },
-  { label: "Hosting & Server Colocation", icon: Server, href: "/services/hosting" },
-  { label: "VOIP / IBS Solutions", icon: PhoneCall, href: "/services/voip" },
-  { label: "Optical Fiber Lease", icon: ShieldCheck, href: "/services/optical-fiber" },
-];
+import { Mail, MapPin, Phone } from "lucide-react";
+import AppIcon from "@/components/admin/DynamicIcon";
 
 const quickLinks = [
   { label: "About Us", href: "/about" },
@@ -19,7 +12,41 @@ const quickLinks = [
   { label: "Contact Us", href: "/contact" },
 ];
 
-export default function Footer() {
+interface FooterBusinessService {
+  name: string;
+  slug: string;
+  icon: string;
+}
+
+interface FooterProps {
+  siteName?: string;
+  logo?: string;
+  contact1?: string;
+  contact2?: string;
+  mail1?: string;
+  mail2?: string;
+  address?: string; // CKEditor HTML
+  description?: string;
+  businessServices?: FooterBusinessService[];
+}
+
+export default function Footer({
+  siteName,
+  logo,
+  contact1,
+  contact2,
+  mail1,
+  mail2,
+  address,
+  description,
+  businessServices,
+}: FooterProps = {}) {
+  const logoSrc = logo || "/images/logo.png";
+  const siteLabel = siteName || "VBC On Fiber";
+  const phoneDisplay = [contact1, contact2].filter(Boolean).join(", ");
+  const mailDisplay = [mail1, mail2].filter(Boolean).join(", ");
+  const services = businessServices || [];
+
   return (
     <footer
       style={{
@@ -41,8 +68,8 @@ export default function Footer() {
             <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "18px" }}>
               <Link href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
                 <Image
-                  src="/images/logo.png"
-                  alt="VBC On Fiber"
+                  src={logoSrc}
+                  alt={siteLabel}
                   width={180}
                   height={60}
                   priority
@@ -54,43 +81,30 @@ export default function Footer() {
                 />
               </Link>
             </div>
-            <p style={{ color: "#B7BDC6", lineHeight: 1.8, fontSize: "14px", maxWidth: "360px", marginBottom: "20px" }}>
-              VBC delivers reliable fiber broadband, TV and enterprise network services with local support, transparent pricing and fast installation.
+            <p style={{ color: "#B7BDC6", lineHeight: 1.8, fontSize: "14px", maxWidth: "360px", marginBottom: "20px" }} className="ck-content">
+              {description ||
+                "VBC delivers reliable fiber broadband, TV and enterprise network services with local support, transparent pricing and fast installation."}
             </p>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "12px 16px",
-                borderRadius: "16px",
-                background: "#111",
-                border: "1px solid #242424",
-                boxShadow: "0 16px 36px rgba(0, 0, 0, 0.28)",
-              }}
-            >
-              <Phone size={18} color="#CC0000" />
-              <div>
-                <div style={{ color: "#9CA3AF", fontSize: "12px" }}>24/7 customer care</div>
-                <div style={{ color: "#FFFFFF", fontWeight: 700 }}>(0891) 6677-123</div>
-              </div>
-            </div>
           </div>
 
           {/* Business Services */}
           <div>
             <h4 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "16px", color: "#FFFFFF", marginBottom: "16px" }}>Business Services</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {businessServices.map(({ label, icon: Icon, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  className="footer-service-link"
-                >
-                  <Icon size={14} color="#CC0000" style={{ flexShrink: 0 }} />
-                  <span>{label}</span>
-                </Link>
-              ))}
+              {services.length > 0 ? (
+                services.map((service) => (
+                  <Link
+                    key={service.slug}
+                    href={`/services/${service.slug}`}
+                    className="footer-service-link"
+                  >
+                    <AppIcon name={service.icon} size={14} className="footer-service-icon" />
+                    <span>{service.name}</span>
+                  </Link>
+                ))
+              ) : (
+                <span style={{ color: "#6B7280", fontSize: "13px" }}>No business services added yet.</span>
+              )}
             </div>
           </div>
 
@@ -110,16 +124,27 @@ export default function Footer() {
             <div style={{ display: "flex", flexDirection: "column", gap: "14px", color: "#B7BDC6", fontSize: "14px", lineHeight: 1.7 }}>
               <div style={{ display: "flex", gap: "10px" }}>
                 <MapPin size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                <span>#47-10-20, 401, 4th Floor, Dwaraka Plaza, Dwaraka Nagar, Visakhapatnam – 530016</span>
+                {address ? (
+                  <span
+                    className="footer-address-html ck-content"
+                    dangerouslySetInnerHTML={{ __html: address }}
+                  />
+                ) : (
+                  <span style={{ color: "#6B7280" }}>Address not set.</span>
+                )}
               </div>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <Phone size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                <span>(0891) 6677-123, 6677-124</span>
-              </div>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <Mail size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                <span>sales@vbctv.in | support@vbctv.in</span>
-              </div>
+              {phoneDisplay && (
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <Phone size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
+                  <span>{phoneDisplay}</span>
+                </div>
+              )}
+              {mailDisplay && (
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <Mail size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
+                  <span>{mailDisplay}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -138,7 +163,7 @@ export default function Footer() {
             fontSize: "13px",
           }}
         >
-          <p>(c) {new Date().getFullYear()} VBC On Fiber. All rights reserved.</p>
+          <p>(c) {new Date().getFullYear()} {siteLabel}. All rights reserved.</p>
           <p style={{ color: "#9CA3AF", fontSize: "13px" }}>
             Designed and Developed by{" "}
             <a href="https://www.thecolourmoon.com/" target="_blank" rel="noopener noreferrer" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>Colourmoon Technologies</a>
@@ -160,6 +185,10 @@ export default function Footer() {
           font-size: 13px;
           text-decoration: none;
           transition: color 0.2s;
+        }
+        .footer-service-icon {
+          flex-shrink: 0;
+          color: #CC0000;
         }
         .footer-service-link:hover {
           color: #CC0000;

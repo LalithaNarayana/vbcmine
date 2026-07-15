@@ -2,18 +2,22 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
-const banners = [
-  "/images/hero1.png",
-  "/images/hero2.png",
-  "/images/hero3.png",
-  "/images/hero4.png",
-  "/images/hero5.png",
-  "/images/hero6.png",
-  "/images/hero7.png",
-];
+export interface HeroBanner {
+  title?: string;
+  subtitle?: string;
+  image: string;
+  ctaLabel?: string;
+  ctaLink?: string;
+}
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  banners?: HeroBanner[];
+}
+
+export default function HeroSection({ banners: bannersProp }: HeroSectionProps = {}) {
+  const banners = bannersProp || [];
   const [active, setActive] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [prev, setPrev] = useState<number | null>(null);
@@ -28,14 +32,17 @@ export default function HeroSection() {
   }, [active, animating]);
 
   const goPrev = useCallback(() => {
+    if (banners.length === 0) return;
     goTo((active - 1 + banners.length) % banners.length);
-  }, [active, goTo]);
+  }, [active, goTo, banners.length]);
 
   const goNext = useCallback(() => {
+    if (banners.length === 0) return;
     goTo((active + 1) % banners.length);
-  }, [active, goTo]);
+  }, [active, goTo, banners.length]);
 
   useEffect(() => {
+    if (banners.length < 2) return;
     const timer = setInterval(() => {
       setActive((a) => {
         const next = (a + 1) % banners.length;
@@ -46,7 +53,11 @@ export default function HeroSection() {
       });
     }, 7500);
     return () => clearInterval(timer);
-  }, []);
+  }, [banners.length]);
+
+  if (banners.length === 0) {
+    return null;
+  }
 
   const arrowButtonStyle: React.CSSProperties = {
     position: "absolute",
@@ -71,7 +82,7 @@ export default function HeroSection() {
       <div style={{ position: "relative", width: "100%" }}>
 
         {/* All slides — each image displayed at its natural ratio */}
-        {banners.map((src, i) => (
+        {banners.map((banner, i) => (
           <div
             key={i}
             style={{
@@ -86,14 +97,77 @@ export default function HeroSection() {
             }}
           >
             <Image
-              src={src}
-              alt={`Hero banner ${i + 1}`}
+              src={banner.image}
+              alt={banner.title || `Hero banner ${i + 1}`}
               width={1920}
               height={1080}
               priority={i === 0}
               style={{ width: "100%", height: "auto", display: "block" }}
               sizes="100vw"
             />
+            {/* {(banner.title || banner.ctaLabel) && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  padding: "0 8%",
+                  background: "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, transparent 60%)",
+                }}
+              >
+                {banner.title && (
+                  <h2
+                    style={{
+                      fontFamily: "'Bebas Neue', cursive",
+                      fontSize: "clamp(32px, 5vw, 64px)",
+                      color: "#fff",
+                      letterSpacing: "1px",
+                      lineHeight: 1.05,
+                      maxWidth: "600px",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    {banner.title}
+                  </h2>
+                )}
+                {banner.subtitle && (
+                  <p
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "14px",
+                      color: "rgba(255,255,255,0.85)",
+                      maxWidth: "480px",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    {banner.subtitle}
+                  </p>
+                )}
+                {banner.ctaLabel && (
+                  <Link
+                    href={banner.ctaLink || "/plans"}
+                    style={{
+                      display: "inline-block",
+                      background: "#CC0000",
+                      color: "#fff",
+                      fontFamily: "'Rajdhani', sans-serif",
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      letterSpacing: "1.5px",
+                      textTransform: "uppercase",
+                      textDecoration: "none",
+                      padding: "12px 32px",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    {banner.ctaLabel}
+                  </Link>
+                )}
+              </div>
+            )} */}
           </div>
         ))}
       </div>

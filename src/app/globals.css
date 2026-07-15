@@ -40,11 +40,17 @@
   --vbc-shadow: 0 20px 60px rgba(20, 33, 61, 0.08);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/*
+ * NOTE: a box-sizing/margin/padding reset used to live here as a plain
+ * `* { ... }` rule. Tailwind's Preflight (@layer base) already applies
+ * this exact reset. Keeping a duplicate at the top level (outside any
+ * @layer) is dangerous with Tailwind v4: un-layered rules always win
+ * over layered rules regardless of specificity, so that stray rule was
+ * silently overriding every Tailwind spacing utility (p-*, m-*, gap-*,
+ * etc.) across the entire site, including the whole admin panel. Do not
+ * re-add a bare `* {}` reset here — if one is ever needed, it must be
+ * wrapped in `@layer base { ... }`.
+ */
 
 html {
   scroll-behavior: smooth;
@@ -235,6 +241,102 @@ body {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   border-radius: 999px;
+}
+
+/*
+ * Rich-text (CKEditor) output styling.
+ * Tailwind's Preflight strips all default browser styling from
+ * headings, lists, etc. Any HTML coming out of CKEditor (address,
+ * working hours, service/about descriptions, legal pages) is rendered
+ * via dangerouslySetInnerHTML, so without these rules a "Heading 1" or
+ * a bullet list typed in the editor renders as plain, unstyled text
+ * on the public site even though the underlying <h1>/<ul> tags are
+ * there. Apply the `ck-content` class to any wrapper around CKEditor
+ * HTML output.
+ */
+.ck-content {
+  color: inherit;
+  font-size: inherit;
+  line-height: 1.8;
+}
+.ck-content h1 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2.25em;
+  line-height: 1.1;
+  letter-spacing: 1px;
+  margin: 0.6em 0 0.4em;
+  color: inherit;
+}
+.ck-content h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.65em;
+  line-height: 1.2;
+  margin: 0.6em 0 0.4em;
+}
+.ck-content h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.3em;
+  line-height: 1.3;
+  margin: 0.6em 0 0.35em;
+}
+.ck-content h4 {
+  font-weight: 700;
+  font-size: 1.1em;
+  margin: 0.6em 0 0.3em;
+}
+.ck-content p {
+  margin: 0 0 0.9em;
+}
+.ck-content p:last-child {
+  margin-bottom: 0;
+}
+.ck-content ul,
+.ck-content ol {
+  margin: 0 0 1em;
+  padding-left: 1.4em;
+}
+.ck-content ul {
+  list-style: disc;
+}
+.ck-content ol {
+  list-style: decimal;
+}
+.ck-content ul ul {
+  list-style: circle;
+}
+.ck-content li {
+  margin-bottom: 0.4em;
+}
+.ck-content a {
+  color: var(--vbc-red, #CC0000);
+  text-decoration: underline;
+}
+.ck-content strong,
+.ck-content b {
+  font-weight: 700;
+}
+.ck-content blockquote {
+  margin: 1em 0;
+  padding: 0.4em 1.2em;
+  border-left: 3px solid rgba(204, 0, 0, 0.4);
+  font-style: italic;
+  opacity: 0.9;
+}
+.ck-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+.ck-content table td,
+.ck-content table th {
+  border: 1px solid rgba(20, 33, 61, 0.15);
+  padding: 8px 12px;
+}
+.ck-content mark {
+  background: rgba(204, 0, 0, 0.18);
+  padding: 0 3px;
 }
 
 /* Keyframes */

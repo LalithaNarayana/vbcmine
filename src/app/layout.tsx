@@ -1,23 +1,54 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import BottomTabBar from "@/components/layout/BottomTabBar";
-import Footer from "@/components/layout/Footer";
+import SiteChrome from "@/components/layout/SiteChrome";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import PlanRequestProvider from "@/components/plans/PlanRequestProvider";
+import connectDB from "@/lib/mongodb";
+import { getOrCreateSettings } from "@/models/Settings";
+import BusinessService from "@/models/BusinessService";
 
-export const metadata: Metadata = {
-  title: "VBC On Fiber - Vizag's Fastest Internet & TV Provider",
-  description:
-    "VBC (Vizag Broadcasting Company) - High-speed fiber broadband up to 1 Gbps, Digital TV, IPTV, and enterprise solutions in Visakhapatnam since 2012.",
-  keywords: "VBC, Vizag fiber, broadband Visakhapatnam, IPTV, high-speed internet Vizag",
-  icons: {
-    icon: "/images/favicon.png",
-    shortcut: "/images/favicon.png",
-    apple: "/images/favicon.png",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  await connectDB();
+  const settings = await getOrCreateSettings();
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return {
+    title:
+      settings.metaTitle ||
+      "VBC On Fiber - Vizag's Fastest Internet & TV Provider",
+    description:
+      settings.metaDescription ||
+      "VBC (Vizag Broadcasting Company) - High-speed fiber broadband up to 1 Gbps, Digital TV, IPTV, and enterprise solutions in Visakhapatnam since 2012.",
+    icons: settings.favicon
+      ? {
+          icon: settings.favicon,
+          shortcut: settings.favicon,
+          apple: settings.favicon,
+        }
+      : {
+          icon: "/images/favicon.png",
+          shortcut: "/images/favicon.png",
+          apple: "/images/favicon.png",
+        },
+  };
+}
+
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  await connectDB();
+  const settings = await getOrCreateSettings();
+  const businessServices = await BusinessService.find()
+    .sort({ order: 1, createdAt: 1 })
+    .lean();
+
+  const services = JSON.parse(JSON.stringify(businessServices)) as {
+    name: string;
+    slug: string;
+    icon: string;
+  }[];
+
   return (
     <html lang="en">
       <head>
@@ -29,10 +60,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <BottomTabBar />
+        <PlanRequestProvider>
+          <SiteChrome
+            siteName={settings.siteName}
+            logo={settings.logo}
+            contact1={settings.contact1}
+            contact2={settings.contact2}
+            mail1={settings.mail1}
+            mail2={settings.mail2}
+            address={settings.address}
+            topBarTitle={settings.topBarTitle}
+            topBarNumber={settings.topBarNumber}
+            footerDescription={settings.footerDescription}
+            businessServices={services}
+          >
+            {children}
+          </SiteChrome>
+        </PlanRequestProvider>
         <ScrollToTop />
       </body>
     </html>

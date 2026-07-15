@@ -9,34 +9,20 @@ import {
   ArrowLeft,
   RefreshCw,
   FileText,
-  CheckCircle,
+  CircleCheck,
   Check,
 } from "lucide-react";
 
 type Step = "details" | "otp" | "bill" | "payment" | "success";
 
-interface Bill {
-  accountId: string;
-  name: string;
-  plan: string;
-  billingPeriod: string;
-  dueDate: string;
-  amount: number;
-}
-
-// Demo-only bill lookup. In production this would call the billing API
-// using the verified Account ID to fetch the real outstanding amount.
-function getBillForAccount(accountId: string): Bill {
-  const seed = accountId.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
-  const amount = 449 + (seed % 12) * 25;
-  return {
-    accountId: accountId.toUpperCase(),
-    name: "VBC Subscriber",
-    plan: "FiberMax 100 — Internet + OTT",
-    billingPeriod: "16 Jun – 15 Jul 2026",
-    dueDate: "25 Jun 2026",
-    amount,
-  };
+interface OrderData {
+  paymentId: string;
+  providerOrderId: string;
+  planName: string;
+  baseAmount: number;
+  gstPercent: number;
+  gstAmount: number;
+  totalAmount: number;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -55,19 +41,36 @@ export default function PayOnlinePage() {
   const [accountId, setAccountId] = useState("");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [debugOtp, setDebugOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [bill, setBill] = useState<Bill | null>(null);
+  const [error, setError] = useState("");
+  const [order, setOrder] = useState<OrderData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState("upi");
 
   const detailsValid = accountId.trim().length >= 4 && mobile.length === 10;
 
-  const handleSendOTP = () => {
-    if (!detailsValid) return;
+  const handleSendOTP = async () => {
+    if (!detailsValid || loading) return;
+    setError("");
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await fetch("/api/auth/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, purpose: "login" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to send OTP.");
+        return;
+      }
+      if (data.debugOtp) setDebugOtp(data.debugOtp);
       setStep("otp");
-    }, 1000);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOTPChange = (val: string, idx: number) => {
@@ -81,25 +84,70 @@ export default function PayOnlinePage() {
     }
   };
 
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
+    if (otp.some((d) => d === "") || loading) return;
+    setError("");
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setBill(getBillForAccount(accountId));
+    try {
+      const verifyRes = await fetch("/api/auth/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, otp: otp.join(""), purpose: "login" }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) {
+        setError(verifyData.error || "OTP verification failed.");
+        return;
+      }
+
+      const sessionAccountId = (verifyData.user?.accountId || "").toString().trim().toUpperCase();
+      if (!sessionAccountId || sessionAccountId !== accountId.trim().toUpperCase()) {
+        setError("Account ID doesn't match our records for this mobile number.");
+        return;
+      }
+
+      const orderRes = await fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ purpose: "renewal" }),
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) {
+        setError(orderData.error || "Could not fetch your bill.");
+        return;
+      }
+
+      setOrder(orderData);
       setStep("bill");
-    }, 1000);
-  };
-
-  const handlePay = () => {
-    setLoading(true);
-    setTimeout(() => {
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
       setLoading(false);
-      setStep("success");
-    }, 1400);
+    }
   };
 
-  const gst = bill ? Math.round(bill.amount * 0.18) : 0;
-  const total = bill ? bill.amount + gst : 0;
+  const handlePay = async () => {
+    if (!order || loading) return;
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/payment/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentId: order.paymentId }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setError(data.error || "Payment could not be verified.");
+        return;
+      }
+      setStep("success");
+    } catch {
+      setError("Network error during payment. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#ffffff", padding: "100px 24px 60px", position: "relative" }}>
@@ -152,7 +200,7 @@ export default function PayOnlinePage() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: "28px" }}>
+              <div style={{ marginBottom: "12px" }}>
                 <label style={labelStyle}>Registered Mobile Number</label>
                 <div style={{ position: "relative" }}>
                   <div style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: "6px", color: "#CC0000" }}>
@@ -173,65 +221,49 @@ export default function PayOnlinePage() {
                 </div>
               </div>
 
+              {error && <p style={{ color: "#CC0000", fontSize: "13px", marginBottom: "16px" }}>{error}</p>}
+
               <button
                 onClick={handleSendOTP}
                 disabled={!detailsValid || loading}
                 className="btn-primary"
-                style={{
-                  width: "100%",
-                  opacity: !detailsValid ? 0.5 : 1,
-                  cursor: !detailsValid ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  border: "none",
-                  padding: "14px",
-                }}
+                style={{ width: "100%", border: "none", cursor: detailsValid && !loading ? "pointer" : "not-allowed", opacity: detailsValid && !loading ? 1 : 0.6, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "14px", marginTop: "12px" }}
               >
                 {loading ? <RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} /> : <ArrowRight size={16} />}
                 {loading ? "Sending OTP..." : "Send OTP"}
               </button>
-
-              <p style={{ textAlign: "center", color: "#667085", fontSize: "12px", marginTop: "20px" }}>
-                Don&apos;t know your Account ID? Find it on any past bill or{" "}
-                <Link href="/contact" style={{ color: "#CC0000", textDecoration: "none", fontWeight: 600 }}>contact support</Link>.
-              </p>
             </>
           )}
 
           {/* Step 2: OTP */}
           {step === "otp" && (
             <>
-              <button
-                onClick={() => setStep("details")}
-                style={{ background: "none", border: "none", color: "#CC0000", cursor: "pointer", fontFamily: "'Rajdhani', sans-serif", fontWeight: 600, fontSize: "13px", letterSpacing: "1px", marginBottom: "20px", padding: 0, display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <ArrowLeft size={14} /> Back
-              </button>
-
               <h2 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "20px", color: "#152238", marginBottom: "8px" }}>
-                Enter OTP
+                Verify Your Mobile
               </h2>
-              <p style={{ color: "#667085", fontSize: "13px", marginBottom: "28px", lineHeight: "1.6" }}>
-                We&apos;ve sent a 6-digit OTP to <strong style={{ color: "#152238" }}>+91 {mobile}</strong> for account <strong style={{ color: "#152238" }}>{accountId.toUpperCase()}</strong>
+              <p style={{ color: "#667085", fontSize: "13px", marginBottom: "24px" }}>
+                Enter the 6-digit code sent to +91 {mobile}
               </p>
+              {debugOtp && (
+                <p style={{ fontSize: "11px", color: "#00C864", marginBottom: "16px" }}>
+                  Dev mode — OTP: {debugOtp} (SMS provider not yet connected)
+                </p>
+              )}
 
-              <div style={{ display: "flex", gap: "10px", marginBottom: "24px", justifyContent: "center" }}>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginBottom: "24px" }}>
                 {otp.map((digit, idx) => (
                   <input
                     key={idx}
                     id={`payotp-${idx}`}
-                    type="text"
-                    maxLength={1}
                     value={digit}
                     onChange={(e) => handleOTPChange(e.target.value, idx)}
+                    maxLength={1}
                     style={{
                       width: "44px",
                       height: "52px",
                       textAlign: "center",
+                      border: "1px solid rgba(20,33,61,0.15)",
                       background: "#ffffff",
-                      border: digit ? "1px solid #CC0000" : "1px solid rgba(20,33,61,0.12)",
                       color: "#152238",
                       fontSize: "20px",
                       fontFamily: "'Bebas Neue', cursive",
@@ -241,6 +273,8 @@ export default function PayOnlinePage() {
                   />
                 ))}
               </div>
+
+              {error && <p style={{ color: "#CC0000", fontSize: "13px", marginBottom: "16px", textAlign: "center" }}>{error}</p>}
 
               <button
                 onClick={handleVerifyOTP}
@@ -254,7 +288,11 @@ export default function PayOnlinePage() {
 
               <p style={{ textAlign: "center", color: "#667085", fontSize: "13px", marginTop: "20px" }}>
                 Didn&apos;t receive?{" "}
-                <button style={{ background: "none", border: "none", color: "#CC0000", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}>
+                <button
+                  onClick={handleSendOTP}
+                  disabled={loading}
+                  style={{ background: "none", border: "none", color: "#CC0000", cursor: "pointer", fontWeight: 600, fontSize: "13px" }}
+                >
                   Resend OTP
                 </button>
               </p>
@@ -262,7 +300,7 @@ export default function PayOnlinePage() {
           )}
 
           {/* Step 3: Bill details */}
-          {step === "bill" && bill && (
+          {step === "bill" && order && (
             <>
               <h2 style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "20px", color: "#152238", marginBottom: "20px" }}>
                 Current Bill
@@ -270,37 +308,29 @@ export default function PayOnlinePage() {
 
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ fontSize: "13px", color: "#667085" }}>Account ID</span>
-                <span style={{ fontSize: "13px", fontWeight: 700, color: "#152238" }}>{bill.accountId}</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ fontSize: "13px", color: "#667085" }}>Plan</span>
-                <span style={{ fontSize: "13px", color: "#152238" }}>{bill.plan}</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ fontSize: "13px", color: "#667085" }}>Billing Period</span>
-                <span style={{ fontSize: "13px", color: "#152238" }}>{bill.billingPeriod}</span>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "#152238" }}>{accountId.toUpperCase()}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-                <span style={{ fontSize: "13px", color: "#667085" }}>Due Date</span>
-                <span style={{ fontSize: "13px", fontWeight: 700, color: "#CC0000" }}>{bill.dueDate}</span>
+                <span style={{ fontSize: "13px", color: "#667085" }}>Plan</span>
+                <span style={{ fontSize: "13px", color: "#152238" }}>{order.planName}</span>
               </div>
 
               <div style={{ height: "1px", background: "rgba(20,33,61,0.08)", margin: "16px 0" }} />
 
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ fontSize: "13px", color: "#667085" }}>Plan Charges</span>
-                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {bill.amount}</span>
+                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {order.baseAmount}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-                <span style={{ fontSize: "13px", color: "#667085" }}>GST (18%)</span>
-                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {gst}</span>
+                <span style={{ fontSize: "13px", color: "#667085" }}>GST ({order.gstPercent}%)</span>
+                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {order.gstAmount}</span>
               </div>
 
               <div style={{ height: "1px", background: "rgba(20,33,61,0.08)", margin: "16px 0" }} />
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
                 <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "16px", color: "#152238" }}>Amount Due</span>
-                <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "32px", color: "#CC0000", letterSpacing: "1px" }}>Rs. {total}</span>
+                <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "32px", color: "#CC0000", letterSpacing: "1px" }}>Rs. {order.totalAmount}</span>
               </div>
 
               <button
@@ -314,7 +344,7 @@ export default function PayOnlinePage() {
           )}
 
           {/* Step 4: Payment gateway */}
-          {step === "payment" && bill && (
+          {step === "payment" && order && (
             <>
               <button
                 onClick={() => setStep("bill")}
@@ -355,6 +385,8 @@ export default function PayOnlinePage() {
                 ))}
               </div>
 
+              {error && <p style={{ color: "#CC0000", fontSize: "13px", marginBottom: "16px" }}>{error}</p>}
+
               <button
                 onClick={handlePay}
                 disabled={loading}
@@ -362,7 +394,7 @@ export default function PayOnlinePage() {
                 style={{ width: "100%", border: "none", cursor: "pointer", fontSize: "15px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
               >
                 {loading ? <RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} /> : null}
-                {loading ? "Redirecting to gateway..." : `Pay Rs. ${total} Securely`}
+                {loading ? "Processing..." : `Pay Rs. ${order.totalAmount} Securely`}
               </button>
 
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
@@ -373,14 +405,14 @@ export default function PayOnlinePage() {
           )}
 
           {/* Step 5: Success */}
-          {step === "success" && bill && (
+          {step === "success" && order && (
             <div style={{ textAlign: "center" }}>
               <div style={{ width: "72px", height: "72px", background: "rgba(0,200,100,0.1)", border: "1px solid rgba(0,200,100,0.3)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-                <CheckCircle size={32} color="#00C864" />
+                <CircleCheck size={32} color="#00C864" />
               </div>
               <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "36px", letterSpacing: "2px", color: "#152238", marginBottom: "12px" }}>PAYMENT SUCCESSFUL!</h1>
               <p style={{ color: "#475467", fontSize: "14px", lineHeight: "1.7", marginBottom: "24px" }}>
-                Rs. {total} has been paid for account <strong>{bill.accountId}</strong>. A receipt has been sent to your registered mobile number.
+                Rs. {order.totalAmount} has been paid for account <strong>{accountId.toUpperCase()}</strong>. A receipt has been sent to your registered mobile number.
               </p>
               <div style={{ background: "#F8FAFC", border: "1px solid rgba(20,33,61,0.06)", padding: "16px", marginBottom: "28px", textAlign: "left" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#152238" }}>

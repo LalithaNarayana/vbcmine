@@ -2,125 +2,66 @@
 import type { JSX } from "react";
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle, Zap, X } from "lucide-react";
+import { CircleCheck, Zap, X } from "lucide-react";
+import type { Plan as CmsPlan } from "@/types/plan";
+import AppIcon from "@/components/admin/DynamicIcon";
+import { usePlanRequest } from "@/components/plans/PlanRequestProvider";
 
-const ottPlans = [
-  {
-    speed: "30 Mbps",
-    price: 499,
-    otts: 20,
-    popular: false,
-    ottImage: "ott1.jpg",
-    features: [
-      "20 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-  {
-    speed: "50 Mbps",
-    price: 599,
-    otts: 27,
-    popular: false,
-    ottImage: "ott2.jpg",
-    features: [
-      "27 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-  {
-    speed: "100 Mbps",
-    price: 799,
-    otts: 30,
-    popular: true,
-    ottImage: "ott3.jpg",
-    features: [
-      "30 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-  {
-    speed: "150 Mbps",
-    price: 899,
-    otts: 30,
-    popular: false,
-    ottImage: "ott3.jpg",
-    features: [
-      "30 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-  {
-    speed: "200 Mbps",
-    price: 999,
-    otts: 30,
-    popular: false,
-    ottImage: "ott3.jpg",
-    features: [
-      "30 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-  {
-    speed: "300 Mbps",
-    price: 1499,
-    otts: 30,
-    popular: false,
-    ottImage: "ott3.jpg",
-    features: [
-      "30 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-  {
-    speed: "500 Mbps",
-    price: 1999,
-    otts: 30,
-    popular: false,
-    ottImage: "ott3.jpg",
-    features: [
-      "30 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-  {
-    speed: "1 Gbps",
-    price: 3999,
-    otts: 30,
-    popular: false,
-    ottImage: "ott3.jpg",
-    features: [
-      "30 OTT Apps",
-      "Unlimited Data",
-      "6+1 or 12+2 Months Offer",
-      "Router & Installation Free (6/12 months)",
-      "Non-refundable installation: ₹1500 (monthly)",
-    ],
-  },
-];
+interface DisplayPlan {
+  _id: string;
+  speed: string;
+  price: number;
+  ott: { name: string; image: string } | null;
+  popular: boolean;
+  features: string[];
+}
 
-export function SpeedHighlight() {
-  const [ottPopupIndex, setOttPopupIndex] = useState<number | null>(null);
+interface SpeedHighlightProps {
+  plans?: CmsPlan[];
+  categoryName?: string;
+  tag?: string;
+  title?: string;
+  description?: string;
+  topTagline?: string;
+  bottomTagline?: string;
+}
+
+function toDisplayPlans(plans?: CmsPlan[]): DisplayPlan[] | null {
+  if (!plans || plans.length === 0) return null;
+  return plans.map((p) => {
+    const prices = p.prices || [];
+    const cheapest = prices.length
+      ? [...prices].sort((a, b) => a.price - b.price)[0].price
+      : 0;
+    const bullets = (p.bullets || []).filter(
+      (b): b is Exclude<typeof b, string> => typeof b === "object"
+    ) as { text: string }[];
+    return {
+      _id: p._id,
+      speed: `${p.speed} ${p.speedUnit}`,
+      price: cheapest,
+      // Only plans that actually have OTT apps attached get an ott object.
+      // Plain internet-only plans get null, so the OTT line/popup never shows for them.
+      ott: p.ottList && p.ottList.length > 0 ? p.ottList[0] : null,
+      popular: p.mostPopular,
+      features: bullets.map((b) => b.text),
+    };
+  });
+}
+
+export function SpeedHighlight({
+  plans: cmsPlans,
+  categoryName,
+  tag,
+  title,
+  description,
+  topTagline,
+  bottomTagline,
+}: SpeedHighlightProps = {}) {
+  const [ottPopup, setOttPopup] = useState<{ name: string; image: string } | null>(null);
+  const { openPlanRequest } = usePlanRequest();
+  const displayPlans: DisplayPlan[] = toDisplayPlans(cmsPlans) || [];
+  const eyebrow = categoryName || tag || "Internet + OTT";
 
   return (
     <section
@@ -170,7 +111,7 @@ export function SpeedHighlight() {
               marginBottom: 14,
             }}
           >
-            Internet + OTT Plans
+            {eyebrow}
           </p>
           <h2
             style={{
@@ -182,11 +123,7 @@ export function SpeedHighlight() {
               color: "#FFFFFF",
             }}
           >
-            FIBER SPEED{" "}
-            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>
-              +
-            </span>{" "}
-            OTT BUNDLE
+            {title || "FIBER SPEED + OTT BUNDLE"}
           </h2>
           <div
             style={{
@@ -211,7 +148,7 @@ export function SpeedHighlight() {
               lineHeight: 1.8,
             }}
           >
-            High-speed unlimited fiber internet bundled with your favourite OTT streaming apps — all in one plan.
+            {description || "High-speed unlimited fiber internet bundled with your favourite OTT streaming apps — all in one plan."}
           </p>
         </div>
 
@@ -237,11 +174,16 @@ export function SpeedHighlight() {
               color: "#becada",
             }}
           >
-            6+1 or 12+2 months offer available. Router &amp; Installation free on 6/12 month plans. Non-refundable installation: ₹1500 for monthly plans. GST @18% extra.
+            {topTagline || "6+1 or 12+2 months offer available. Router & Installation free on 6/12 month plans. Non-refundable installation: ₹1500 for monthly plans. GST @18% extra."}
           </span>
         </div>
 
         {/* Plan Cards */}
+        {displayPlans.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#becada", fontFamily: "'DM Sans', sans-serif", fontSize: 14 }}>
+            Plans will appear here once added from the admin panel.
+          </p>
+        ) : (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div
             style={{
@@ -252,7 +194,7 @@ export function SpeedHighlight() {
               maxWidth: 1320,
             }}
           >
-            {ottPlans.map((plan, i) => (
+            {displayPlans.map((plan, i) => (
               <div
                 key={i}
                 style={{
@@ -321,34 +263,37 @@ export function SpeedHighlight() {
                   {plan.speed}
                 </div>
 
-                {/* OTT count — clickable to open popup */}
-                <button
-                  onClick={() => setOttPopupIndex(i)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: 0,
-                    display: "block",
-                    marginBottom: 16,
-                  }}
-                  title="Click to see OTT apps"
-                >
-                  <span
+                {/* OTT app name — only shown for plans that actually bundle an OTT app; clickable to open popup */}
+                {plan.ott && (
+                  <button
+                    onClick={() => setOttPopup(plan.ott)}
                     style={{
-                      fontFamily: "'Rajdhani', sans-serif",
-                      fontWeight: 700,
-                      fontSize: 14,
-                      color: "#ff0000",
-                      letterSpacing: 1,
-                      textDecoration: "underline",
-                      textUnderlineOffset: 3,
-                      textDecorationStyle: "dotted",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: 0,
+                      display: "block",
+                      marginBottom: 16,
+                      textAlign: "left",
                     }}
+                    title="Click to see OTT app"
                   >
-                    {plan.otts} OTT Apps 🎬
-                  </span>
-                </button>
+                    <span
+                      style={{
+                        fontFamily: "'Rajdhani', sans-serif",
+                        fontWeight: 700,
+                        fontSize: 14,
+                        color: "#ff0000",
+                        letterSpacing: 1,
+                        textDecoration: "underline",
+                        textUnderlineOffset: 3,
+                        textDecorationStyle: "dotted",
+                      }}
+                    >
+                      {plan.ott.name}
+                    </span>
+                  </button>
+                )}
 
                 {/* Price */}
                 <div
@@ -418,7 +363,7 @@ export function SpeedHighlight() {
                         lineHeight: 1.5,
                       }}
                     >
-                      <CheckCircle
+                      <CircleCheck
                         size={14}
                         color="#CC0000"
                         style={{ marginTop: 2, flexShrink: 0 }}
@@ -429,10 +374,11 @@ export function SpeedHighlight() {
                 </ul>
 
                 {/* CTA */}
-                <Link
-                  href="/contact"
+                <button
+                  onClick={() => openPlanRequest(plan._id)}
                   style={{
                     display: "block",
+                    width: "100%",
                     textAlign: "center",
                     background: "#CC0000",
                     color: "#fff",
@@ -442,19 +388,20 @@ export function SpeedHighlight() {
                     fontSize: 13,
                     letterSpacing: 1.5,
                     textTransform: "uppercase",
-                    textDecoration: "none",
                     padding: "12px 20px",
                     borderRadius: 10,
                     transition: "all 0.2s",
                     boxShadow: plan.popular ? "0 6px 20px rgba(204,0,0,0.4)" : "none",
+                    cursor: "pointer",
                   }}
                 >
                   Get This Plan
-                </Link>
+                </button>
               </div>
             ))}
           </div>
         </div>
+        )}
         {/* View all plans link */}
         <div style={{ textAlign: "center", marginTop: 48 }}>
           <Link
@@ -483,10 +430,29 @@ export function SpeedHighlight() {
             </svg>
           </Link>
         </div>
+
+        {/* Bottom tagline — mirrors the Plans page footnote */}
+        <p
+          style={{
+            textAlign: "center",
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: 12,
+            color: "#8b9ab0",
+            marginTop: 28,
+            maxWidth: 760,
+            marginLeft: "auto",
+            marginRight: "auto",
+            lineHeight: 1.7,
+          }}
+        >
+          *{" "}
+          {bottomTagline ||
+            "All prices are exclusive of GST @18%. Non-refundable installation charges: ₹1500 (for monthly plans). For 6/12 month plans, router & installation charges free — confirm at time of booking."}
+        </p>
       </div>
 
-      {/* OTT Popup Modal */}
-      {ottPopupIndex !== null && (
+      {/* OTT Apps Image Popup — matches the /plans page popup design */}
+      {ottPopup && (
         <div
           style={{
             position: "fixed",
@@ -499,7 +465,7 @@ export function SpeedHighlight() {
             padding: 24,
             backdropFilter: "blur(6px)",
           }}
-          onClick={() => setOttPopupIndex(null)}
+          onClick={() => setOttPopup(null)}
         >
           <div
             style={{
@@ -512,9 +478,8 @@ export function SpeedHighlight() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button — fixed: was calling stopPropagation instead of closing */}
             <button
-              onClick={() => setOttPopupIndex(null)}
+              onClick={() => setOttPopup(null)}
               style={{
                 position: "absolute",
                 top: 16,
@@ -535,26 +500,17 @@ export function SpeedHighlight() {
               <X size={18} />
             </button>
 
-            {/* Image — uses per-plan ottImage filename */}
-            <img
-              src={`/images/${ottPlans[ottPopupIndex].ottImage}`}
-              alt="OTT Apps included"
-              style={{
-                width: "100%",
-                height: "auto",
-                display: "block",
-                objectFit: "contain",
-              }}
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = "none";
-                const parent = (e.currentTarget as HTMLImageElement).parentElement;
-                if (parent) {
-                  parent.style.background = "#14213D";
-                  parent.style.padding = "60px 40px";
-                  parent.innerHTML = `<div style="text-align:center;color:#fff;font-family:'Rajdhani',sans-serif;font-size:20px;">Image not found.</div>`;
-                }
-              }}
-            />
+            {ottPopup.image ? (
+              <img
+                src={ottPopup.image}
+                alt={ottPopup.name}
+                style={{ width: "100%", height: "auto", display: "block", objectFit: "contain" }}
+              />
+            ) : (
+              <div style={{ background: "#14213D", padding: "60px 40px", textAlign: "center" }}>
+                <p style={{ color: "#fff", fontFamily: "'Rajdhani', sans-serif", fontSize: 20, margin: 0 }}>{ottPopup.name}</p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -604,18 +560,29 @@ const whyIcons: Record<string, JSX.Element> = {
   ),
 };
 
-const whyItems = [
-  { img: "/images/why1.jpeg", iconKey: "lightning", title: "Lightning Fast Speeds", desc: "True fiber-optic infrastructure with symmetric upload and download speeds — no throttling, no fair usage caps." },
-  { img: "/images/why2.jpeg", iconKey: "shield", title: "99.9% Uptime SLA", desc: "Our redundant network architecture and 24/7 NOC monitoring guarantee near-zero downtime for homes and businesses." },
-  { img: "/images/why4.jpeg", iconKey: "film", title: "21+ OTT Platforms", desc: "Disney+ Hotstar, Sony LIV, ZEE5, Aha, Sun NXT, Amazon Prime and more — bundled at no extra subscription cost." },
-  { img: "/images/why5.png", iconKey: "headset", title: "24/7 Expert Support", desc: "Our local Vizag-based support team is available round the clock via phone, WhatsApp, and in-person visits." },
-  { img: "/images/why6.jpeg", iconKey: "globe", title: "State-wide coverage", desc: "50+ zones across Visakhapatnam covered with our fiber backbone — expanding every quarter to new areas." },
-  { img: "/images/why3.jpeg", iconKey: "tv", title: "Home Connection", desc: "Fast fiber internet for your home with free installation and same-day activation. Symmetric speeds, no throttling, no hidden charges." },
-  { img: "/images/why7.jpeg", iconKey: "lightning", title: "Business Connection", desc: "Dedicated leased lines, static IPs, and SLA-backed plans tailored for businesses. Priority support and guaranteed uptime around the clock." },
-  { img: "/images/why8.png", iconKey: "shield", title: "Bulk / Apartments", desc: "Special group packages for apartments, hostels, and commercial complexes. One connection, whole building — managed effortlessly." },
-];
+export interface WhyChooseCardItem {
+  title: string;
+  description: string;
+  icon: string;
+  image?: string;
+}
 
-export function WhyVBC() {
+interface WhyVBCProps {
+  items?: WhyChooseCardItem[];
+  tag?: string;
+  title?: string;
+  description?: string;
+}
+
+export function WhyVBC({ items, tag, title, description }: WhyVBCProps = {}) {
+  const cards = (items || []).map((item) => ({
+    img: item.image || "",
+    iconKey: "",
+    title: item.title,
+    desc: item.description,
+    icon: item.icon,
+  }));
+
   return (
     <section style={{ background: "#14213D", padding: "110px 24px", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", top: -120, right: -120, width: 500, height: 500, background: "radial-gradient(circle, rgba(204,0,0,0.09) 0%, transparent 70%)", borderRadius: "50%", zIndex: 0 }} />
@@ -629,15 +596,13 @@ export function WhyVBC() {
             fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
             fontSize: 22, letterSpacing: 4, textTransform: "uppercase",
             color: "#CC0000", marginBottom: 14,
-          }}>Why Choose Us</p>
+          }}>{tag || "Why Choose Us"}</p>
           <h2 style={{
             fontFamily: "'Bebas Neue', cursive",
             fontSize: "clamp(52px, 7vw, 88px)",
             letterSpacing: 2, lineHeight: 0.95, marginBottom: 24, color: "#FFFFFF",
           }}>
-            THE{" "}
-            <span style={{ WebkitTextStroke: "2px #CC0000", color: "transparent" }}>VBC</span>
-            {" "}DIFFERENCE
+            {title || "THE VBC DIFFERENCE"}
           </h2>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, transparent, #CC0000)" }} />
@@ -645,13 +610,18 @@ export function WhyVBC() {
             <div style={{ height: 1, width: 60, background: "linear-gradient(90deg, #CC0000, transparent)" }} />
           </div>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: "#becada", maxWidth: 520, margin: "20px auto 0", lineHeight: 1.8 }}>
-            14+ years of delivering Vizag&apos;s most trusted fiber broadband experience.
+            {description || "14+ years of delivering Vizag's most trusted fiber broadband experience."}
           </p>
         </div>
 
         {/* Cards grid */}
+        {cards.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#becada", fontFamily: "'DM Sans', sans-serif", fontSize: 14 }}>
+            Highlight cards will appear here once added from the admin panel.
+          </p>
+        ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 26 }}>
-          {whyItems.map((item, i) => (
+          {cards.map((item, i) => (
             <div
               key={i}
               style={{
@@ -669,10 +639,12 @@ export function WhyVBC() {
                 (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
               }}
             >
-              <img src={item.img} alt="" aria-hidden="true"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.80 }}
-                onError={e => ((e.currentTarget as HTMLImageElement).style.display = "none")}
-              />
+              {item.img ? (
+                <img src={item.img} alt="" aria-hidden="true"
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.80 }}
+                  onError={e => ((e.currentTarget as HTMLImageElement).style.display = "none")}
+                />
+              ) : null}
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(46, 56, 78, 0.68) 0%, rgba(8, 14, 28, 0.59) 100%)" }} />
 
               <div style={{
@@ -687,7 +659,13 @@ export function WhyVBC() {
                   boxShadow: "0 8px 24px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)",
                   marginBottom: 24,
                 }}>
-                  {whyIcons[item.iconKey]}
+                  {item.iconKey ? (
+                    whyIcons[item.iconKey]
+                  ) : (
+                    <span style={{ color: "#14213D" }}>
+                      <AppIcon name={item.icon} size={32} />
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ width: 36, height: 3, background: "linear-gradient(90deg, #CC0000, #E43B2C)", borderRadius: 2, marginBottom: 18 }} />
@@ -697,12 +675,14 @@ export function WhyVBC() {
                   letterSpacing: 1, textTransform: "uppercase", color: "#F0F4F8", marginBottom: 14,
                 }}>{item.title}</h3>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#dee8ff", lineHeight: 1.8 }}>{item.desc}</p>
-
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, transparent, #CC0000, transparent)" }} />
               </div>
+
+              {/* Bottom accent — pinned to the card's actual bottom edge (sibling of content, not nested inside it) so short descriptions never leave it floating mid-card */}
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, transparent, #CC0000, transparent)" }} />
             </div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

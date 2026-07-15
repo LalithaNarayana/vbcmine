@@ -1,0 +1,615 @@
+/*
+ * Admin panel theme.
+ * Imported ONLY inside the admin route group (protected layout + admin
+ * login page), so none of this leaks into the public marketing site.
+ * Reuses the same brand palette as src/styles/theme.css but adds a
+ * dedicated set of --admin-* tokens and component classes for a more
+ * polished, "product dashboard" look.
+ */
+
+:root {
+  --brand-red: #cc0000;
+  --brand-red-dark: #880000;
+  --brand-red-bright: #e43b2c;
+  --brand-dark: #152238;
+  --brand-black: #0d0d0d;
+
+  --admin-bg: #f3f5f9;
+  --admin-surface: #ffffff;
+  --admin-surface-muted: #f8fafc;
+  --admin-border: #e6e9f0;
+  --admin-text: #152238;
+  --admin-text-muted: #667085;
+  --admin-sidebar-from: #152238;
+  --admin-sidebar-to: #0d1524;
+  --admin-shadow: 0 10px 30px rgba(21, 34, 56, 0.06);
+  --admin-shadow-lg: 0 20px 50px rgba(21, 34, 56, 0.14);
+  --admin-radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: #152238;
+  font-family: "DM Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+.badge-red {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--brand-red);
+  background: rgba(204, 0, 0, 0.08);
+  border: 1px solid rgba(204, 0, 0, 0.25);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+::selection {
+  background: var(--brand-red);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------ */
+/* Shell                                                               */
+/* ------------------------------------------------------------------ */
+
+.admin-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(204, 0, 0, 0.05), transparent 32%),
+    var(--admin-bg);
+  font-family: "DM Sans", sans-serif;
+}
+
+.admin-shell ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.admin-shell ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-shell ::-webkit-scrollbar-thumb {
+  background: rgba(204, 0, 0, 0.25);
+  border-radius: 999px;
+}
+.admin-shell ::-webkit-scrollbar-thumb:hover {
+  background: rgba(204, 0, 0, 0.45);
+}
+
+/* ------------------------------------------------------------------ */
+/* Sidebar                                                             */
+/* ------------------------------------------------------------------ */
+
+.admin-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, var(--admin-sidebar-from) 0%, var(--admin-sidebar-to) 100%);
+  color: #ffffff;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  transition: width 0.2s ease;
+}
+
+.admin-sidebar.collapsed {
+  width: 76px;
+}
+
+.admin-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-brand {
+  padding: 22px 0;
+  justify-content: center;
+}
+
+.admin-sidebar-brand-mark {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-brand-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-sidebar-brand-text {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.admin-sidebar-brand-sub {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  opacity: 0.7;
+}
+
+.admin-sidebar-collapse-btn {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--brand-red);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  border: 2px solid var(--admin-sidebar-to);
+  flex-shrink: 0;
+}
+
+.admin-sidebar.collapsed .admin-sidebar-collapse-btn {
+  position: static;
+  transform: none;
+  margin-left: 0;
+}
+
+.admin-sidebar-collapse-btn:hover {
+  background: var(--brand-red-bright);
+}
+
+.admin-nav-group {
+  padding: 6px 14px;
+}
+
+.admin-sidebar.collapsed .admin-nav-group {
+  padding: 6px 12px;
+}
+
+.admin-nav-group-label {
+  padding: 0 10px;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  opacity: 0.55;
+  margin-bottom: 6px;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  color: #ffffff;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.admin-sidebar.collapsed .admin-nav-link {
+  justify-content: center;
+  padding: 10px;
+}
+
+.admin-nav-link-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.admin-nav-link.active {
+  background: linear-gradient(135deg, var(--brand-red), var(--brand-red-bright));
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(204, 0, 0, 0.3);
+}
+
+.admin-nav-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Topbar                                                              */
+/* ------------------------------------------------------------------ */
+
+.admin-topbar {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--admin-border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.admin-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-topbar-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-dark), #2a3b5c);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.admin-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-red);
+  padding: 7px 12px;
+  border-radius: 8px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.admin-logout-btn:hover {
+  background: rgba(204, 0, 0, 0.08);
+  color: var(--brand-red-dark);
+}
+
+/* ------------------------------------------------------------------ */
+/* Page furniture                                                      */
+/* ------------------------------------------------------------------ */
+
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+}
+
+@media (max-width: 640px) {
+  .admin-main {
+    padding: 20px 16px;
+  }
+}
+
+.admin-page-title {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.2px;
+  color: var(--admin-text);
+}
+
+.admin-page-subtitle {
+  font-size: 13.5px;
+  color: var(--admin-text-muted);
+  margin-top: 6px;
+}
+
+.admin-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  box-shadow: var(--admin-shadow);
+}
+
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-card-title {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.2px;
+  color: var(--admin-text);
+  margin: 0;
+}
+
+.admin-card-body {
+  padding: 24px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Buttons                                                             */
+/* ------------------------------------------------------------------ */
+
+.admin-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand-red), var(--brand-red-bright));
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+  box-shadow: 0 6px 16px rgba(204, 0, 0, 0.25);
+}
+.admin-btn-primary:hover {
+  box-shadow: 0 10px 24px rgba(204, 0, 0, 0.35);
+  transform: translateY(-1px);
+}
+.admin-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.admin-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 10px;
+  background: var(--admin-surface);
+  color: var(--admin-text);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border: 1px solid var(--admin-border);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.admin-btn-secondary:hover {
+  background: var(--admin-surface-muted);
+  border-color: #d5dae3;
+}
+
+.admin-icon-btn {
+  color: #98a2b3;
+  transition: color 0.15s ease;
+}
+.admin-icon-btn:hover {
+  color: var(--admin-text);
+}
+.admin-icon-btn-danger:hover {
+  color: var(--brand-red);
+}
+
+/* ------------------------------------------------------------------ */
+/* Forms                                                               */
+/* ------------------------------------------------------------------ */
+
+.admin-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #344054;
+  margin-bottom: 8px;
+}
+
+.admin-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface);
+  padding: 9px 13px;
+  font-size: 13.5px;
+  color: var(--admin-text);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.admin-input:focus {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.12);
+}
+.admin-input::placeholder {
+  color: #a3aab8;
+}
+
+textarea.admin-input {
+  resize: vertical;
+}
+
+.admin-alert-error {
+  font-size: 13px;
+  color: var(--brand-red-dark);
+  background: rgba(204, 0, 0, 0.06);
+  border: 1px solid rgba(204, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.admin-alert-success {
+  font-size: 13px;
+  color: #067647;
+  background: #ecfdf3;
+  border: 1px solid #abefc6;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Tables                                                              */
+/* ------------------------------------------------------------------ */
+
+.admin-table thead tr {
+  background: var(--admin-surface-muted);
+}
+.admin-table th {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #8a93a3;
+}
+.admin-table tbody tr {
+  transition: background 0.15s ease;
+}
+.admin-table tbody tr:hover {
+  background: rgba(204, 0, 0, 0.025);
+}
+
+/* ------------------------------------------------------------------ */
+/* CKEditor theming — matches the brand palette                       */
+/* ------------------------------------------------------------------ */
+
+.admin-ckeditor-wrap .ck.ck-editor {
+  --ck-color-base-border: var(--admin-border);
+  --ck-border-radius: 10px;
+}
+
+.admin-ckeditor-wrap .ck.ck-toolbar {
+  background: var(--admin-surface-muted) !important;
+  border-color: var(--admin-border) !important;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.admin-ckeditor-wrap .ck.ck-content {
+  min-height: var(--ck-min-height, 160px);
+  font-family: "DM Sans", sans-serif;
+  font-size: 13.5px;
+  padding-left: 13px !important;
+  padding-right: 13px !important;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.admin-ckeditor-wrap .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
+  border-color: var(--brand-red) !important;
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.12) !important;
+}
+
+.admin-ckeditor-wrap .ck.ck-button.ck-on,
+.admin-ckeditor-wrap .ck.ck-button:not(.ck-disabled):hover {
+  background: rgba(204, 0, 0, 0.1) !important;
+  color: var(--brand-red-dark) !important;
+}
+
+.admin-ckeditor-wrap .ck.ck-icon {
+  color: inherit;
+}
+
+/* ------------------------------------------------------------------ */
+/* Login page                                                          */
+/* ------------------------------------------------------------------ */
+
+.admin-login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 20% 20%, rgba(204, 0, 0, 0.14), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(21, 34, 56, 0.5), transparent 45%),
+    linear-gradient(135deg, var(--brand-black) 0%, var(--brand-dark) 55%, #1b2c4a 100%);
+}
+
+.admin-login-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(60deg, rgba(204, 0, 0, 0.05) 25%, transparent 25%),
+    linear-gradient(-60deg, rgba(204, 0, 0, 0.05) 25%, transparent 25%),
+    linear-gradient(60deg, transparent 75%, rgba(204, 0, 0, 0.05) 75%),
+    linear-gradient(-60deg, transparent 75%, rgba(204, 0, 0, 0.05) 75%);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+.admin-login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 18px;
+  padding: 36px 32px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-login-mark {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0 auto 2px;
+}
+
+.admin-login-title {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--brand-dark);
+  text-align: center;
+}
+
+.admin-login-subtitle {
+  font-size: 13px;
+  color: var(--admin-text-muted);
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 24px;
+}
