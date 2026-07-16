@@ -11,17 +11,40 @@ interface SalesPlan {
   speedUnit: string;
 }
 
+interface SalesPayment {
+  _id: string;
+  totalAmount: number;
+  status: "created" | "success" | "failed";
+}
+
 interface SalesRequest {
   _id: string;
   name: string;
   mobile: string;
+  city: string;
   address: string;
   landmark: string;
   plan: SalesPlan | null;
-  status: "pending" | "assigned";
+  status: "pending" | "payment_pending" | "payment_done" | "assigned";
+  payment: SalesPayment | null;
   accountId: string | null;
   createdAt: string;
 }
+
+function formatRequestedOn(iso: string): { date: string; time: string } {
+  const d = new Date(iso);
+  return {
+    date: d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+    time: d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
+  };
+}
+
+const STATUS_STYLES: Record<SalesRequest["status"], { label: string; bg: string; color: string }> = {
+  pending: { label: "Pending Review", bg: "#fff4e5", color: "#b54708" },
+  payment_pending: { label: "Payment Sent", bg: "#eff8ff", color: "#175cd3" },
+  payment_done: { label: "Paid — Ready to Assign", bg: "#f4f3ff", color: "#5925dc" },
+  assigned: { label: "Assigned", bg: "#ecfdf3", color: "#067647" },
+};
 
 export default function AdminSalesPage() {
   const [items, setItems] = useState<SalesRequest[]>([]);
@@ -32,6 +55,8 @@ export default function AdminSalesPage() {
   const [error, setError] = useState<string | null>(null);
   const [ispStatus, setIspStatus] = useState<Record<string, "active" | "inactive">>({});
   const [ispBusy, setIspBusy] = useState<string | null>(null);
+  const [sendingLinkFor, setSendingLinkFor] = useState<string | null>(null);
+  const [linkError, setLinkError] = useState<Record<string, string>>({});
 
   async function load() {
     setLoading(true);
@@ -86,6 +111,25 @@ export default function AdminSalesPage() {
     load();
   }, []);
 
+  async function handleSendPaymentLink(item: SalesRequest) {
+    if (sendingLinkFor) return;
+    setSendingLinkFor(item._id);
+    setLinkError((prev) => ({ ...prev, [item._id]: "" }));
+    try {
+      const res = await fetch(`/api/connection-requests/${item._id}/send-payment-link`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLinkError((prev) => ({ ...prev, [item._id]: data.error || "Failed to send payment link." }));
+        return;
+      }
+      await load();
+    } finally {
+      setSendingLinkFor(null);
+    }
+  }
+
   function openAssign(item: SalesRequest) {
     setAssigning(item);
     setAccountId(item.accountId || "");
@@ -120,8 +164,9 @@ export default function AdminSalesPage() {
       <div className="mb-8">
         <h1 className="admin-page-title">Sales — Connection Requests</h1>
         <p className="admin-page-subtitle">
-          New connection requests submitted from the website. Assign an Account ID
-          to activate a customer&apos;s dashboard.
+          New connection requests submitted from the website. Verify feasibility and send a
+          payment link first — once the customer pays, assign an Account ID to activate their
+          dashboard.
         </p>
       </div>
 
@@ -140,11 +185,9 @@ export default function AdminSalesPage() {
             <table className="admin-table w-full text-left" style={{ borderCollapse: "collapse" }}>
               <thead>
                 <tr>
-                  <th className="px-3 py-2">Customer</th>
-                  <th className="px-3 py-2">Mobile</th>
+                  <th className="px-3 py-2">Customer Details</th>
                   <th className="px-3 py-2">Plan</th>
-                  <th className="px-3 py-2">Address</th>
-                  <th className="px-3 py-2">Landmark</th>
+                  <th className="px-3 py-2">Requested On</th>
                   <th className="px-3 py-2">Status</th>
                   <th className="px-3 py-2">Account ID</th>
                   <th className="px-3 py-2">Live Status</th>
@@ -152,17 +195,31 @@ export default function AdminSalesPage() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {items.map((item) => {
+                  const requestedOn = formatRequestedOn(item.createdAt);
+                  return (
                   <tr key={item._id} className="border-t border-gray-100">
-                    <td className="px-3 py-3 font-medium text-gray-900">{item.name}</td>
-                    <td className="px-3 py-3">{item.mobile}</td>
+                    <td className="px-3 py-3" style={{ minWidth: "220px", maxWidth: "280px" }}>
+                      <div className="font-medium text-gray-900">{item.name}</div>
+                      <div style={{ fontSize: "12px", color: "#667085", marginTop: "2px" }}>{item.mobile}</div>
+                      {item.city && (
+                        <div style={{ fontSize: "12px", color: "#B42318", fontWeight: 600, marginTop: "4px" }}>
+                          {item.city}
+                        </div>
+                      )}
+                      <div style={{ fontSize: "12px", color: "#667085", marginTop: "4px", lineHeight: 1.4 }}>
+                        {item.address}
+                        {item.landmark && (
+                          <span style={{ color: "#98a2b3" }}> · near {item.landmark}</span>
+                        )}
+                      </div>                    </td>
                     <td className="px-3 py-3">
                       {item.plan ? `${item.plan.name} (${item.plan.speed} ${item.plan.speedUnit})` : "—"}
                     </td>
-                    <td className="px-3 py-3 max-w-[220px]">
-                      <span className="line-clamp-2 text-gray-600">{item.address}</span>
+                    <td className="px-3 py-3" style={{ whiteSpace: "nowrap" }}>
+                      <div style={{ color: "#344054", fontWeight: 500 }}>{requestedOn.date}</div>
+                      <div style={{ fontSize: "12px", color: "#98a2b3" }}>{requestedOn.time}</div>
                     </td>
-                    <td className="px-3 py-3">{item.landmark}</td>
                     <td className="px-3 py-3">
                       <span
                         style={{
@@ -173,12 +230,17 @@ export default function AdminSalesPage() {
                           fontWeight: 600,
                           letterSpacing: "0.5px",
                           textTransform: "uppercase",
-                          background: item.status === "assigned" ? "#ecfdf3" : "#fff4e5",
-                          color: item.status === "assigned" ? "#067647" : "#b54708",
+                          background: STATUS_STYLES[item.status].bg,
+                          color: STATUS_STYLES[item.status].color,
                         }}
                       >
-                        {item.status}
+                        {STATUS_STYLES[item.status].label}
                       </span>
+                      {item.payment && item.status === "payment_pending" && (
+                        <div style={{ fontSize: "11px", color: "#98a2b3", marginTop: "4px" }}>
+                          ₹{item.payment.totalAmount.toLocaleString("en-IN")} due
+                        </div>
+                      )}
                     </td>
                     <td className="px-3 py-3">{item.accountId || "—"}</td>
                     <td className="px-3 py-3">
@@ -208,13 +270,28 @@ export default function AdminSalesPage() {
                     </td>
                     <td className="px-3 py-3">
                       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                        <button
-                          onClick={() => openAssign(item)}
-                          className="admin-btn-secondary"
-                          style={{ whiteSpace: "nowrap" }}
-                        >
-                          {item.status === "assigned" ? "Update ID" : "Assign Account ID"}
-                        </button>
+                        {item.status === "pending" && (
+                          <button
+                            onClick={() => handleSendPaymentLink(item)}
+                            disabled={sendingLinkFor === item._id}
+                            className="admin-btn-secondary"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {sendingLinkFor === item._id ? "Sending…" : "Verify & Send Payment Link"}
+                          </button>
+                        )}
+                        {item.status === "payment_pending" && (
+                          <span style={{ color: "#98a2b3", fontSize: "12px" }}>Awaiting customer payment</span>
+                        )}
+                        {(item.status === "payment_done" || item.status === "assigned") && (
+                          <button
+                            onClick={() => openAssign(item)}
+                            className="admin-btn-secondary"
+                            style={{ whiteSpace: "nowrap" }}
+                          >
+                            {item.status === "assigned" ? "Update ID" : "Assign Account ID"}
+                          </button>
+                        )}
                         {item.status === "assigned" && item.accountId && (
                           <button
                             onClick={() => handleIspToggle(item)}
@@ -231,9 +308,13 @@ export default function AdminSalesPage() {
                           </button>
                         )}
                       </div>
+                      {linkError[item._id] && (
+                        <div style={{ color: "#B42318", fontSize: "11px", marginTop: "6px" }}>{linkError[item._id]}</div>
+                      )}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}

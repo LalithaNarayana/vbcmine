@@ -6,10 +6,13 @@ import { Bell, User, LogOut, Wifi, Loader2 } from "lucide-react";
 import ActivePlanCard from "@/components/dashboard/ActivePlanCard";
 import RenewalAlert from "@/components/dashboard/RenewalAlert";
 import TransactionTable from "@/components/dashboard/TransactionTable";
+import SubscriptionHistoryTimeline from "@/components/dashboard/SubscriptionHistoryTimeline";
 import QuickActions from "@/components/dashboard/QuickActions";
 import IspStatusCard from "@/components/dashboard/IspStatusCard";
 import NotificationsModal, { NotificationItem } from "@/components/dashboard/NotificationsModal";
+import ConnectionPaymentModal from "@/components/dashboard/ConnectionPaymentModal";
 import { usePlanRequest } from "@/components/plans/PlanRequestProvider";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
 
 interface SessionUser {
   id: string;
@@ -38,6 +41,7 @@ interface Transaction {
 
 interface ConnectionStatus {
   hasConnection: boolean;
+  requestStatus: "pending" | "payment_pending" | "payment_done" | "assigned" | null;
   plan: ConnectionStatusPlan | null;
   expiresAt: string | null;
   daysLeft: number | null;
@@ -52,6 +56,15 @@ interface IspLiveState {
   loading: boolean;
 }
 
+interface SubscriptionHistoryEntry {
+  _id: string;
+  oldPlan: { name: string; speed: number; speedUnit: string } | null;
+  newPlan: { name: string; speed: number; speedUnit: string };
+  reason: "new-connection" | "renewal" | "upgrade" | "downgrade" | "admin-change";
+  note: string;
+  createdAt: string;
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-IN", {
     day: "2-digit",
@@ -63,6 +76,7 @@ function formatDate(iso: string): string {
 export default function DashboardPage() {
   const router = useRouter();
   const { openPlanRequest } = usePlanRequest();
+  const { logout: sessionLogout } = useUserSession();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<SessionUser | null>(null);
   const [status, setStatus] = useState<ConnectionStatus | null>(null);
@@ -75,6 +89,36 @@ export default function DashboardPage() {
     loading: false,
   });
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [subscriptionHistory, setSubscriptionHistory] = useState<SubscriptionHistoryEntry[]>([]);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+
+  async function loadConnectionStatus() {
+    const res = await fetch("/api/user/connection-status");
+    if (res.ok) setStatus(await res.json());
+  }
+
+  async function loadNotifications() {
+    const res = await fetch("/api/notifications");
+    if (res.ok) {
+      const data = await res.json();
+      setNotifications(data.notifications || []);
+      setUnreadCount(data.unreadCount || 0);
+    }
+  }
+
+  async function handleMarkRead(id: string) {
+    setNotifications((prev) => prev.map((n) => (n._id === id ? { ...n, read: true } : n)));
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+    await fetch(`/api/notifications/${id}`, { method: "PATCH" });
+  }
+
+  async function handleMarkAllRead() {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setUnreadCount(0);
+    await fetch("/api/notifications/mark-all-read", { method: "POST" });
+  }
 
   useEffect(() => {
     (async () => {
@@ -92,6 +136,11 @@ export default function DashboardPage() {
         if (statusRes.ok) {
           setStatus(await statusRes.json());
         }
+        loadNotifications();
+        fetch("/api/subscription-history")
+          .then((res) => (res.ok ? res.json() : []))
+          .then((data: SubscriptionHistoryEntry[]) => setSubscriptionHistory(data))
+          .catch(() => setSubscriptionHistory([]));
       } finally {
         setLoading(false);
       }
@@ -124,49 +173,11 @@ export default function DashboardPage() {
     };
   }, [status?.hasConnection]);
 
-  const notifications: NotificationItem[] = (() => {
-    if (!status?.hasConnection) return [];
-    const items: NotificationItem[] = [];
-    if (isp.status) {
-      items.push({
-        id: "isp-status",
-        type: isp.status === "active" ? "success" : "warning",
-        title: isp.status === "active" ? "Connection is online" : "Connection is offline",
-        message:
-          isp.status === "active"
-            ? "Your internet connection is active and running normally."
-            : "Your connection is currently inactive. Contact support if this is unexpected.",
-        time: isp.lastSynced
-          ? new Date(isp.lastSynced).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
-          : "Just now",
-      });
-    }
-    if (status.daysLeft !== null && status.daysLeft <= 5) {
-      items.push({
-        id: "renewal-due",
-        type: "warning",
-        title: "Plan renewal due soon",
-        message: `Your plan expires in ${status.daysLeft} day${status.daysLeft === 1 ? "" : "s"}. Renew now to avoid interruption.`,
-        time: status.expiresAt ? formatDate(status.expiresAt) : "",
-      });
-    }
-    for (const p of status.payments.slice(0, 3)) {
-      items.push({
-        id: `payment-${p.id}`,
-        type: "payment",
-        title: p.status === "success" ? "Payment received" : p.status === "failed" ? "Payment failed" : "Payment pending",
-        message: `${p.description} — ₹${p.amount.toLocaleString("en-IN")}`,
-        time: p.date,
-      });
-    }
-    return items;
-  })();
-
   async function handleLogout() {
     if (loggingOut) return;
     setLoggingOut(true);
     try {
-      await fetch("/api/auth/user-logout", { method: "POST" });
+      await sessionLogout();
     } finally {
       router.push("/");
     }
@@ -199,7 +210,7 @@ export default function DashboardPage() {
               title="Notifications"
             >
               <Bell size={20} />
-              {notifications.length > 0 && (
+              {unreadCount > 0 && (
                 <span
                   style={{
                     position: "absolute",
@@ -234,6 +245,7 @@ export default function DashboardPage() {
           <div style={{
             background: "var(--vbc-surface)",
             border: "1px solid var(--vbc-border)",
+            borderRadius: "12px",
             boxShadow: "var(--vbc-shadow)",
             padding: "48px 32px",
             textAlign: "center",
@@ -242,16 +254,32 @@ export default function DashboardPage() {
               <Wifi size={28} color="#CC0000" />
             </div>
             <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", letterSpacing: "1px", color: "var(--vbc-text)", marginBottom: "10px" }}>
-              CONNECTION NOT YET ACTIVATED
+              {status?.requestStatus === "payment_pending"
+                ? "PAYMENT REQUIRED TO PROCEED"
+                : status?.requestStatus === "payment_done"
+                ? "INSTALLATION IN PROGRESS"
+                : "CONNECTION NOT YET ACTIVATED"}
             </h2>
             <p style={{ color: "var(--vbc-muted)", fontSize: "14px", lineHeight: "1.7", maxWidth: "480px", margin: "0 auto 24px" }}>
-              {user.connectionStatus === "pending"
+              {status?.requestStatus === "payment_pending"
+                ? "We've verified your connection request. Please complete the payment below so our team can proceed with installation."
+                : status?.requestStatus === "payment_done"
+                ? "Payment received! Our team will install your router and assign your Account ID shortly — this usually only takes a short while."
+                : status?.requestStatus === "pending"
+                ? "We've received your connection request and it's being reviewed by our sales team. We'll notify you here as soon as it's verified."
+                : user.connectionStatus === "pending"
                 ? "We haven't received a connection request from this account yet, or it's still being reviewed by our sales team. Once an Account ID is assigned, your plan and billing details will appear here."
                 : "Your connection is being set up. Hang tight — this usually only takes a short while."}
             </p>
-            <button onClick={() => openPlanRequest()} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
-              Request a Connection
-            </button>
+            {status?.requestStatus === "payment_pending" ? (
+              <button onClick={() => setPaymentModalOpen(true)} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
+                Pay Now
+              </button>
+            ) : !status?.requestStatus ? (
+              <button onClick={() => openPlanRequest()} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
+                Request a Connection
+              </button>
+            ) : null}
           </div>
         ) : (
           <>
@@ -274,23 +302,63 @@ export default function DashboardPage() {
                 />
               )}
 
-              <div style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", boxShadow: "var(--vbc-shadow)", padding: "28px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                  <User size={18} color="#CC0000" />
-                  <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: 1, textTransform: "uppercase", color: "var(--vbc-muted)" }}>Account Info</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13px" }}>
+              <div
+                style={{
+                  background: "var(--vbc-surface)",
+                  border: "1px solid var(--vbc-border)",
+                  borderRadius: "12px",
+                  boxShadow: "var(--vbc-shadow)",
+                  padding: "28px",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 12,
+                    letterSpacing: 1,
+                    textTransform: "uppercase",
+                    color: "var(--vbc-muted)",
+                    display: "block",
+                    marginBottom: "18px",
+                  }}
+                >
+                  Account Info
+                </span>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    fontSize: "13px",
+                  }}
+                >
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--vbc-muted)" }}>Account ID</span>
-                    <span style={{ color: "var(--vbc-text)", fontWeight: 600 }}>{user.accountId}</span>
+                    <span style={{ color: "var(--vbc-text)", fontWeight: 600 }}>
+                      {user.accountId}
+                    </span>
                   </div>
+
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--vbc-muted)" }}>Mobile</span>
-                    <span style={{ color: "var(--vbc-text)", fontWeight: 600 }}>+91 {user.mobile}</span>
+                    <span style={{ color: "var(--vbc-text)", fontWeight: 600 }}>
+                      +91 {user.mobile}
+                    </span>
                   </div>
+
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "var(--vbc-muted)" }}>Status</span>
-                    <span style={{ color: "#067647", fontWeight: 600, textTransform: "uppercase" }}>{user.connectionStatus}</span>
+                    <span
+                      style={{
+                        color: "#067647",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {user.connectionStatus}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -308,18 +376,33 @@ export default function DashboardPage() {
               <QuickActions />
             </div>
 
-            <div style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", boxShadow: "var(--vbc-shadow)", padding: "28px" }}>
+            <div style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", borderRadius: "12px", boxShadow: "var(--vbc-shadow)", padding: "28px" }}>
               <TransactionTable transactions={status.payments} />
+            </div>
+
+            <div style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", borderRadius: "12px", boxShadow: "var(--vbc-shadow)", padding: "28px", marginTop: "28px" }}>
+              <SubscriptionHistoryTimeline history={subscriptionHistory} />
             </div>
           </>
         )}
       </div>
 
+      <ConnectionPaymentModal
+        open={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        onPaid={() => {
+          loadConnectionStatus();
+          loadNotifications();
+        }}
+      />
+
       <NotificationsModal
         open={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
         notifications={notifications}
+        onMarkRead={handleMarkRead}
+        onMarkAllRead={handleMarkAllRead}
       />
-    </div>
+    </div >
   );
 }

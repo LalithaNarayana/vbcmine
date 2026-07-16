@@ -1,7 +1,12 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { X, User, Phone, MapPin, Landmark as LandmarkIcon, CircleCheck } from "lucide-react";
+import { X, User, Phone, MapPin, Landmark as LandmarkIcon, Building2, CircleCheck } from "lucide-react";
 import type { Plan, PlanDuration } from "@/types/plan";
+
+interface SalesCityOption {
+  _id: string;
+  name: string;
+}
 
 interface SessionUser {
   id: string;
@@ -69,6 +74,8 @@ export default function PlanRequestModal({
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [planId, setPlanId] = useState("");
+  const [cities, setCities] = useState<SalesCityOption[]>([]);
+  const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [landmark, setLandmark] = useState("");
 
@@ -88,6 +95,8 @@ export default function PlanRequestModal({
     setSessionUser(null);
     setPlans([]);
     setPlanId("");
+    setCities([]);
+    setCity("");
     setAddress("");
     setLandmark("");
     setName("");
@@ -106,14 +115,17 @@ export default function PlanRequestModal({
 
     (async () => {
       try {
-        const [meRes, plansRes] = await Promise.all([
+        const [meRes, plansRes, citiesRes] = await Promise.all([
           fetch("/api/user/me"),
           fetch("/api/plans"),
+          fetch("/api/contact/cities"),
         ]);
         const meData = await meRes.json();
         const plansData: Plan[] = await plansRes.json();
+        const citiesData: SalesCityOption[] = await citiesRes.json();
         setSessionUser(meData.user || null);
         setPlans(Array.isArray(plansData) ? plansData : []);
+        setCities(Array.isArray(citiesData) ? citiesData : []);
         if (preselectedPlanId) setPlanId(preselectedPlanId);
       } catch {
         setError("Could not load plans. Please try again.");
@@ -177,6 +189,7 @@ export default function PlanRequestModal({
   const canSubmit =
     !!sessionUser &&
     !!planId &&
+    !!city &&
     address.trim().length >= 5 &&
     landmark.trim().length >= 2 &&
     !loading;
@@ -189,7 +202,7 @@ export default function PlanRequestModal({
       const res = await fetch("/api/connection-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId, address, landmark }),
+        body: JSON.stringify({ planId, city, address, landmark }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -397,6 +410,28 @@ export default function PlanRequestModal({
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>City</label>
+                      <div style={{ position: "relative" }}>
+                        <div style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#CC0000", display: "flex" }}>
+                          <Building2 size={14} />
+                        </div>
+                        <select
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          required
+                          style={{ ...inputStyle, appearance: "auto" }}
+                        >
+                          <option value="">Select your city</option>
+                          {cities.map((c) => (
+                            <option key={c._id} value={c.name}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
                     <div>

@@ -2,16 +2,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Info, Zap, User } from "lucide-react";
-
-const tabs = [
-  { label: "Home",       href: "/",       icon: Home },
-  { label: "About",      href: "/about",  icon: Info },
-  { label: "Plans",      href: "/plans",  icon: Zap  },
-  { label: "My Account", href: "/login",  icon: User },
-];
+import { useUserSession } from "@/components/auth/UserSessionProvider";
 
 export default function BottomTabBar() {
   const pathname = usePathname();
+  const { user } = useUserSession();
+
+  const tabs = [
+    { label: "Home",  href: "/",      icon: Home },
+    { label: "About", href: "/about", icon: Info },
+    { label: "Plans", href: "/plans", icon: Zap  },
+    { label: user ? "Account" : "My Account", href: user ? "/dashboard" : "/login", icon: User },
+  ];
 
   return (
     <>

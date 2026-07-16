@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Phone, Smartphone, X } from "lucide-react";
 import { navLinks } from "@/constants/nav";
 import { useEffect } from "react";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
 
 interface MobileMenuProps {
   open: boolean;
@@ -12,6 +13,9 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ open, onClose }: MobileMenuProps) {
   const pathname = usePathname();
+  const { user } = useUserSession();
+  const accountHref = user ? "/dashboard" : "/login";
+  const accountLabel = user ? "My Dashboard" : "My Account";
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -144,8 +148,8 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
             </Link>
           </div>
           <div style={{ display: "flex", gap: "10px" }}>
-            <Link href="/login" onClick={onClose} className="btn-outline" style={{ flex: 1, textAlign: "center", textDecoration: "none" }}>
-              My Account
+            <Link href={accountHref} onClick={onClose} className="btn-outline" style={{ flex: 1, textAlign: "center", textDecoration: "none" }}>
+              {accountLabel}
             </Link>
             <Link href="/plans" onClick={onClose} className="btn-primary" style={{ flex: 1, textAlign: "center", textDecoration: "none" }}>
               View Plans

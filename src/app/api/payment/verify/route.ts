@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import connectDB from "@/lib/mongodb";
 import Payment from "@/models/Payment";
+import ConnectionRequest from "@/models/ConnectionRequest";
 import { getPaymentProvider } from "@/lib/payment";
 import { requireUser } from "@/lib/userAuth";
+import { notifyUserOnce } from "@/lib/notify";
+import { logSubscriptionChange } from "@/lib/subscriptionHistory";
 
 const bodySchema = z.object({
   paymentId: z.string().min(1, "Missing payment reference."),
@@ -56,6 +59,40 @@ export async function POST(req: NextRequest) {
     payment.status = result.success ? "success" : "failed";
     payment.providerPaymentId = result.providerPaymentId;
     await payment.save();
+
+    if (result.success) {
+      if (payment.purpose === "new-connection") {
+        const linkedRequest = await ConnectionRequest.findOne({ payment: payment._id });
+        if (linkedRequest && linkedRequest.status === "payment_pending") {
+          linkedRequest.status = "payment_done";
+          await linkedRequest.save();
+        }
+
+        await notifyUserOnce(
+          payment.user,
+          "payment",
+          "Payment successful",
+          `We've received your payment of ₹${payment.totalAmount.toLocaleString("en-IN")}. Our team will now schedule the router installation and assign your Account ID shortly.`,
+          `payment:${payment._id.toString()}`
+        );
+      } else {
+        await notifyUserOnce(
+          payment.user,
+          "payment",
+          "Payment received",
+          `We've received your payment of ₹${payment.totalAmount.toLocaleString("en-IN")}. Thank you!`,
+          `payment:${payment._id.toString()}`
+        );
+
+        await logSubscriptionChange({
+          userId: payment.user,
+          oldPlanId: payment.plan,
+          newPlanId: payment.plan,
+          reason: "renewal",
+          note: `Plan renewed via online payment of ₹${payment.totalAmount.toLocaleString("en-IN")}.`,
+        });
+      }
+    }
 
     return NextResponse.json({ success: result.success, payment });
   } catch (err) {

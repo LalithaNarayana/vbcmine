@@ -8,7 +8,7 @@ interface ActivePlanCardProps {
 export default function ActivePlanCard({ plan }: ActivePlanCardProps) {
   const urgent = plan.daysLeft <= 7;
   return (
-    <div style={{ background: "linear-gradient(135deg, #14213D 0%, #0D1730 100%)", border: `1px solid ${urgent ? "rgba(204,0,0,0.6)" : "rgba(204,0,0,0.25)"}`, padding: "32px", position: "relative", overflow: "hidden" }}>
+    <div style={{ background: "linear-gradient(135deg, #14213D 0%, #0D1730 100%)", border: `1px solid ${urgent ? "rgba(204,0,0,0.6)" : "rgba(204,0,0,0.25)"}`, borderRadius: "12px", padding: "32px", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", top: 0, right: 0, width: "200px", height: "200px", background: "radial-gradient(circle at top right, rgba(204,0,0,0.16) 0%, transparent 70%)", pointerEvents: "none" }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
         <div>
@@ -47,7 +47,7 @@ export default function ActivePlanCard({ plan }: ActivePlanCardProps) {
       </div>
 
       {urgent && (
-        <div style={{ marginTop: "16px", padding: "10px 16px", background: "rgba(255,50,50,0.1)", border: "1px solid rgba(255,50,50,0.3)", fontFamily: "'Rajdhani', sans-serif", fontSize: "13px", color: "#FF3333", fontWeight: 600 }}>
+        <div style={{ marginTop: "16px", padding: "10px 16px", background: "rgba(255,50,50,0.1)", border: "1px solid rgba(255,50,50,0.3)", borderRadius: "8px", fontFamily: "'Rajdhani', sans-serif", fontSize: "13px", color: "#FF3333", fontWeight: 600 }}>
           ⚠ Your plan expires in {plan.daysLeft} days. Renew to avoid disconnection.
         </div>
       )}

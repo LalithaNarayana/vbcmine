@@ -16,6 +16,8 @@ export default function RenewalAlert({ daysLeft, planName }: RenewalAlertProps) 
       padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px",
       background: isUrgent ? "rgba(255,50,50,0.08)" : "rgba(255,180,0,0.06)",
       border: `1px solid ${isUrgent ? "rgba(255,50,50,0.3)" : "rgba(255,180,0,0.25)"}`,
+      borderLeft: `4px solid ${isUrgent ? "#FF3333" : "#FFB400"}`,
+      borderRadius: "8px",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         {isUrgent ? <AlertTriangle size={18} color="#FF3333" /> : <Bell size={18} color="#FFB400" />}
@@ -34,7 +36,7 @@ export default function RenewalAlert({ daysLeft, planName }: RenewalAlertProps) 
         color: isUrgent ? "white" : "#FFB400",
         padding: "8px 20px", fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
         fontSize: "12px", letterSpacing: "1px", textTransform: "uppercase", textDecoration: "none",
-        clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)",
+        borderRadius: "6px",
       }}>
         <RefreshCw size={13} /> Renew
       </Link>

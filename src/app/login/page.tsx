@@ -1,24 +1,37 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Phone, ArrowRight, Shield, RefreshCw } from "lucide-react";
+import { Phone, ArrowRight, Shield, RefreshCw, Loader2 } from "lucide-react";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
 
 type Step = "mobile" | "otp";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, loading: sessionLoading, refresh } = useUserSession();
   const [step, setStep] = useState<Step>("mobile");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [notRegistered, setNotRegistered] = useState(false);
   const [debugOtp, setDebugOtp] = useState(""); // shown only while mock OTP provider is active
+
+  // If the person is already logged in (e.g. they hit /login directly with
+  // a valid session cookie still set), skip straight to their dashboard
+  // instead of showing the login form again.
+  useEffect(() => {
+    if (!sessionLoading && user) {
+      router.replace(searchParams.get("next") || "/dashboard");
+    }
+  }, [sessionLoading, user, router, searchParams]);
 
   const handleSendOTP = async () => {
     if (mobile.length !== 10 || loading) return;
     setError("");
+    setNotRegistered(false);
     setLoading(true);
     try {
       const res = await fetch("/api/auth/otp/send", {
@@ -28,7 +41,11 @@ function LoginContent() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.detail ? `${data.error} (${data.detail})` : data.error || "Failed to send OTP.");
+        if (res.status === 404) {
+          setNotRegistered(true);
+        } else {
+          setError(data.detail ? `${data.error} (${data.detail})` : data.error || "Failed to send OTP.");
+        }
         return;
       }
       if (data.debugOtp) setDebugOtp(data.debugOtp);
@@ -56,7 +73,8 @@ function LoginContent() {
         setError(data.detail ? `${data.error} (${data.detail})` : data.error || "OTP verification failed.");
         return;
       }
-      router.push(searchParams.get("next") || "/dashboard");
+      await refresh();
+      window.location.href = searchParams.get("next") || "/dashboard";
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -74,6 +92,24 @@ function LoginContent() {
       next?.focus();
     }
   };
+
+  if (sessionLoading || user) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #fff7f5 0%, #ffffff 55%, #f7fafc 100%)",
+          color: "#667085",
+        }}
+      >
+        <Loader2 size={22} style={{ animation: "spin 1s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -179,12 +215,35 @@ function LoginContent() {
                   type="tel"
                   maxLength={10}
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+                  onChange={(e) => {
+                    setMobile(e.target.value.replace(/\D/g, ""));
+                    setNotRegistered(false);
+                    setError("");
+                  }}
                   placeholder="Enter 10-digit number"
                   className="vbc-input"
                   style={{ paddingLeft: "80px" }}
                 />
               </div>
+
+              {notRegistered && (
+                <div
+                  style={{
+                    background: "rgba(204,0,0,0.06)",
+                    border: "1px solid rgba(204,0,0,0.2)",
+                    borderRadius: "8px",
+                    padding: "12px 14px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <p style={{ color: "#152238", fontSize: "13px", lineHeight: "1.6" }}>
+                    No account found for this number.{" "}
+                    <Link href="/register" style={{ color: "#CC0000", fontWeight: 700, textDecoration: "none" }}>
+                      Register here
+                    </Link>
+                  </p>
+                </div>
+              )}
 
               {error && (
                 <p style={{ color: "#CC0000", fontSize: "12px", marginBottom: "12px", fontFamily: "'DM Sans', sans-serif" }}>{error}</p>

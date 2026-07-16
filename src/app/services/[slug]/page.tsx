@@ -3,8 +3,10 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import connectDB from "@/lib/mongodb";
 import BusinessService from "@/models/BusinessService";
+import SalesCity from "@/models/SalesCity";
 import { getOrCreateSettings } from "@/models/Settings";
 import AppIcon from "@/components/admin/DynamicIcon";
+import ServiceEnquireButton from "@/components/services/ServiceEnquireButton";
 
 export const dynamic = "force-dynamic";
 
@@ -17,15 +19,19 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   await connectDB();
 
-  const [service, allServices, settings] = await Promise.all([
+  const [service, allServices, settings, cityDocs] = await Promise.all([
     BusinessService.findOne({ slug }).lean(),
     BusinessService.find().sort({ order: 1, createdAt: 1 }).lean(),
     getOrCreateSettings(),
+    SalesCity.find().sort({ order: 1, createdAt: 1 }).lean(),
   ]);
 
   if (!service) {
     notFound();
   }
+
+  const serviceOptions = allServices.map((s) => ({ _id: String(s._id), name: s.name }));
+  const cityNames = cityDocs.map((c) => c.name);
 
   const phone = settings.contact1 || settings.contact2 || "";
   const email = settings.mail1 || settings.mail2 || "";
@@ -246,13 +252,11 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </>
               )}
 
-              <Link
-                href="/contact"
-                className="btn-primary"
-                style={{ display: "inline-block", textDecoration: "none" }}
-              >
-                Enquire Now
-              </Link>
+              <ServiceEnquireButton
+                serviceId={String(service._id)}
+                services={serviceOptions}
+                cities={cityNames}
+              />
             </div>
           </div>
         </div>

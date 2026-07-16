@@ -4,7 +4,7 @@ export interface IUser extends Document {
   name: string;
   mobile: string; // 10-digit, unique
   accountId: string | null; // set by admin once connection is provisioned
-  connectionStatus: "pending" | "active";
+  connectionStatus: "pending" | "active" | "inactive";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -29,7 +29,7 @@ const UserSchema = new Schema<IUser>(
 
     connectionStatus: {
       type: String,
-      enum: ["pending", "active"],
+      enum: ["pending", "active", "inactive"],
       default: "pending",
     },
   },

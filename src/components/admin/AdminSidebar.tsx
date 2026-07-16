@@ -10,8 +10,33 @@ const NAV_GROUPS = [
     label: "General",
     items: [
       { label: "Dashboard", href: "/admin" },
+      { label: "Reports & Analytics", href: "/admin/reports" },
       { label: "Settings", href: "/admin/settings" },
       { label: "Section Titles", href: "/admin/content/section-headings" },
+    ],
+  },
+  {
+    label: "Connections",
+    items: [
+      { label: "Users", href: "/admin/users" },
+      { label: "Renewals", href: "/admin/renewals" },
+      { label: "Master Settings", href: "/admin/master" },
+      { label: "Connection Requests", href: "/admin/sales" },
+    ],
+  },
+  {
+    label: "Support",
+    items: [
+      { label: "Complaints", href: "/admin/complaints" },
+      { label: "Payments", href: "/admin/payments" },
+      { label: "Send Notification", href: "/admin/notifications" },
+    ],
+  },
+  {
+    label: "Business",
+    items: [
+      { label: "Services", href: "/admin/services" },
+      { label: "Service Requests", href: "/admin/business-requests" },
     ],
   },
   {
@@ -29,17 +54,6 @@ const NAV_GROUPS = [
       { label: "Durations", href: "/admin/plans/durations" },
       { label: "Bullet Points", href: "/admin/plans/bullets" },
       { label: "Plans", href: "/admin/plans" },
-    ],
-  },
-  {
-    label: "Business",
-    items: [{ label: "Services", href: "/admin/services" }],
-  },
-  {
-    label: "Connections",
-    items: [
-      { label: "Master Settings", href: "/admin/master" },
-      { label: "Sales", href: "/admin/sales" },
     ],
   },
   {

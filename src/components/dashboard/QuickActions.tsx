@@ -3,7 +3,7 @@ import { RefreshCw, FileText, Headphones, Wifi, User, CreditCard } from "lucide-
 
 const actions = [
   { icon: <RefreshCw size={20} />, label: "Renew Plan", href: "/renew", primary: true },
-  { icon: <FileText size={20} />, label: "Raise Ticket", href: "/contact", primary: false },
+  { icon: <FileText size={20} />, label: "Raise Ticket", href: "/dashboard/complaints", primary: false },
   { icon: <Headphones size={20} />, label: "Support", href: "/contact", primary: false },
   { icon: <Wifi size={20} />, label: "Speed Test", href: "#", primary: false },
   { icon: <User size={20} />, label: "Edit Profile", href: "#", primary: false },
@@ -19,6 +19,7 @@ export default function QuickActions() {
           <Link key={i} href={a.href} style={{
             display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
             padding: "20px 12px", textDecoration: "none",
+            borderRadius: "10px",
             background: a.primary ? "rgba(204,0,0,0.06)" : "var(--vbc-surface)",
             border: a.primary ? "1px solid rgba(204,0,0,0.3)" : "1px solid var(--vbc-border)",
             boxShadow: a.primary ? "none" : "var(--vbc-shadow)",

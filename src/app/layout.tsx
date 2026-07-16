@@ -3,6 +3,7 @@ import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import PlanRequestProvider from "@/components/plans/PlanRequestProvider";
+import UserSessionProvider from "@/components/auth/UserSessionProvider";
 import connectDB from "@/lib/mongodb";
 import { getOrCreateSettings } from "@/models/Settings";
 import BusinessService from "@/models/BusinessService";
@@ -60,23 +61,25 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <PlanRequestProvider>
-          <SiteChrome
-            siteName={settings.siteName}
-            logo={settings.logo}
-            contact1={settings.contact1}
-            contact2={settings.contact2}
-            mail1={settings.mail1}
-            mail2={settings.mail2}
-            address={settings.address}
-            topBarTitle={settings.topBarTitle}
-            topBarNumber={settings.topBarNumber}
-            footerDescription={settings.footerDescription}
-            businessServices={services}
-          >
-            {children}
-          </SiteChrome>
-        </PlanRequestProvider>
+        <UserSessionProvider>
+          <PlanRequestProvider>
+            <SiteChrome
+              siteName={settings.siteName}
+              logo={settings.logo}
+              contact1={settings.contact1}
+              contact2={settings.contact2}
+              mail1={settings.mail1}
+              mail2={settings.mail2}
+              address={settings.address}
+              topBarTitle={settings.topBarTitle}
+              topBarNumber={settings.topBarNumber}
+              footerDescription={settings.footerDescription}
+              businessServices={services}
+            >
+              {children}
+            </SiteChrome>
+          </PlanRequestProvider>
+        </UserSessionProvider>
         <ScrollToTop />
       </body>
     </html>

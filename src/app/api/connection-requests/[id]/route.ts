@@ -4,6 +4,8 @@ import connectDB from "@/lib/mongodb";
 import ConnectionRequest from "@/models/ConnectionRequest";
 import User from "@/models/User";
 import { requireAdmin } from "@/lib/auth";
+import { notifyUserOnce } from "@/lib/notify";
+import { logSubscriptionChange } from "@/lib/subscriptionHistory";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -42,6 +44,18 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "Request not found." }, { status: 404 });
     }
 
+    if (connectionRequest.status !== "payment_done" && connectionRequest.status !== "assigned") {
+      return NextResponse.json(
+        {
+          error:
+            connectionRequest.status === "pending"
+              ? "Verify feasibility and send a payment link before assigning an Account ID."
+              : "Waiting for the customer to complete payment before an Account ID can be assigned.",
+        },
+        { status: 409 }
+      );
+    }
+
     const existing = await User.findOne({ accountId });
     if (existing && existing._id.toString() !== connectionRequest.user.toString()) {
       return NextResponse.json(
@@ -50,6 +64,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       );
     }
 
+    const wasAlreadyAssigned = connectionRequest.status === "assigned";
+
     connectionRequest.accountId = accountId;
     connectionRequest.status = "assigned";
     await connectionRequest.save();
@@ -57,6 +73,24 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     await User.findByIdAndUpdate(connectionRequest.user, {
       $set: { accountId, connectionStatus: "active" },
     });
+
+    if (!wasAlreadyAssigned) {
+      await logSubscriptionChange({
+        userId: connectionRequest.user,
+        oldPlanId: null,
+        newPlanId: connectionRequest.plan,
+        reason: "new-connection",
+        note: `Connection activated with Account ID ${accountId}.`,
+      });
+    }
+
+    await notifyUserOnce(
+      connectionRequest.user,
+      "activation",
+      "Plan activated",
+      `Your connection has been activated with Account ID ${accountId}. Welcome aboard!`,
+      `activation:${connectionRequest._id.toString()}:${accountId}`
+    );
 
     const populated = await ConnectionRequest.findById(id).populate({
       path: "plan",

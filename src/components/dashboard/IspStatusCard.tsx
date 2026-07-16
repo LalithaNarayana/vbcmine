@@ -20,7 +20,7 @@ export default function IspStatusCard({
   const isActive = status === "active";
 
   return (
-    <div style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", boxShadow: "var(--vbc-shadow)", padding: "28px" }}>
+    <div style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", borderRadius: "12px", boxShadow: "var(--vbc-shadow)", padding: "28px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Gauge size={18} color="#CC0000" />
@@ -69,7 +69,7 @@ export default function IspStatusCard({
               of {dataLimitGb} GB
             </span>
           </div>
-          <div style={{ height: "5px", background: "var(--vbc-gray)" }}>
+          <div style={{ height: "5px", background: "var(--vbc-gray)", borderRadius: "999px", overflow: "hidden" }}>
             <div
               style={{
                 height: "100%",

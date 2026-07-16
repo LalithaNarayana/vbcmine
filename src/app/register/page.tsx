@@ -1,11 +1,9 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CircleCheck, User, Phone } from "lucide-react";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [done, setDone] = useState(false);
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -116,7 +114,7 @@ export default function RegisterPage() {
             <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "36px", letterSpacing: "2px", color: "#152238", marginBottom: "12px" }}>WELCOME TO VBC!</h2>
             <p style={{ color: "#667085", fontSize: "14px", lineHeight: "1.7", marginBottom: "32px" }}>Your account has been created and you&apos;re logged in. Choose a plan to request your connection.</p>
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => { window.location.href = "/dashboard"; }}
               className="btn-primary"
               style={{ border: "none", cursor: "pointer" }}
             >

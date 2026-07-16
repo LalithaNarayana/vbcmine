@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Phone, Smartphone } from "lucide-react";
+import { Menu, Phone, Smartphone, User } from "lucide-react";
 import { navLinks } from "@/constants/nav";
 import MobileMenu from "@/components/layout/MobileMenu";
 import Image from "next/image";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
 
 interface NavbarProps {
   siteName?: string;
@@ -19,6 +20,9 @@ export default function Navbar({ siteName, logo, contact1, topBarTitle, topBarNu
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user } = useUserSession();
+  const accountHref = user ? "/dashboard" : "/login";
+  const accountLabel = user ? user.name?.split(" ")[0] || "My Account" : "My Account";
 
   const barTitle = topBarTitle || "👉🏻 Click here to book connection online";
   const barNumber = topBarNumber || contact1 || "(0891) 6677-123";
@@ -144,8 +148,13 @@ export default function Navbar({ siteName, logo, contact1, topBarTitle, topBarNu
                 <span style={{ display: "block", fontSize: "12px", fontWeight: 700, fontFamily: "'Rajdhani', sans-serif" }}>Coming Soon for Android</span>
               </span>
             </div>
-            <Link href="/login" className="btn-outline" style={{ textDecoration: "none", padding: "10px 20px" }}>
-              My Account
+            <Link
+              href={accountHref}
+              className="btn-outline"
+              style={{ textDecoration: "none", padding: "10px 20px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              {user && <User size={14} />}
+              {accountLabel}
             </Link>
             <Link href="/plans" className="btn-primary" style={{ textDecoration: "none", padding: "10px 22px" }}>
               Explore Plans

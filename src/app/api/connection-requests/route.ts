@@ -9,6 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 
 const createSchema = z.object({
   planId: z.string().min(1, "Please select a plan."),
+  city: z.string().trim().min(1, "Please select your city."),
   address: z.string().trim().min(5, "Please enter your full address."),
   landmark: z.string().trim().min(2, "Please enter a nearby landmark."),
 });
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const { planId, address, landmark } = parsed.data;
+    const { planId, city, address, landmark } = parsed.data;
 
     await connectDB();
 
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
       user: user._id,
       name: user.name,
       mobile: user.mobile,
+      city,
       address,
       landmark,
       plan: plan._id,
@@ -77,6 +79,7 @@ export async function GET() {
 
     const requests = await ConnectionRequest.find()
       .populate({ path: "plan", select: "name speed speedUnit" })
+      .populate({ path: "payment", select: "totalAmount status" })
       .sort({ createdAt: -1 })
       .lean();
 

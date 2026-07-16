@@ -4,6 +4,7 @@ import User from "@/models/User";
 import ConnectionRequest from "@/models/ConnectionRequest";
 import Payment from "@/models/Payment";
 import { requireUser } from "@/lib/userAuth";
+import { notifyUserOnce } from "@/lib/notify";
 
 const BILLING_CYCLE_DAYS = 30;
 
@@ -32,6 +33,10 @@ export async function GET() {
     }
 
     if (!user.accountId || user.connectionStatus !== "active") {
+      const latestRequest = await ConnectionRequest.findOne({ user: user._id })
+        .sort({ createdAt: -1 })
+        .select("status");
+
       return NextResponse.json({
         user: {
           id: user._id.toString(),
@@ -41,6 +46,7 @@ export async function GET() {
           connectionStatus: user.connectionStatus,
         },
         hasConnection: false,
+        requestStatus: latestRequest?.status || null,
         plan: null,
         expiresAt: null,
         daysLeft: null,
@@ -77,6 +83,19 @@ export async function GET() {
     const daysLeft = Math.ceil(
       (expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
     );
+
+    // Renewal-due notification — deduped per billing cycle so this doesn't
+    // re-fire on every dashboard load, only once per expiry date.
+    if (daysLeft <= 5) {
+      const cycleKey = expiresAt.toISOString().slice(0, 10);
+      await notifyUserOnce(
+        user._id,
+        "renewal",
+        "Plan renewal due soon",
+        `Your plan expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid interruption.`,
+        `renewal:${cycleKey}`
+      );
+    }
 
     const planDoc = assignedRequest?.plan as unknown as {
       _id: { toString(): string };
@@ -122,6 +141,7 @@ export async function GET() {
         connectionStatus: user.connectionStatus,
       },
       hasConnection: true,
+      requestStatus: "assigned",
       plan,
       expiresAt: expiresAt.toISOString(),
       daysLeft,

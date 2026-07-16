@@ -5,17 +5,13 @@ import User from "@/models/User";
 import ConnectionRequest from "@/models/ConnectionRequest";
 import Payment from "@/models/Payment";
 import { getOrCreateMasterSettings } from "@/models/MasterSettings";
+import { cheapestPrice } from "@/lib/planPricing";
 import { getPaymentProvider } from "@/lib/payment";
 import { requireUser } from "@/lib/userAuth";
 
 const bodySchema = z.object({
   purpose: z.enum(["new-connection", "renewal"]).default("renewal"),
 });
-
-function cheapestPrice(prices: { duration: unknown; price: number }[]): number {
-  if (!prices || prices.length === 0) return 0;
-  return [...prices].sort((a, b) => a.price - b.price)[0].price;
-}
 
 /**
  * POST /api/payment/create-order — resolves the user's active plan,
