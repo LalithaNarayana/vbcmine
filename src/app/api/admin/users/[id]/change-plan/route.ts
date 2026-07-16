@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { Types } from "mongoose";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import ConnectionRequest from "@/models/ConnectionRequest";
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
 
     const oldPlanDoc = assignedRequest.plan as unknown as {
-      _id: { toString(): string };
+      _id: Types.ObjectId;
       name: string;
       prices: { duration: unknown; price: number }[];
     };
