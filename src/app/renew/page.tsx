@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Check, CreditCard, Shield, Smartphone, ArrowLeft, RefreshCw } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
@@ -23,8 +23,11 @@ export default function RenewPage() {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paying, setPaying] = useState(false);
   const [done, setDone] = useState(false);
+  const orderRequested = useRef(false);
 
   useEffect(() => {
+    if (orderRequested.current) return;
+    orderRequested.current = true;
     (async () => {
       try {
         const res = await fetch("/api/payment/create-order", {

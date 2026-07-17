@@ -12,7 +12,7 @@ export interface IConnectionRequest extends Document {
   address: string;
   landmark: string;
   plan: Types.ObjectId; // ref Plan
-  status: "pending" | "payment_pending" | "payment_done" | "assigned";
+  status: "pending" | "payment_pending" | "payment_done" | "assigned" | "not_serviceable";
   // Set once an admin verifies feasibility and sends a payment link —
   // points at the Payment doc the user needs to pay off before an
   // Account ID can be assigned.
@@ -33,7 +33,7 @@ const ConnectionRequestSchema = new Schema<IConnectionRequest>(
     plan: { type: Schema.Types.ObjectId, ref: "Plan", required: true },
     status: {
       type: String,
-      enum: ["pending", "payment_pending", "payment_done", "assigned"],
+      enum: ["pending", "payment_pending", "payment_done", "assigned", "not_serviceable"],
       default: "pending",
     },
     payment: { type: Schema.Types.ObjectId, ref: "Payment", default: null },

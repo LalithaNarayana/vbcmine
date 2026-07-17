@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { X, User, Phone, MapPin, Landmark as LandmarkIcon, Building2, CircleCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { X, User, Phone, MapPin, Landmark as LandmarkIcon, Building2, CircleCheck, AlertCircle, Clock } from "lucide-react";
 import type { Plan, PlanDuration } from "@/types/plan";
 
 interface SalesCityOption {
@@ -20,6 +21,7 @@ interface PlanRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
   preselectedPlanId?: string;
+  onSuccess?: () => void;
 }
 
 const labelStyle: React.CSSProperties = {
@@ -68,6 +70,7 @@ export default function PlanRequestModal({
   isOpen,
   onClose,
   preselectedPlanId,
+  onSuccess,
 }: PlanRequestModalProps) {
   const [checkingSession, setCheckingSession] = useState(true);
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
@@ -89,6 +92,10 @@ export default function PlanRequestModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submittedReplaced, setSubmittedReplaced] = useState(false);
+  const [blockedState, setBlockedState] = useState<"duplicate" | "payment-required" | null>(null);
+  const [blockedMessage, setBlockedMessage] = useState("");
+  const router = useRouter();
 
   const resetState = useCallback(() => {
     setCheckingSession(true);
@@ -107,6 +114,9 @@ export default function PlanRequestModal({
     setLoading(false);
     setError("");
     setSubmitted(false);
+    setSubmittedReplaced(false);
+    setBlockedState(null);
+    setBlockedMessage("");
   }, []);
 
   useEffect(() => {
@@ -209,13 +219,25 @@ export default function PlanRequestModal({
         setError(data.error || "Failed to submit request.");
         return;
       }
+      if (data.state === "duplicate" || data.state === "payment-required") {
+        setBlockedState(data.state);
+        setBlockedMessage(data.message || "");
+        return;
+      }
+      setSubmittedReplaced(data.state === "replaced");
       setSubmitted(true);
+      onSuccess?.();
     } catch {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  function handleGoToDashboardForPayment() {
+    onClose();
+    router.push("/dashboard");
+  }
 
   return (
     <div
@@ -268,14 +290,44 @@ export default function PlanRequestModal({
         </button>
 
         <div style={{ padding: "40px 32px 32px" }}>
-          {submitted ? (
+          {blockedState ? (
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
+              {blockedState === "payment-required" ? (
+                <Clock size={56} color="#CC0000" style={{ margin: "0 auto 20px" }} />
+              ) : (
+                <AlertCircle size={56} color="#B54708" style={{ margin: "0 auto 20px" }} />
+              )}
+              <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "26px", letterSpacing: "2px", color: "#152238", marginBottom: "12px" }}>
+                {blockedState === "payment-required" ? "PAYMENT PENDING" : "REQUEST ALREADY RECEIVED"}
+              </h2>
+              <p style={{ color: "#667085", fontSize: "14px", lineHeight: "1.7", marginBottom: "24px" }}>
+                {blockedMessage}
+              </p>
+              {blockedState === "payment-required" ? (
+                <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+                  <button onClick={onClose} className="btn-outline" style={{ cursor: "pointer" }}>
+                    Close
+                  </button>
+                  <button onClick={handleGoToDashboardForPayment} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
+                    Go to Dashboard to Pay
+                  </button>
+                </div>
+              ) : (
+                <button onClick={onClose} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
+                  Close
+                </button>
+              )}
+            </div>
+          ) : submitted ? (
             <div style={{ textAlign: "center", padding: "20px 0" }}>
               <CircleCheck size={56} color="#00C864" style={{ margin: "0 auto 20px" }} />
               <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "30px", letterSpacing: "2px", color: "#152238", marginBottom: "12px" }}>
-                REQUEST SUBMITTED!
+                {submittedReplaced ? "REQUEST UPDATED!" : "REQUEST SUBMITTED!"}
               </h2>
               <p style={{ color: "#667085", fontSize: "14px", lineHeight: "1.7", marginBottom: "24px" }}>
-                Our sales team has received your connection request and will reach out to you shortly.
+                {submittedReplaced
+                  ? "We've updated your connection request to this plan. Our sales team has received it and will reach out to you shortly."
+                  : "Our sales team has received your connection request and will reach out to you shortly."}
               </p>
               <button onClick={onClose} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
                 Close
@@ -286,14 +338,16 @@ export default function PlanRequestModal({
           ) : (
             <>
               <div className="badge-red" style={{ display: "inline-block", marginBottom: "16px" }}>
-                Get This Plan
+                {sessionUser?.accountId ? "Get Another Connection" : "Get This Plan"}
               </div>
               <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "30px", letterSpacing: "2px", color: "#152238", marginBottom: "8px" }}>
-                REQUEST YOUR CONNECTION
+                {sessionUser?.accountId ? "REQUEST A NEW CONNECTION" : "REQUEST YOUR CONNECTION"}
               </h2>
               <p style={{ color: "#667085", fontSize: "13px", marginBottom: "28px" }}>
                 {sessionUser
-                  ? "Fill in your address and pick a plan — our team will contact you to set it up."
+                  ? sessionUser.accountId
+                    ? "Setting up service at a new address? Fill in the details below and our team will process it just like your first connection."
+                    : "Fill in your address and pick a plan — our team will contact you to set it up."
                   : "Verify your mobile number to continue."}
               </p>
 

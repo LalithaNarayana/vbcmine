@@ -54,9 +54,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
+    if (!user.accountId) {
+      return NextResponse.json(
+        { error: "No active plan found for this account. Please contact support." },
+        { status: 400 }
+      );
+    }
+
     const assignedRequest = await ConnectionRequest.findOne({
       user: user._id,
       status: "assigned",
+      accountId: user.accountId,
     })
       .sort({ updatedAt: -1 })
       .populate({ path: "plan", select: "name speed speedUnit prices" });
@@ -103,6 +111,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Idempotency guard: if the user already has a still-open ("created",
+    // unpaid) order for this exact same connection/purpose/plan from the
+    // last few minutes, reuse it instead of minting a new Payment record.
+    // This is what actually stops duplicate transactions — e.g. the renew
+    // page's on-mount effect firing twice (React StrictMode, a fast
+    // double-click, a page remount, a retried request) would otherwise
+    // create two separate "pending" rows for the same renewal.
+    const REUSE_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
+    const existingOpenPayment = await Payment.findOne({
+      user: user._id,
+      connectionRequest: assignedRequest._id,
+      purpose,
+      plan: planDoc._id,
+      status: "created",
+      createdAt: { $gte: new Date(Date.now() - REUSE_WINDOW_MS) },
+    }).sort({ createdAt: -1 });
+
+    if (existingOpenPayment) {
+      return NextResponse.json({
+        paymentId: existingOpenPayment._id.toString(),
+        providerOrderId: existingOpenPayment.providerOrderId,
+        currency: "INR",
+        planName: planDoc.name,
+        currentPlanName: purpose === "upgrade" ? currentPlanDoc.name : undefined,
+        baseAmount: existingOpenPayment.baseAmount,
+        gstPercent: existingOpenPayment.gstPercent,
+        gstAmount: existingOpenPayment.gstAmount,
+        totalAmount: existingOpenPayment.totalAmount,
+        meta: null,
+      });
+    }
+
     const masterSettings = await getOrCreateMasterSettings();
     const gstPercent = masterSettings.gstPercent;
     const gstAmount = calculateGst(baseAmount, gstPercent);
@@ -111,6 +151,7 @@ export async function POST(req: NextRequest) {
     const payment = await Payment.create({
       user: user._id,
       plan: planDoc._id,
+      connectionRequest: assignedRequest._id,
       purpose,
       baseAmount,
       gstPercent,

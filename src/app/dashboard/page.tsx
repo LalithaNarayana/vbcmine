@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Bell, User, LogOut, Wifi, Loader2 } from "lucide-react";
+import { Bell, User, LogOut, Wifi, Loader2, PlusCircle } from "lucide-react";
 import ActivePlanCard from "@/components/dashboard/ActivePlanCard";
 import RenewalAlert from "@/components/dashboard/RenewalAlert";
 import TransactionTable from "@/components/dashboard/TransactionTable";
@@ -39,13 +39,28 @@ interface Transaction {
   method: string;
 }
 
+interface AccountSummary {
+  accountId: string;
+  connectionStatus: "active" | "inactive";
+  city: string;
+  planName: string | null;
+  isActive: boolean;
+}
+
+interface PendingNewConnection {
+  status: "pending" | "payment_pending" | "payment_done" | "not_serviceable";
+  planName: string;
+}
+
 interface ConnectionStatus {
   hasConnection: boolean;
-  requestStatus: "pending" | "payment_pending" | "payment_done" | "assigned" | null;
+  requestStatus: "pending" | "payment_pending" | "payment_done" | "assigned" | "not_serviceable" | null;
   plan: ConnectionStatusPlan | null;
   expiresAt: string | null;
   daysLeft: number | null;
   payments: Transaction[];
+  accounts: AccountSummary[];
+  pendingNewConnection: PendingNewConnection | null;
 }
 
 interface IspLiveState {
@@ -93,10 +108,48 @@ export default function DashboardPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [subscriptionHistory, setSubscriptionHistory] = useState<SubscriptionHistoryEntry[]>([]);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [switchingAccount, setSwitchingAccount] = useState(false);
 
   async function loadConnectionStatus() {
     const res = await fetch("/api/user/connection-status");
     if (res.ok) setStatus(await res.json());
+  }
+
+  async function loadUser() {
+    const res = await fetch("/api/user/me");
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user) setUser(data.user);
+    }
+  }
+
+  async function refreshAll() {
+    await Promise.all([loadUser(), loadConnectionStatus(), loadNotifications()]);
+  }
+
+  async function handleSwitchAccount(accountId: string) {
+    if (switchingAccount) return;
+    setSwitchingAccount(true);
+    try {
+      const res = await fetch("/api/user/switch-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountId }),
+      });
+      if (res.ok) {
+        await refreshAll();
+      }
+    } finally {
+      setSwitchingAccount(false);
+    }
+  }
+
+  function handleGetNewConnection() {
+    openPlanRequest(undefined, () => {
+      // Refresh so the "new connection in progress" banner shows up
+      // right away without needing a manual page reload.
+      loadConnectionStatus();
+    });
   }
 
   async function loadNotifications() {
@@ -204,6 +257,53 @@ export default function DashboardPage() {
             <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", letterSpacing: "2px", color: "#FFFFFF" }}>{user.name.toUpperCase()}</h1>
           </div>
           <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+            {status && status.accounts.length > 1 && (
+              <select
+                value={user.accountId || ""}
+                onChange={(e) => handleSwitchAccount(e.target.value)}
+                disabled={switchingAccount}
+                title="Switch account"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  color: "#ffffff",
+                  borderRadius: "6px",
+                  padding: "8px 10px",
+                  fontFamily: "'Rajdhani', sans-serif",
+                  fontSize: "12px",
+                  letterSpacing: "0.5px",
+                  cursor: switchingAccount ? "wait" : "pointer",
+                }}
+              >
+                {status.accounts.map((a) => (
+                  <option key={a.accountId} value={a.accountId} style={{ color: "#152238" }}>
+                    {a.accountId}{a.planName ? ` — ${a.planName}` : ""}{a.connectionStatus === "inactive" ? " (Inactive)" : ""}
+                  </option>
+                ))}
+              </select>
+            )}
+            {status?.hasConnection && (
+              <button
+                onClick={handleGetNewConnection}
+                style={{
+                  background: "none",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  color: "rgba(255,255,255,0.9)",
+                  cursor: "pointer",
+                  borderRadius: "6px",
+                  padding: "8px 12px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontFamily: "'Rajdhani', sans-serif",
+                  fontSize: "12px",
+                  letterSpacing: "0.5px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <PlusCircle size={14} /> Get New Connection
+              </button>
+            )}
             <button
               onClick={() => setNotificationsOpen(true)}
               style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer", position: "relative" }}
@@ -254,14 +354,18 @@ export default function DashboardPage() {
               <Wifi size={28} color="#CC0000" />
             </div>
             <h2 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", letterSpacing: "1px", color: "var(--vbc-text)", marginBottom: "10px" }}>
-              {status?.requestStatus === "payment_pending"
+              {status?.requestStatus === "not_serviceable"
+                ? "NOT SERVICEABLE IN YOUR AREA"
+                : status?.requestStatus === "payment_pending"
                 ? "PAYMENT REQUIRED TO PROCEED"
                 : status?.requestStatus === "payment_done"
                 ? "INSTALLATION IN PROGRESS"
                 : "CONNECTION NOT YET ACTIVATED"}
             </h2>
             <p style={{ color: "var(--vbc-muted)", fontSize: "14px", lineHeight: "1.7", maxWidth: "480px", margin: "0 auto 24px" }}>
-              {status?.requestStatus === "payment_pending"
+              {status?.requestStatus === "not_serviceable"
+                ? "Sorry, we're not serviceable in your area right now. Please try a different plan or address and we'll check feasibility again."
+                : status?.requestStatus === "payment_pending"
                 ? "We've verified your connection request. Please complete the payment below so our team can proceed with installation."
                 : status?.requestStatus === "payment_done"
                 ? "Payment received! Our team will install your router and assign your Account ID shortly — this usually only takes a short while."
@@ -275,14 +379,79 @@ export default function DashboardPage() {
               <button onClick={() => setPaymentModalOpen(true)} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
                 Pay Now
               </button>
-            ) : !status?.requestStatus ? (
+            ) : status?.requestStatus === "not_serviceable" || !status?.requestStatus ? (
               <button onClick={() => openPlanRequest()} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
-                Request a Connection
+                {status?.requestStatus === "not_serviceable" ? "Try Another Plan" : "Request a Connection"}
               </button>
             ) : null}
+
+            {/* Other connections this mobile number holds — e.g. this one was
+                deactivated but another is still active. Let them switch. */}
+            {status && status.accounts.some((a) => a.connectionStatus === "active" && !a.isActive) && (
+              <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid var(--vbc-border)" }}>
+                <p style={{ color: "var(--vbc-muted)", fontSize: "13px", marginBottom: "12px" }}>
+                  You have another active connection on this number:
+                </p>
+                {status.accounts
+                  .filter((a) => a.connectionStatus === "active" && !a.isActive)
+                  .map((a) => (
+                    <button
+                      key={a.accountId}
+                      onClick={() => handleSwitchAccount(a.accountId)}
+                      disabled={switchingAccount}
+                      className="btn-primary"
+                      style={{ border: "none", cursor: switchingAccount ? "wait" : "pointer", marginRight: "8px" }}
+                    >
+                      Switch to {a.accountId}
+                    </button>
+                  ))}
+              </div>
+            )}
           </div>
         ) : (
           <>
+            {status.pendingNewConnection && (
+              <div
+                style={{
+                  background: "rgba(204,0,0,0.06)",
+                  border: "1px solid rgba(204,0,0,0.25)",
+                  borderRadius: "12px",
+                  padding: "18px 24px",
+                  marginBottom: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: "12px",
+                }}
+              >
+                <div>
+                  <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "12px", letterSpacing: "1px", textTransform: "uppercase", color: "var(--vbc-red-dark)" }}>
+                    {status.pendingNewConnection.status === "not_serviceable" ? "Not Serviceable" : "New Connection Requested"}
+                  </span>
+                  <p style={{ color: "var(--vbc-muted)", fontSize: "13px", marginTop: "4px" }}>
+                    {status.pendingNewConnection.status === "not_serviceable"
+                      ? `Sorry, we're not serviceable in your area for ${status.pendingNewConnection.planName} right now. Please try a different plan or address.`
+                      : status.pendingNewConnection.status === "pending"
+                      ? `Your request for ${status.pendingNewConnection.planName} is being reviewed by our sales team.`
+                      : status.pendingNewConnection.status === "payment_pending"
+                      ? `We've verified your request for ${status.pendingNewConnection.planName} — complete the payment to proceed.`
+                      : `Payment received for ${status.pendingNewConnection.planName} — our team will assign your new Account ID shortly.`}
+                  </p>
+                </div>
+                {status.pendingNewConnection.status === "payment_pending" && (
+                  <button onClick={() => setPaymentModalOpen(true)} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
+                    Pay Now
+                  </button>
+                )}
+                {status.pendingNewConnection.status === "not_serviceable" && (
+                  <button onClick={handleGetNewConnection} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
+                    Try Another Plan
+                  </button>
+                )}
+              </div>
+            )}
+
             {status.daysLeft !== null && status.plan && (
               <div style={{ marginBottom: "24px" }}>
                 <RenewalAlert daysLeft={status.daysLeft} planName={status.plan.name} />
@@ -373,7 +542,7 @@ export default function DashboardPage() {
             </div>
 
             <div style={{ marginBottom: "28px" }}>
-              <QuickActions />
+              <QuickActions onGetNewConnection={handleGetNewConnection} />
             </div>
 
             <div style={{ background: "var(--vbc-surface)", border: "1px solid var(--vbc-border)", borderRadius: "12px", boxShadow: "var(--vbc-shadow)", padding: "28px" }}>

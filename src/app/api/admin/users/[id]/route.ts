@@ -21,16 +21,26 @@ export async function GET(_req: NextRequest, { params }: Params) {
   try {
     await connectDB();
 
-    const user = await User.findById(id).lean();
+    const user = await User.findById(id)
+      .populate({ path: "accounts.plan", select: "name speed speedUnit" })
+      .lean();
     if (!user) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
-    const assignedRequest = await ConnectionRequest.findOne({
-      user: user._id,
-      status: "assigned",
-    })
-      .sort({ updatedAt: -1 })
+    const assignedRequest = user.accountId
+      ? await ConnectionRequest.findOne({
+          user: user._id,
+          status: "assigned",
+          accountId: user.accountId,
+        })
+          .sort({ updatedAt: -1 })
+          .populate({ path: "plan", select: "name speed speedUnit" })
+          .lean()
+      : null;
+
+    const allRequests = await ConnectionRequest.find({ user: user._id })
+      .sort({ createdAt: -1 })
       .populate({ path: "plan", select: "name speed speedUnit" })
       .lean();
 
@@ -55,6 +65,31 @@ export async function GET(_req: NextRequest, { params }: Params) {
         connectionStatus: user.connectionStatus,
         createdAt: user.createdAt,
       },
+      // Every connection this mobile number holds (active or inactive),
+      // for the admin to see at a glance that this user has more than
+      // one account.
+      accounts: (user.accounts || []).map((a) => {
+        const plan = a.plan as unknown as { name: string; speed: number; speedUnit: string } | null;
+        return {
+          accountId: a.accountId,
+          connectionStatus: a.connectionStatus,
+          city: a.city,
+          plan,
+          isActive: a.accountId === user.accountId,
+          createdAt: a.createdAt,
+        };
+      }),
+      // Every connection request ever raised by this user, including any
+      // still in progress (pending / payment_pending / payment_done).
+      connectionRequests: allRequests.map((r) => ({
+        _id: r._id.toString(),
+        status: r.status,
+        accountId: r.accountId,
+        city: r.city,
+        plan: r.plan,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+      })),
       plan: assignedRequest?.plan || null,
       payments: payments.map((p) => ({
         _id: p._id.toString(),

@@ -56,7 +56,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       );
     }
 
-    const existing = await User.findOne({ accountId });
+    // Account IDs must be unique across every user AND across every entry
+    // in every user's `accounts` list (a user can hold more than one).
+    const existing = await User.findOne({
+      $or: [{ accountId }, { "accounts.accountId": accountId }],
+    });
     if (existing && existing._id.toString() !== connectionRequest.user.toString()) {
       return NextResponse.json(
         { error: "This Account ID is already assigned to another user." },
@@ -65,14 +69,55 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
 
     const wasAlreadyAssigned = connectionRequest.status === "assigned";
+    const previousAccountId = connectionRequest.accountId;
 
     connectionRequest.accountId = accountId;
     connectionRequest.status = "assigned";
     await connectionRequest.save();
 
-    await User.findByIdAndUpdate(connectionRequest.user, {
-      $set: { accountId, connectionStatus: "active" },
-    });
+    const user = await User.findById(connectionRequest.user);
+    if (user) {
+      const requestIdStr = connectionRequest._id.toString();
+      const entry = user.accounts.find(
+        (a) => a.connectionRequest?.toString() === requestIdStr
+      );
+
+      if (entry) {
+        // Re-saving an Account ID on a request that was already assigned
+        // (admin correcting a typo, etc.) — update the matching entry.
+        entry.accountId = accountId;
+        entry.connectionStatus = "active";
+      } else {
+        user.accounts.push({
+          accountId,
+          connectionStatus: "active",
+          connectionRequest: connectionRequest._id,
+          plan: connectionRequest.plan,
+          city: connectionRequest.city,
+          createdAt: new Date(),
+        } as never);
+      }
+
+      if (!wasAlreadyAssigned) {
+        // Brand-new assignment. If the user has no currently-selected
+        // account yet, make this one it so it shows up on their dashboard
+        // right away. Otherwise this is an *additional* connection — it's
+        // added to their account list, but we don't yank them off the
+        // account they're currently viewing; they can switch to it
+        // whenever they like via the account switcher.
+        if (!user.accountId) {
+          user.accountId = accountId;
+          user.connectionStatus = "active";
+        }
+      } else if (user.accountId === previousAccountId) {
+        // Admin corrected the Account ID on the request that happens to be
+        // the user's currently-selected one — keep the selection pointed
+        // at it under its new id.
+        user.accountId = accountId;
+      }
+
+      await user.save();
+    }
 
     if (!wasAlreadyAssigned) {
       await logSubscriptionChange({

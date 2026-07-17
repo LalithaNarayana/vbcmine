@@ -2,12 +2,16 @@ import mongoose, { Schema, Model, Document, Types } from "mongoose";
 
 import "@/models/User";
 import "@/models/Plan";
+import "@/models/ConnectionRequest";
 
 export type PaymentPurpose = "new-connection" | "renewal" | "upgrade";
 
 export interface IPayment extends Document {
   user: Types.ObjectId; // ref User
   plan: Types.ObjectId; // ref Plan
+  // Which of the user's connections/accounts this payment is for. Null on
+  // older records created before multi-account support existed.
+  connectionRequest: Types.ObjectId | null; // ref ConnectionRequest
   purpose: PaymentPurpose;
   baseAmount: number;
   gstPercent: number;
@@ -25,6 +29,7 @@ const PaymentSchema = new Schema<IPayment>(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     plan: { type: Schema.Types.ObjectId, ref: "Plan", required: true },
+    connectionRequest: { type: Schema.Types.ObjectId, ref: "ConnectionRequest", default: null },
     purpose: {
       type: String,
       enum: ["new-connection", "renewal", "upgrade"],

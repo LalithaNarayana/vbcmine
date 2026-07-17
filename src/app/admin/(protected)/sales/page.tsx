@@ -27,7 +27,7 @@ interface SalesRequest {
   address: string;
   landmark: string;
   plan: SalesPlan | null;
-  status: "pending" | "payment_pending" | "payment_done" | "assigned";
+  status: "pending" | "payment_pending" | "payment_done" | "assigned" | "not_serviceable";
   payment: SalesPayment | null;
   accountId: string | null;
   createdAt: string;
@@ -46,6 +46,7 @@ const STATUS_STYLES: Record<SalesRequest["status"], { label: string; bg: string;
   payment_pending: { label: "Payment Sent", bg: "#eff8ff", color: "#175cd3" },
   payment_done: { label: "Paid — Ready to Assign", bg: "#f4f3ff", color: "#5925dc" },
   assigned: { label: "Assigned", bg: "#ecfdf3", color: "#067647" },
+  not_serviceable: { label: "Not Serviceable", bg: "#fef3f2", color: "#B42318" },
 };
 
 export default function AdminSalesPage() {
@@ -59,6 +60,7 @@ export default function AdminSalesPage() {
   const [ispBusy, setIspBusy] = useState<string | null>(null);
   const [sendingLinkFor, setSendingLinkFor] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<Record<string, string>>({});
+  const [markingNotServiceableFor, setMarkingNotServiceableFor] = useState<string | null>(null);
   const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(items, 10);
 
   async function load() {
@@ -130,6 +132,28 @@ export default function AdminSalesPage() {
       await load();
     } finally {
       setSendingLinkFor(null);
+    }
+  }
+
+  async function handleMarkNotServiceable(item: SalesRequest) {
+    if (markingNotServiceableFor) return;
+    if (!window.confirm(`Mark ${item.name}'s request as not serviceable? They'll be notified and can submit a new request.`)) {
+      return;
+    }
+    setMarkingNotServiceableFor(item._id);
+    setLinkError((prev) => ({ ...prev, [item._id]: "" }));
+    try {
+      const res = await fetch(`/api/connection-requests/${item._id}/not-serviceable`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLinkError((prev) => ({ ...prev, [item._id]: data.error || "Failed to update request." }));
+        return;
+      }
+      await load();
+    } finally {
+      setMarkingNotServiceableFor(null);
     }
   }
 
@@ -274,14 +298,24 @@ export default function AdminSalesPage() {
                     <td className="px-3 py-3">
                       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                         {item.status === "pending" && (
-                          <button
-                            onClick={() => handleSendPaymentLink(item)}
-                            disabled={sendingLinkFor === item._id}
-                            className="admin-btn-secondary"
-                            style={{ whiteSpace: "nowrap" }}
-                          >
-                            {sendingLinkFor === item._id ? "Sending…" : "Verify & Send Payment Link"}
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleSendPaymentLink(item)}
+                              disabled={sendingLinkFor === item._id || markingNotServiceableFor === item._id}
+                              className="admin-btn-secondary"
+                              style={{ whiteSpace: "nowrap" }}
+                            >
+                              {sendingLinkFor === item._id ? "Sending…" : "Verify & Send Payment Link"}
+                            </button>
+                            <button
+                              onClick={() => handleMarkNotServiceable(item)}
+                              disabled={sendingLinkFor === item._id || markingNotServiceableFor === item._id}
+                              className="admin-btn-secondary"
+                              style={{ whiteSpace: "nowrap", color: "#B42318", borderColor: "#fda29b" }}
+                            >
+                              {markingNotServiceableFor === item._id ? "Updating…" : "Not Serviceable"}
+                            </button>
+                          </>
                         )}
                         {item.status === "payment_pending" && (
                           <span style={{ color: "#98a2b3", fontSize: "12px" }}>Awaiting customer payment</span>

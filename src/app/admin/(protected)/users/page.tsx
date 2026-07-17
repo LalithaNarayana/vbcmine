@@ -20,6 +20,7 @@ interface UserRow {
   connectionStatus: "pending" | "active" | "inactive";
   createdAt: string;
   plan: UserPlan | null;
+  accountsCount?: number;
 }
 
 function formatJoined(iso: string): string {
@@ -118,7 +119,25 @@ export default function AdminUsersPage() {
                       {u.name}
                     </td>
                     <td className="px-3 py-3" style={{ whiteSpace: "nowrap" }}>{u.mobile}</td>
-                    <td className="px-3 py-3" style={{ whiteSpace: "nowrap" }}>{u.accountId || "—"}</td>
+                    <td className="px-3 py-3" style={{ whiteSpace: "nowrap" }}>
+                      {u.accountId || "—"}
+                      {(u.accountsCount || 0) > 1 && (
+                        <span
+                          style={{
+                            marginLeft: "6px",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            color: "#cc0000",
+                            background: "rgba(204,0,0,0.08)",
+                            borderRadius: "999px",
+                            padding: "2px 6px",
+                          }}
+                          title={`This user has ${u.accountsCount} connections`}
+                        >
+                          +{(u.accountsCount || 0) - 1}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-3 py-3" style={{ minWidth: "140px" }}>
                       {u.plan ? `${u.plan.name} (${u.plan.speed} ${u.plan.speedUnit})` : "—"}
                     </td>

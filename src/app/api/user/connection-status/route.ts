@@ -14,11 +14,36 @@ function cheapestPrice(prices: { duration: unknown; price: number }[]): number {
   return [...prices].sort((a, b) => a.price - b.price)[0].price;
 }
 
+/** Shapes the user's `accounts` list for the dashboard's account switcher. */
+function buildAccountsSummary(
+  user: {
+    accountId: string | null;
+    accounts: {
+      accountId: string;
+      connectionStatus: string;
+      city: string;
+      plan: unknown;
+    }[];
+  }
+) {
+  return (user.accounts || []).map((a) => {
+    const plan = a.plan as { name: string; speed: number; speedUnit: string } | null;
+    return {
+      accountId: a.accountId,
+      connectionStatus: a.connectionStatus,
+      city: a.city,
+      planName: plan ? `${plan.name} (${plan.speed} ${plan.speedUnit})` : null,
+      isActive: a.accountId === user.accountId,
+    };
+  });
+}
+
 /**
  * GET /api/user/connection-status — everything the user dashboard needs:
- * account/connection state, the active plan (resolved from the most
- * recently assigned ConnectionRequest), a billing-cycle expiry estimate,
- * and recent payment history for the transaction table.
+ * account/connection state for the currently-selected account, the active
+ * plan, a billing-cycle expiry estimate, recent payment history, the full
+ * list of the user's connections (account switcher), and whether a
+ * separate new-connection request is in progress.
  */
 export async function GET() {
   const session = await requireUser();
@@ -27,16 +52,58 @@ export async function GET() {
   try {
     await connectDB();
 
-    const user = await User.findById(session.userId);
+    const user = await User.findById(session.userId).populate({
+      path: "accounts.plan",
+      select: "name speed speedUnit",
+    });
     if (!user) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
-    if (!user.accountId || user.connectionStatus !== "active") {
-      const latestRequest = await ConnectionRequest.findOne({ user: user._id })
-        .sort({ createdAt: -1 })
-        .select("status");
+    const accounts = buildAccountsSummary(user);
 
+    // A connection request that hasn't reached "assigned" yet — either the
+    // user's very first request (handled by the no-connection branch below)
+    // or an *additional* connection they requested on top of one they
+    // already have active.
+    const inProgressRequest = await ConnectionRequest.findOne({
+      user: user._id,
+      status: { $in: ["pending", "payment_pending", "payment_done"] },
+    })
+      .sort({ createdAt: -1 })
+      .populate({ path: "plan", select: "name speed speedUnit" });
+
+    // If there's nothing in flight, check whether the customer's most
+    // recent request was rejected as not serviceable — that's still worth
+    // surfacing on the dashboard (with a way to try again) even though it
+    // no longer blocks a fresh request.
+    const latestRequest = inProgressRequest
+      ? null
+      : await ConnectionRequest.findOne({ user: user._id })
+          .sort({ createdAt: -1 })
+          .populate({ path: "plan", select: "name speed speedUnit" });
+
+    const relevantRequest =
+      inProgressRequest || (latestRequest?.status === "not_serviceable" ? latestRequest : null);
+
+    const relevantPlan = relevantRequest?.plan as unknown as {
+      name: string;
+      speed: number;
+      speedUnit: string;
+    } | null;
+
+    const pendingNewConnection = relevantRequest
+      ? {
+          status: relevantRequest.status as
+            | "pending"
+            | "payment_pending"
+            | "payment_done"
+            | "not_serviceable",
+          planName: relevantPlan ? `${relevantPlan.name} (${relevantPlan.speed} ${relevantPlan.speedUnit})` : "Your plan",
+        }
+      : null;
+
+    if (!user.accountId || user.connectionStatus !== "active") {
       return NextResponse.json({
         user: {
           id: user._id.toString(),
@@ -46,22 +113,28 @@ export async function GET() {
           connectionStatus: user.connectionStatus,
         },
         hasConnection: false,
-        requestStatus: latestRequest?.status || null,
+        requestStatus: relevantRequest?.status || null,
         plan: null,
         expiresAt: null,
         daysLeft: null,
         payments: [],
+        accounts,
+        pendingNewConnection: null,
       });
     }
 
     const assignedRequest = await ConnectionRequest.findOne({
       user: user._id,
       status: "assigned",
+      accountId: user.accountId,
     })
       .sort({ updatedAt: -1 })
       .populate({ path: "plan", select: "name speed speedUnit prices" });
 
-    const payments = await Payment.find({ user: user._id })
+    const payments = await Payment.find({
+      user: user._id,
+      $or: [{ connectionRequest: assignedRequest?._id ?? null }, { connectionRequest: null }],
+    })
       .sort({ createdAt: -1 })
       .limit(20)
       .populate({ path: "plan", select: "name speed speedUnit" })
@@ -117,11 +190,14 @@ export async function GET() {
 
     const paymentHistory = payments.map((p) => ({
       id: p._id.toString(),
-      date: new Date(p.createdAt).toLocaleDateString("en-IN", {
+      date: `${new Date(p.createdAt).toLocaleDateString("en-IN", {
         day: "2-digit",
         month: "short",
         year: "numeric",
-      }),
+      })}, ${new Date(p.createdAt).toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`,
       description: p.plan
         ? `${(p.plan as unknown as { name: string }).name} — ${
             p.purpose === "new-connection" ? "New Connection" : p.purpose === "upgrade" ? "Plan Upgrade" : "Renewal"
@@ -150,6 +226,8 @@ export async function GET() {
       expiresAt: expiresAt.toISOString(),
       daysLeft,
       payments: paymentHistory,
+      accounts,
+      pendingNewConnection,
     });
   } catch (err) {
     console.error("[user/connection-status] error:", err);

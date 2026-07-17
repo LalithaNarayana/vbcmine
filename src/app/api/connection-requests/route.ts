@@ -44,6 +44,65 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Selected plan was not found." }, { status: 404 });
     }
 
+    // Only one connection request may be "in flight" for a user at a time.
+    // Once an admin verifies feasibility and pushes a payment link
+    // (payment_pending) — or the user has already paid (payment_done) —
+    // the request is locked in and can no longer be swapped for a
+    // different plan; the user must complete/await that request first.
+    const existing = await ConnectionRequest.findOne({
+      user: user._id,
+      status: { $in: ["pending", "payment_pending", "payment_done"] },
+    })
+      .sort({ createdAt: -1 })
+      .populate({ path: "plan", select: "name speed speedUnit" });
+
+    if (existing) {
+      if (existing.status !== "pending") {
+        const existingPlan = existing.plan as unknown as { name: string; speed: number; speedUnit: string } | null;
+        return NextResponse.json({
+          success: false,
+          state: "payment-required",
+          message: `Your requested connection for ${
+            existingPlan ? `${existingPlan.name} (${existingPlan.speed} ${existingPlan.speedUnit})` : "your selected plan"
+          } has already been verified and a payment link has been sent. Please complete that payment to get your connection.`,
+          connectionRequest: existing,
+        });
+      }
+
+      const existingPlanId =
+        typeof existing.plan === "string" ? existing.plan : (existing.plan as { _id: { toString(): string } })._id.toString();
+
+      if (existingPlanId === planId) {
+        return NextResponse.json({
+          success: false,
+          state: "duplicate",
+          message: "We've already received your request for this plan and it's currently in process. Our sales team will reach out to you shortly.",
+          connectionRequest: existing,
+        });
+      }
+
+      // Different plan while still pending review — replace the existing
+      // record instead of creating a second one, so only one connection
+      // request ever exists per user until it's verified.
+      existing.plan = plan._id;
+      existing.city = city;
+      existing.address = address;
+      existing.landmark = landmark;
+      existing.name = user.name;
+      existing.mobile = user.mobile;
+      await existing.save();
+
+      const populated = await ConnectionRequest.findById(existing._id).populate({
+        path: "plan",
+        select: "name speed speedUnit",
+      });
+
+      return NextResponse.json(
+        { success: true, state: "replaced", connectionRequest: populated },
+        { status: 200 }
+      );
+    }
+
     const connectionRequest = await ConnectionRequest.create({
       user: user._id,
       name: user.name,
@@ -57,7 +116,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { success: true, connectionRequest },
+      { success: true, state: "created", connectionRequest },
       { status: 201 }
     );
   } catch (err) {

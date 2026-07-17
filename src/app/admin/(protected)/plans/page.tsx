@@ -316,6 +316,7 @@ export default function AdminPlansPage() {
                     value={row.duration}
                     onChange={(e) => updatePriceRow(idx, { duration: e.target.value })}
                     className="admin-input flex-1"
+                    style={{ minWidth: "160px" }}
                   >
                     <option value="">Duration…</option>
                     {durations.map((d) => (
@@ -330,6 +331,7 @@ export default function AdminPlansPage() {
                     value={row.price}
                     onChange={(e) => updatePriceRow(idx, { price: e.target.value })}
                     className="admin-input w-28"
+                    style={{ flexShrink: 0 }}
                   />
                   <button type="button" onClick={() => removePriceRow(idx)} className="admin-icon-btn admin-icon-btn-danger">
                     <Trash2 size={16} />

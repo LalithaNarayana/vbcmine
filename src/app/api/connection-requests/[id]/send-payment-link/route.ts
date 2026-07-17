@@ -71,6 +71,7 @@ export async function POST(_req: Request, { params }: Params) {
     const payment = await Payment.create({
       user: connectionRequest.user,
       plan: planDoc._id,
+      connectionRequest: connectionRequest._id,
       purpose: "new-connection",
       baseAmount,
       gstPercent,

@@ -23,9 +23,12 @@ export default function Modal({ open, onClose, title, children, width = "480px" 
     <div style={{
       position: "fixed", inset: 0, zIndex: 9000,
       display: "flex", alignItems: "center", justifyContent: "center",
-      background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
       padding: "24px",
     }} onClick={onClose}>
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+      }} />
       <div style={{
         background: "#FFFFFF", border: "1px solid rgba(204,0,0,0.25)",
         width: "100%", maxWidth: width, position: "relative",

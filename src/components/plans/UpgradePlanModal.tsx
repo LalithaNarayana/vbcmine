@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, CreditCard, Shield, RefreshCw, CircleCheck, TrendingUp } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { formatCurrency } from "@/lib/format";
@@ -43,6 +44,7 @@ export default function UpgradePlanModal({
   planSpeedUnit,
   onUpgraded,
 }: UpgradePlanModalProps) {
+  const router = useRouter();
   const [step, setStep] = useState<Step>("confirm");
   const [error, setError] = useState("");
   const [order, setOrder] = useState<OrderDetails | null>(null);
@@ -103,6 +105,11 @@ export default function UpgradePlanModal({
       setError("Network error during payment. Please try again.");
       setStep("error");
     }
+  }
+
+  function handleGoToDashboard() {
+    onClose();
+    router.push("/dashboard");
   }
 
   const title =
@@ -178,7 +185,7 @@ export default function UpgradePlanModal({
           <p style={{ color: "#667085", fontSize: "13px", lineHeight: 1.7, marginBottom: "20px" }}>
             You&apos;re now on the {order?.planName || planName} plan. Your dashboard will reflect the change right away.
           </p>
-          <button onClick={onClose} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
+          <button onClick={handleGoToDashboard} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
             Go to Dashboard
           </button>
         </div>

@@ -4,6 +4,7 @@ import { Types } from "mongoose";
 import connectDB from "@/lib/mongodb";
 import Payment from "@/models/Payment";
 import ConnectionRequest from "@/models/ConnectionRequest";
+import User from "@/models/User";
 import { getPaymentProvider } from "@/lib/payment";
 import { requireUser } from "@/lib/userAuth";
 import { notifyUserOnce } from "@/lib/notify";
@@ -80,12 +81,20 @@ export async function POST(req: NextRequest) {
       } else if (payment.purpose === "upgrade") {
         // Move the user's active connection onto the new plan and log the
         // change so it shows up in their subscription history timeline.
-        const assignedRequest = await ConnectionRequest.findOne({
-          user: payment.user,
-          status: "assigned",
-        })
-          .sort({ updatedAt: -1 })
-          .populate({ path: "plan", select: "name prices" });
+        // Uses the connectionRequest tagged on the payment at create-order
+        // time so this always lands on the exact connection/account that
+        // was actually paid for (important once a user has more than one).
+        const assignedRequest = payment.connectionRequest
+          ? await ConnectionRequest.findOne({
+              _id: payment.connectionRequest,
+              status: "assigned",
+            }).populate({ path: "plan", select: "name prices" })
+          : await ConnectionRequest.findOne({
+              user: payment.user,
+              status: "assigned",
+            })
+              .sort({ updatedAt: -1 })
+              .populate({ path: "plan", select: "name prices" });
 
         if (assignedRequest && assignedRequest.plan) {
           const oldPlanDoc = assignedRequest.plan as unknown as {
@@ -100,6 +109,19 @@ export async function POST(req: NextRequest) {
 
           assignedRequest.plan = payment.plan;
           await assignedRequest.save();
+
+          // Keep the User.accounts[] cached plan reference (shown in the
+          // account switcher) in sync with the upgrade.
+          const userDoc = await User.findById(payment.user);
+          if (userDoc) {
+            const entry = userDoc.accounts.find(
+              (a) => a.connectionRequest?.toString() === assignedRequest._id.toString()
+            );
+            if (entry) {
+              entry.plan = payment.plan;
+              await userDoc.save();
+            }
+          }
 
           await logSubscriptionChange({
             userId: payment.user,

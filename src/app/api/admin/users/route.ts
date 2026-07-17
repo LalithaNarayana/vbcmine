@@ -17,7 +17,7 @@ export async function GET() {
     await connectDB();
 
     const users = await User.find()
-      .select("name mobile accountId connectionStatus createdAt")
+      .select("name mobile accountId connectionStatus accounts createdAt")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -26,14 +26,15 @@ export async function GET() {
       .sort({ updatedAt: -1 })
       .lean();
 
-    // Latest assigned request per user (list is already newest-first).
-    const planByUser = new Map<string, { name: string; speed: number; speedUnit: string }>();
+    // Latest assigned request *for the user's currently-selected account*
+    // (a user may have more than one assigned connection).
+    const planByUserAccount = new Map<string, { name: string; speed: number; speedUnit: string }>();
     for (const req of assignedRequests) {
-      const userId = req.user?.toString();
-      if (!userId || planByUser.has(userId)) continue;
+      const key = `${req.user?.toString()}:${req.accountId}`;
+      if (!req.user || planByUserAccount.has(key)) continue;
       const plan = req.plan as unknown as { name: string; speed: number; speedUnit: string } | null;
       if (plan) {
-        planByUser.set(userId, { name: plan.name, speed: plan.speed, speedUnit: plan.speedUnit });
+        planByUserAccount.set(key, { name: plan.name, speed: plan.speed, speedUnit: plan.speedUnit });
       }
     }
 
@@ -44,7 +45,10 @@ export async function GET() {
       accountId: u.accountId,
       connectionStatus: u.connectionStatus,
       createdAt: u.createdAt,
-      plan: planByUser.get(u._id.toString()) || null,
+      accountsCount: (u.accounts || []).length,
+      plan: u.accountId
+        ? planByUserAccount.get(`${u._id.toString()}:${u.accountId}`) || null
+        : null,
     }));
 
     return NextResponse.json(result);

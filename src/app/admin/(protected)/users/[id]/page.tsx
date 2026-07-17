@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Wifi, WifiOff, Power } from "lucide-react";
 
 interface UserDetail {
   _id: string;
@@ -45,6 +45,15 @@ interface PlanOption {
   speedUnit: string;
 }
 
+interface AccountEntry {
+  accountId: string;
+  connectionStatus: "active" | "inactive";
+  city: string;
+  plan: PlanInfo | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
 function statusStyle(status: string): React.CSSProperties {
   if (status === "active") return { background: "#ecfdf3", color: "#067647" };
   if (status === "inactive") return { background: "#fef3f2", color: "#b42318" };
@@ -72,6 +81,7 @@ export default function AdminUserDetailPage() {
   const router = useRouter();
 
   const [user, setUser] = useState<UserDetail | null>(null);
+  const [accounts, setAccounts] = useState<AccountEntry[]>([]);
   const [plan, setPlan] = useState<PlanInfo | null>(null);
   const [payments, setPayments] = useState<PaymentRow[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -91,18 +101,68 @@ export default function AdminUserDetailPage() {
   const [mobile, setMobile] = useState("");
   const [accountId, setAccountId] = useState("");
 
+  const [ispStatus, setIspStatus] = useState<Record<string, "active" | "inactive">>({});
+  const [ispBusy, setIspBusy] = useState<string | null>(null);
+
+  async function loadIspStatuses(accountIds: string[]) {
+    const results = await Promise.all(
+      accountIds.map(async (accId) => {
+        const res = await fetch(`/api/isp/status?accountId=${encodeURIComponent(accId)}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return { accountId: accId, status: data.status as "active" | "inactive" };
+      })
+    );
+    setIspStatus((prev) => {
+      const next = { ...prev };
+      for (const r of results) {
+        if (r) next[r.accountId] = r.status;
+      }
+      return next;
+    });
+  }
+
+  async function handleIspToggle(accId: string) {
+    if (!accId || ispBusy) return;
+    const targetAction = ispStatus[accId] === "active" ? "deactivate" : "activate";
+    setIspBusy(accId);
+    try {
+      const res = await fetch(`/api/isp/${targetAction}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountId: accId }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIspStatus((prev) => ({ ...prev, [accId]: data.status }));
+      }
+    } finally {
+      setIspBusy(null);
+    }
+  }
+
   async function load() {
     setLoading(true);
     const res = await fetch(`/api/admin/users/${id}`);
     if (res.ok) {
       const data = await res.json();
       setUser(data.user);
+      setAccounts(data.accounts || []);
       setPlan(data.plan);
       setPayments(data.payments);
       setHistory(data.history || []);
       setName(data.user.name);
       setMobile(data.user.mobile);
       setAccountId(data.user.accountId || "");
+
+      const allAccountIds: string[] = (data.accounts || [])
+        .map((a: { accountId: string }) => a.accountId)
+        .filter(Boolean);
+      if (allAccountIds.length > 0) {
+        loadIspStatuses(allAccountIds);
+      } else if (data.user.accountId) {
+        loadIspStatuses([data.user.accountId]);
+      }
     }
     setLoading(false);
   }
@@ -304,6 +364,52 @@ export default function AdminUserDetailPage() {
               </p>
             )}
 
+            {user.accountId && (
+              <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                <p className="admin-label" style={{ marginBottom: "8px" }}>Live Connection ({user.accountId})</p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+                  {ispStatus[user.accountId] ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      {ispStatus[user.accountId] === "active" ? (
+                        <Wifi size={14} color="#067647" />
+                      ) : (
+                        <WifiOff size={14} color="#B42318" />
+                      )}
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          color: ispStatus[user.accountId] === "active" ? "#067647" : "#B42318",
+                        }}
+                      >
+                        {ispStatus[user.accountId]}
+                      </span>
+                    </div>
+                  ) : (
+                    <Loader2 size={14} className="animate-spin" style={{ color: "#98a2b3" }} />
+                  )}
+                  <button
+                    onClick={() => handleIspToggle(user.accountId as string)}
+                    disabled={ispBusy === user.accountId}
+                    className="admin-btn-secondary"
+                    style={{ whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                  >
+                    <Power size={13} />
+                    {ispBusy === user.accountId
+                      ? "…"
+                      : ispStatus[user.accountId] === "active"
+                      ? "Deactivate"
+                      : "Activate"}
+                  </button>
+                </div>
+                <p style={{ fontSize: "12px", color: "#98a2b3", marginTop: "8px", lineHeight: 1.5 }}>
+                  This controls the actual internet connection with the ISP provider — separate from the
+                  dashboard access status above.
+                </p>
+              </div>
+            )}
+
             {plan && (
               <div style={{ marginTop: "24px", paddingTop: "16px", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
                 <p className="admin-label" style={{ marginBottom: "6px" }}>Current Plan</p>
@@ -348,6 +454,103 @@ export default function AdminUserDetailPage() {
         </div>
       </div>
 
+      {accounts.length > 1 && (
+        <div className="admin-card" style={{ marginTop: "24px" }}>
+          <div className="admin-card-header">
+            <h2 className="admin-card-title">Connections ({accounts.length})</h2>
+          </div>
+          <div className="admin-card-body" style={{ overflowX: "auto" }}>
+            <p className="admin-page-subtitle" style={{ marginBottom: "12px" }}>
+              This mobile number has requested more than one connection. The one marked
+              &ldquo;Active on dashboard&rdquo; is what shows up when the customer logs in — they can
+              switch between them from their dashboard.
+            </p>
+            <table className="admin-table w-full text-left" style={{ borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th className="px-3 py-2">Account ID</th>
+                  <th className="px-3 py-2">Plan</th>
+                  <th className="px-3 py-2">City</th>
+                  <th className="px-3 py-2">Status</th>
+                  <th className="px-3 py-2">Dashboard</th>
+                  <th className="px-3 py-2">Live Status</th>
+                  <th className="px-3 py-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accounts.map((a) => (
+                  <tr key={a.accountId} className="border-t border-gray-100">
+                    <td className="px-3 py-3" style={{ fontWeight: 600 }}>{a.accountId}</td>
+                    <td className="px-3 py-3">{a.plan ? `${a.plan.name} (${a.plan.speed} ${a.plan.speedUnit})` : "—"}</td>
+                    <td className="px-3 py-3">{a.city || "—"}</td>
+                    <td className="px-3 py-3" style={{ textTransform: "capitalize" }}>
+                      <span
+                        style={{
+                          borderRadius: "999px",
+                          padding: "3px 10px",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          letterSpacing: "0.5px",
+                          textTransform: "uppercase",
+                          ...statusStyle(a.connectionStatus),
+                        }}
+                      >
+                        {a.connectionStatus}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      {a.isActive ? (
+                        <span style={{ color: "#067647", fontWeight: 600, fontSize: "12px" }}>Active on dashboard</span>
+                      ) : (
+                        <span style={{ color: "#98a2b3", fontSize: "12px" }}>—</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-3">
+                      {ispStatus[a.accountId] ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          {ispStatus[a.accountId] === "active" ? (
+                            <Wifi size={14} color="#067647" />
+                          ) : (
+                            <WifiOff size={14} color="#B42318" />
+                          )}
+                          <span
+                            style={{
+                              fontSize: "12px",
+                              fontWeight: 600,
+                              textTransform: "uppercase",
+                              color: ispStatus[a.accountId] === "active" ? "#067647" : "#B42318",
+                            }}
+                          >
+                            {ispStatus[a.accountId]}
+                          </span>
+                        </div>
+                      ) : (
+                        <Loader2 size={14} className="animate-spin" style={{ color: "#98a2b3" }} />
+                      )}
+                    </td>
+                    <td className="px-3 py-3">
+                      <button
+                        onClick={() => handleIspToggle(a.accountId)}
+                        disabled={ispBusy === a.accountId}
+                        className="admin-btn-secondary"
+                        style={{ whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                      >
+                        <Power size={13} />
+                        {ispBusy === a.accountId
+                          ? "…"
+                          : ispStatus[a.accountId] === "active"
+                          ? "Deactivate"
+                          : "Activate"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       <div className="admin-card" style={{ marginTop: "24px" }}>
         <div className="admin-card-header">
           <h2 className="admin-card-title">Recent Payments {payments.length > 0 && `(${payments.length})`}</h2>
@@ -374,7 +577,12 @@ export default function AdminUserDetailPage() {
                     <td className="px-3 py-3">₹{p.totalAmount}</td>
                     <td className="px-3 py-3" style={{ textTransform: "capitalize" }}>{p.status}</td>
                     <td className="px-3 py-3" style={{ whiteSpace: "nowrap" }}>
-                      {new Date(p.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                      <div style={{ color: "#344054", fontWeight: 500 }}>
+                        {new Date(p.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#98a2b3" }}>
+                        {new Date(p.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -421,6 +629,8 @@ export default function AdminUserDetailPage() {
                       </span>
                       <span style={{ fontSize: "12px", color: "#98a2b3" }}>
                         {new Date(h.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                        {", "}
+                        {new Date(h.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
                     <p style={{ fontSize: "13px", color: "#344054", marginTop: "3px" }}>

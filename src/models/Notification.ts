@@ -2,7 +2,7 @@ import mongoose, { Schema, Model, Document, Types } from "mongoose";
 
 import "@/models/User";
 
-export type NotificationType = "renewal" | "activation" | "payment" | "broadcast" | "direct";
+export type NotificationType = "renewal" | "activation" | "payment" | "broadcast" | "direct" | "not-serviceable";
 
 export interface INotification extends Document {
   user: Types.ObjectId; // ref User — every notification is a per-user row
@@ -26,7 +26,7 @@ const NotificationSchema = new Schema<INotification>(
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     type: {
       type: String,
-      enum: ["renewal", "activation", "payment", "broadcast", "direct"],
+      enum: ["renewal", "activation", "payment", "broadcast", "direct", "not-serviceable"],
       required: true,
     },
     title: { type: String, required: true, trim: true },
