@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/ui/Modal";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
 import { Wifi, WifiOff, Power, Loader2 } from "lucide-react";
 
 interface SalesPlan {
@@ -57,6 +59,7 @@ export default function AdminSalesPage() {
   const [ispBusy, setIspBusy] = useState<string | null>(null);
   const [sendingLinkFor, setSendingLinkFor] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<Record<string, string>>({});
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(items, 10);
 
   async function load() {
     setLoading(true);
@@ -195,7 +198,7 @@ export default function AdminSalesPage() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => {
+                {pageItems.map((item) => {
                   const requestedOn = formatRequestedOn(item.createdAt);
                   return (
                   <tr key={item._id} className="border-t border-gray-100">
@@ -318,6 +321,15 @@ export default function AdminSalesPage() {
               </tbody>
             </table>
           )}
+        </div>
+        <div className="admin-card-body" style={{ paddingTop: 0 }}>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="requests"
+          />
         </div>
       </div>
 

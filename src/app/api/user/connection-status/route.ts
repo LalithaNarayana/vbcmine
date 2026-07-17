@@ -123,9 +123,13 @@ export async function GET() {
         year: "numeric",
       }),
       description: p.plan
-        ? `${(p.plan as unknown as { name: string }).name} — ${p.purpose === "new-connection" ? "New Connection" : "Renewal"}`
+        ? `${(p.plan as unknown as { name: string }).name} — ${
+            p.purpose === "new-connection" ? "New Connection" : p.purpose === "upgrade" ? "Plan Upgrade" : "Renewal"
+          }`
         : p.purpose === "new-connection"
         ? "New Connection"
+        : p.purpose === "upgrade"
+        ? "Plan Upgrade"
         : "Renewal",
       amount: p.totalAmount,
       status: p.status === "success" ? "success" : p.status === "failed" ? "failed" : "pending",

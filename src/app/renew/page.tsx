@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, CreditCard, Shield, Smartphone, ArrowLeft, RefreshCw } from "lucide-react";
+import { formatCurrency } from "@/lib/format";
 
 interface OrderData {
   paymentId: string;
@@ -115,7 +116,7 @@ export default function RenewPage() {
           </div>
           <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "48px", letterSpacing: "2px", color: "#152238", marginBottom: "12px" }}>PAYMENT SUCCESSFUL!</h1>
           <p style={{ color: "#475467", fontSize: "14px", lineHeight: "1.7", marginBottom: "32px" }}>
-            Your {order.planName} plan has been renewed for ₹{order.totalAmount}. Enjoy uninterrupted connectivity!
+            Your {order.planName} plan has been renewed for ₹{formatCurrency(order.totalAmount)}. Enjoy uninterrupted connectivity!
           </p>
           <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
             <Link href="/dashboard" className="btn-primary" style={{ textDecoration: "none" }}>Go to Dashboard</Link>
@@ -153,16 +154,16 @@ export default function RenewPage() {
             <div style={{ height: "1px", background: "rgba(20,33,61,0.08)", margin: "24px 0" }} />
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
               <span style={{ fontSize: "13px", color: "#667085" }}>Plan Price</span>
-              <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {order.baseAmount}</span>
+              <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {formatCurrency(order.baseAmount)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
               <span style={{ fontSize: "13px", color: "#667085" }}>GST ({order.gstPercent}%)</span>
-              <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {order.gstAmount}</span>
+              <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {formatCurrency(order.gstAmount)}</span>
             </div>
             <div style={{ height: "1px", background: "rgba(20,33,61,0.08)", margin: "16px 0" }} />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "16px", color: "#152238" }}>Total</span>
-              <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", color: "#CC0000", letterSpacing: "1px" }}>Rs. {order.totalAmount}</span>
+              <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", color: "#CC0000", letterSpacing: "1px" }}>Rs. {formatCurrency(order.totalAmount)}</span>
             </div>
           </div>
 
@@ -194,7 +195,7 @@ export default function RenewPage() {
               style={{ width: "100%", border: "none", cursor: paying ? "not-allowed" : "pointer", fontSize: "15px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
             >
               {paying && <RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} />}
-              {paying ? "Processing…" : `Pay Rs. ${order.totalAmount} Securely`}
+              {paying ? "Processing…" : `Pay Rs. ${formatCurrency(order.totalAmount)} Securely`}
             </button>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
               <Shield size={12} color="#667085" />

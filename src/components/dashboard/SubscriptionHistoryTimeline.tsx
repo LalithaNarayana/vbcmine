@@ -1,3 +1,7 @@
+"use client";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
+
 interface PlanRef {
   name: string;
   speed: number;
@@ -47,6 +51,8 @@ function planLabel(plan: PlanRef | null): string {
 }
 
 export default function SubscriptionHistoryTimeline({ history }: SubscriptionHistoryTimelineProps) {
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(history, 5);
+
   return (
     <div>
       <h3
@@ -75,59 +81,68 @@ export default function SubscriptionHistoryTimeline({ history }: SubscriptionHis
           No plan changes recorded yet.
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-          {history.map((entry, i) => (
-            <div
-              key={entry._id}
-              style={{
-                display: "flex",
-                gap: "16px",
-                paddingBottom: i === history.length - 1 ? 0 : "18px",
-                marginBottom: i === history.length - 1 ? 0 : "18px",
-                borderBottom: i === history.length - 1 ? "none" : "1px solid var(--vbc-border)",
-              }}
-            >
-              <div style={{ flexShrink: 0, paddingTop: "3px" }}>
-                <span
-                  style={{
-                    width: "10px",
-                    height: "10px",
-                    borderRadius: "50%",
-                    display: "inline-block",
-                    background: REASON_COLOR[entry.reason],
-                  }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "4px" }}>
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+            {pageItems.map((entry, i) => (
+              <div
+                key={entry._id}
+                style={{
+                  display: "flex",
+                  gap: "16px",
+                  paddingBottom: i === pageItems.length - 1 ? 0 : "18px",
+                  marginBottom: i === pageItems.length - 1 ? 0 : "18px",
+                  borderBottom: i === pageItems.length - 1 ? "none" : "1px solid var(--vbc-border)",
+                }}
+              >
+                <div style={{ flexShrink: 0, paddingTop: "3px" }}>
                   <span
                     style={{
-                      fontFamily: "'Rajdhani', sans-serif",
-                      fontWeight: 700,
-                      fontSize: "13px",
-                      letterSpacing: "0.5px",
-                      textTransform: "uppercase",
-                      color: REASON_COLOR[entry.reason],
+                      width: "10px",
+                      height: "10px",
+                      borderRadius: "50%",
+                      display: "inline-block",
+                      background: REASON_COLOR[entry.reason],
                     }}
-                  >
-                    {REASON_LABEL[entry.reason]}
-                  </span>
-                  <span style={{ fontSize: "12px", color: "var(--vbc-muted)" }}>{formatDate(entry.createdAt)}</span>
+                  />
                 </div>
-                <p style={{ fontSize: "13px", color: "var(--vbc-text)", marginBottom: "2px" }}>
-                  {entry.oldPlan ? (
-                    <>
-                      {planLabel(entry.oldPlan)} <span style={{ color: "var(--vbc-muted)" }}>→</span> {planLabel(entry.newPlan)}
-                    </>
-                  ) : (
-                    planLabel(entry.newPlan)
-                  )}
-                </p>
-                {entry.note && <p style={{ fontSize: "12px", color: "var(--vbc-muted)" }}>{entry.note}</p>}
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "4px" }}>
+                    <span
+                      style={{
+                        fontFamily: "'Rajdhani', sans-serif",
+                        fontWeight: 700,
+                        fontSize: "13px",
+                        letterSpacing: "0.5px",
+                        textTransform: "uppercase",
+                        color: REASON_COLOR[entry.reason],
+                      }}
+                    >
+                      {REASON_LABEL[entry.reason]}
+                    </span>
+                    <span style={{ fontSize: "12px", color: "var(--vbc-muted)" }}>{formatDate(entry.createdAt)}</span>
+                  </div>
+                  <p style={{ fontSize: "13px", color: "var(--vbc-text)", marginBottom: "2px" }}>
+                    {entry.oldPlan ? (
+                      <>
+                        {planLabel(entry.oldPlan)} <span style={{ color: "var(--vbc-muted)" }}>→</span> {planLabel(entry.newPlan)}
+                      </>
+                    ) : (
+                      planLabel(entry.newPlan)
+                    )}
+                  </p>
+                  {entry.note && <p style={{ fontSize: "12px", color: "var(--vbc-muted)" }}>{entry.note}</p>}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="entries"
+          />
+        </>
       )}
     </div>
   );

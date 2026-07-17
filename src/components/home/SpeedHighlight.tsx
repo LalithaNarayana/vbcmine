@@ -6,9 +6,14 @@ import { CircleCheck, Zap, X } from "lucide-react";
 import type { Plan as CmsPlan } from "@/types/plan";
 import AppIcon from "@/components/admin/DynamicIcon";
 import { usePlanRequest } from "@/components/plans/PlanRequestProvider";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
+import UpgradePlanModal from "@/components/plans/UpgradePlanModal";
 
 interface DisplayPlan {
   _id: string;
+  name: string;
+  speedValue: number;
+  speedUnit: string;
   speed: string;
   price: number;
   ott: { name: string; image: string } | null;
@@ -38,6 +43,9 @@ function toDisplayPlans(plans?: CmsPlan[]): DisplayPlan[] | null {
     ) as { text: string }[];
     return {
       _id: p._id,
+      name: p.name,
+      speedValue: p.speed,
+      speedUnit: p.speedUnit,
       speed: `${p.speed} ${p.speedUnit}`,
       price: cheapest,
       // Only plans that actually have OTT apps attached get an ott object.
@@ -60,8 +68,23 @@ export function SpeedHighlight({
 }: SpeedHighlightProps = {}) {
   const [ottPopup, setOttPopup] = useState<{ name: string; image: string } | null>(null);
   const { openPlanRequest } = usePlanRequest();
+  const { user } = useUserSession();
+  const [upgradePlan, setUpgradePlan] = useState<DisplayPlan | null>(null);
   const displayPlans: DisplayPlan[] = toDisplayPlans(cmsPlans) || [];
   const eyebrow = categoryName || tag || "Internet + OTT";
+
+  // Mirrors the /plans page: an existing customer with a live connection
+  // gets the "upgrade" flow (in-session plan switch + payment) instead of
+  // the new-connection request form.
+  const isExistingCustomer = !!user && user.connectionStatus === "active" && !!user.accountId;
+
+  function handleGetPlan(plan: DisplayPlan) {
+    if (isExistingCustomer) {
+      setUpgradePlan(plan);
+    } else {
+      openPlanRequest(plan._id);
+    }
+  }
 
   return (
     <section
@@ -375,7 +398,7 @@ export function SpeedHighlight({
 
                 {/* CTA */}
                 <button
-                  onClick={() => openPlanRequest(plan._id)}
+                  onClick={() => handleGetPlan(plan)}
                   style={{
                     display: "block",
                     width: "100%",
@@ -395,7 +418,7 @@ export function SpeedHighlight({
                     cursor: "pointer",
                   }}
                 >
-                  Get This Plan
+                  {isExistingCustomer ? "Upgrade To This Plan" : "Get This Plan"}
                 </button>
               </div>
             ))}
@@ -514,6 +537,15 @@ export function SpeedHighlight({
           </div>
         </div>
       )}
+
+      <UpgradePlanModal
+        open={!!upgradePlan}
+        onClose={() => setUpgradePlan(null)}
+        planId={upgradePlan?._id || ""}
+        planName={upgradePlan?.name || ""}
+        planSpeed={upgradePlan?.speedValue}
+        planSpeedUnit={upgradePlan?.speedUnit}
+      />
     </section>
   );
 }

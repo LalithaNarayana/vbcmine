@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
 
 interface UserPlan {
   name: string;
@@ -59,6 +61,8 @@ export default function AdminUsersPage() {
     );
   }, [items, query]);
 
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(filtered, 10);
+
   return (
     <div>
       <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
@@ -108,7 +112,7 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((u) => (
+                {pageItems.map((u) => (
                   <tr key={u._id} className="border-t border-gray-100">
                     <td className="px-3 py-3 font-medium text-gray-900" style={{ minWidth: "160px" }}>
                       {u.name}
@@ -146,6 +150,15 @@ export default function AdminUsersPage() {
               </tbody>
             </table>
           )}
+        </div>
+        <div className="admin-card-body" style={{ paddingTop: 0 }}>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="users"
+          />
         </div>
       </div>
     </div>

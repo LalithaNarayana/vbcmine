@@ -12,6 +12,7 @@ import {
   CircleCheck,
   Check,
 } from "lucide-react";
+import { formatCurrency } from "@/lib/format";
 
 type Step = "details" | "otp" | "bill" | "payment" | "success";
 
@@ -319,18 +320,18 @@ export default function PayOnlinePage() {
 
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
                 <span style={{ fontSize: "13px", color: "#667085" }}>Plan Charges</span>
-                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {order.baseAmount}</span>
+                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {formatCurrency(order.baseAmount)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
                 <span style={{ fontSize: "13px", color: "#667085" }}>GST ({order.gstPercent}%)</span>
-                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {order.gstAmount}</span>
+                <span style={{ fontSize: "13px", color: "#152238" }}>Rs. {formatCurrency(order.gstAmount)}</span>
               </div>
 
               <div style={{ height: "1px", background: "rgba(20,33,61,0.08)", margin: "16px 0" }} />
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
                 <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "16px", color: "#152238" }}>Amount Due</span>
-                <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "32px", color: "#CC0000", letterSpacing: "1px" }}>Rs. {order.totalAmount}</span>
+                <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "32px", color: "#CC0000", letterSpacing: "1px" }}>Rs. {formatCurrency(order.totalAmount)}</span>
               </div>
 
               <button
@@ -394,7 +395,7 @@ export default function PayOnlinePage() {
                 style={{ width: "100%", border: "none", cursor: "pointer", fontSize: "15px", padding: "14px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
               >
                 {loading ? <RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} /> : null}
-                {loading ? "Processing..." : `Pay Rs. ${order.totalAmount} Securely`}
+                {loading ? "Processing..." : `Pay Rs. ${formatCurrency(order.totalAmount)} Securely`}
               </button>
 
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
@@ -412,7 +413,7 @@ export default function PayOnlinePage() {
               </div>
               <h1 style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "36px", letterSpacing: "2px", color: "#152238", marginBottom: "12px" }}>PAYMENT SUCCESSFUL!</h1>
               <p style={{ color: "#475467", fontSize: "14px", lineHeight: "1.7", marginBottom: "24px" }}>
-                Rs. {order.totalAmount} has been paid for account <strong>{accountId.toUpperCase()}</strong>. A receipt has been sent to your registered mobile number.
+                Rs. {formatCurrency(order.totalAmount)} has been paid for account <strong>{accountId.toUpperCase()}</strong>. A receipt has been sent to your registered mobile number.
               </p>
               <div style={{ background: "#F8FAFC", border: "1px solid rgba(20,33,61,0.06)", padding: "16px", marginBottom: "28px", textAlign: "left" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#152238" }}>

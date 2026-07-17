@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { CreditCard, Shield, RefreshCw, CircleCheck } from "lucide-react";
 import Modal from "@/components/ui/Modal";
+import { formatCurrency } from "@/lib/format";
 
 interface ConnectionPaymentModalProps {
   open: boolean;
@@ -105,17 +106,17 @@ export default function ConnectionPaymentModal({ open, onClose, onPaid }: Connec
           <div style={{ height: "1px", background: "rgba(20,33,61,0.08)", margin: "12px 0" }} />
           <div style={rowStyle}>
             <span style={{ color: "#667085" }}>Plan Charges</span>
-            <span style={{ color: "#152238" }}>₹{details.baseAmount.toLocaleString("en-IN")}</span>
+            <span style={{ color: "#152238" }}>₹{formatCurrency(details.baseAmount)}</span>
           </div>
           <div style={rowStyle}>
             <span style={{ color: "#667085" }}>GST ({details.gstPercent}%)</span>
-            <span style={{ color: "#152238" }}>₹{details.gstAmount.toLocaleString("en-IN")}</span>
+            <span style={{ color: "#152238" }}>₹{formatCurrency(details.gstAmount)}</span>
           </div>
           <div style={{ height: "1px", background: "rgba(20,33,61,0.08)", margin: "12px 0" }} />
           <div style={{ ...rowStyle, marginBottom: "24px", alignItems: "center" }}>
             <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: "15px", color: "#152238" }}>Amount Due</span>
             <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "28px", color: "#CC0000", letterSpacing: "1px" }}>
-              ₹{details.totalAmount.toLocaleString("en-IN")}
+              ₹{formatCurrency(details.totalAmount)}
             </span>
           </div>
 
@@ -128,7 +129,7 @@ export default function ConnectionPaymentModal({ open, onClose, onPaid }: Connec
             style={{ width: "100%", border: "none", cursor: paying ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "14px" }}
           >
             {paying ? <RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} /> : <CreditCard size={16} />}
-            {paying ? "Processing..." : `Pay ₹${details.totalAmount.toLocaleString("en-IN")} Securely`}
+            {paying ? "Processing..." : `Pay ₹${formatCurrency(details.totalAmount)} Securely`}
           </button>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "16px" }}>

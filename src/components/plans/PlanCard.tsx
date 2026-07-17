@@ -1,9 +1,12 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Check, Star, Zap } from "lucide-react";
 import type { Plan, PlanDuration, PlanBullet } from "@/types/plan";
 import { usePlanRequest } from "./PlanRequestProvider";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
+import UpgradePlanModal from "./UpgradePlanModal";
 
 interface PlanCardProps {
   plan: Plan;
@@ -12,6 +15,20 @@ interface PlanCardProps {
 
 export default function PlanCard({ plan, showRenew }: PlanCardProps) {
   const { openPlanRequest } = usePlanRequest();
+  const { user } = useUserSession();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+
+  // An existing customer with a live connection gets the "upgrade" popup +
+  // payment link instead of the new-connection request form.
+  const isExistingCustomer = !!user && user.connectionStatus === "active" && !!user.accountId;
+
+  function handleGetPlan() {
+    if (isExistingCustomer) {
+      setUpgradeOpen(true);
+    } else {
+      openPlanRequest(plan._id);
+    }
+  }
   // prices/bullets are populated server-side, so duration/text are objects, not ids
   const sortedPrices = [...plan.prices].sort((a, b) => {
     const aMonths = typeof a.duration === "object" ? (a.duration as PlanDuration).months : 0;
@@ -128,13 +145,22 @@ export default function PlanCard({ plan, showRenew }: PlanCardProps) {
         </Link>
       ) : (
         <button
-          onClick={() => openPlanRequest(plan._id)}
+          onClick={handleGetPlan}
           className={plan.mostPopular ? "btn-primary" : "btn-outline"}
           style={{ display: "block", width: "100%", textAlign: "center", border: plan.mostPopular ? "none" : undefined, cursor: "pointer" }}
         >
-          Get Started
+          {isExistingCustomer ? "Upgrade To This Plan" : "Get Started"}
         </button>
       )}
+
+      <UpgradePlanModal
+        open={upgradeOpen}
+        onClose={() => setUpgradeOpen(false)}
+        planId={plan._id}
+        planName={plan.name}
+        planSpeed={plan.speed}
+        planSpeedUnit={plan.speedUnit}
+      />
     </div>
   );
 }

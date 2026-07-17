@@ -1,4 +1,6 @@
 import Badge from "@/components/ui/Badge";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
 
 interface Transaction {
   id: string;
@@ -16,6 +18,7 @@ interface TransactionTableProps {
 export default function TransactionTable({ transactions }: TransactionTableProps) {
   const statusVariant = { success: "green", pending: "yellow", failed: "red" } as const;
   const statusLabel = { success: "Paid", pending: "Pending", failed: "Failed" };
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(transactions, 10);
 
   return (
     <div>
@@ -32,7 +35,7 @@ export default function TransactionTable({ transactions }: TransactionTableProps
             </tr>
           </thead>
           <tbody>
-            {transactions.map((tx, i) => (
+            {pageItems.map((tx, i) => (
               <tr key={tx.id} style={{ borderBottom: "1px solid var(--vbc-border)", background: i % 2 === 0 ? "transparent" : "var(--vbc-surface-alt)" }}>
                 <td style={{ padding: "14px 16px", fontFamily: "'Rajdhani', sans-serif", fontSize: "12px", color: "#CC0000", letterSpacing: "0.5px" }}>{tx.id}</td>
                 <td style={{ padding: "14px 16px", fontSize: "13px", color: "var(--vbc-muted)", whiteSpace: "nowrap" }}>{tx.date}</td>
@@ -50,6 +53,13 @@ export default function TransactionTable({ transactions }: TransactionTableProps
           <div style={{ textAlign: "center", padding: "40px", color: "var(--vbc-muted)", fontFamily: "'Rajdhani', sans-serif" }}>No transactions found</div>
         )}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        itemLabel="transactions"
+      />
     </div>
   );
 }

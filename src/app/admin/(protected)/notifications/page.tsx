@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
 
 interface AdminUserOption {
   _id: string;
@@ -39,6 +41,7 @@ export default function AdminNotificationsPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(batches, 10);
 
   async function loadHistory() {
     setLoadingHistory(true);
@@ -201,7 +204,7 @@ export default function AdminNotificationsPage() {
                 </tr>
               </thead>
               <tbody>
-                {batches.map((b) => {
+                {pageItems.map((b) => {
                   const sentOn = formatSentOn(b.createdAt);
                   return (
                     <tr key={b._id} className="border-t border-gray-100">
@@ -241,6 +244,15 @@ export default function AdminNotificationsPage() {
               </tbody>
             </table>
           )}
+        </div>
+        <div className="admin-card-body" style={{ paddingTop: 0 }}>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="notifications"
+          />
         </div>
       </div>
     </div>

@@ -6,8 +6,15 @@ import PlansExplorer from "@/components/plans/PlansExplorer";
 
 export const dynamic = "force-dynamic";
 
-export default async function PlansPage() {
+interface PlansPageProps {
+  searchParams: Promise<{ upgrade?: string }>;
+}
+
+export default async function PlansPage({ searchParams }: PlansPageProps) {
   await connectDB();
+
+  const { upgrade } = await searchParams;
+  const isUpgradeIntent = upgrade === "1" || upgrade === "true";
 
   const [categories, plans, headings] = await Promise.all([
     PlanCategory.find().sort({ order: 1, createdAt: 1 }).lean(),
@@ -103,6 +110,24 @@ export default async function PlansPage() {
       </section>
 
       <div style={{ padding: "0 24px 100px" }}>
+        {isUpgradeIntent && (
+          <div
+            style={{
+              maxWidth: 1280,
+              margin: "0 auto 24px",
+              background: "rgba(204,0,0,0.06)",
+              border: "1px solid rgba(204,0,0,0.2)",
+              borderRadius: 8,
+              padding: "14px 20px",
+              textAlign: "center",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 13,
+              color: "#152238",
+            }}
+          >
+            Pick a new plan below and we&apos;ll take you straight to payment — no need to fill out the connection form again.
+          </div>
+        )}
         <PlansExplorer
           categories={serializedCategories}
           plansByCategory={plansByCategory}

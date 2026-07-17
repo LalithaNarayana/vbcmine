@@ -206,6 +206,14 @@ export default async function ServiceDetailPage({ params }: Props) {
                   )}
                 </div>
               )}
+
+              <div style={{ marginTop: 24, textAlign: "center" }}>
+                <ServiceEnquireButton
+                  serviceId={String(service._id)}
+                  services={serviceOptions}
+                  cities={cityNames}
+                />
+              </div>
             </div>
 
             <div>
@@ -251,12 +259,6 @@ export default async function ServiceDetailPage({ params }: Props) {
                   </ul>
                 </>
               )}
-
-              <ServiceEnquireButton
-                serviceId={String(service._id)}
-                services={serviceOptions}
-                cities={cityNames}
-              />
             </div>
           </div>
         </div>

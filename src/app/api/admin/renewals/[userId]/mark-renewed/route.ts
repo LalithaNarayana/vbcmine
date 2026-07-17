@@ -5,6 +5,7 @@ import User from "@/models/User";
 import ConnectionRequest from "@/models/ConnectionRequest";
 import Payment from "@/models/Payment";
 import { getOrCreateMasterSettings } from "@/models/MasterSettings";
+import { calculateGst, roundToTwoDecimals } from "@/lib/planPricing";
 import { requireAdmin } from "@/lib/auth";
 import { logSubscriptionChange } from "@/lib/subscriptionHistory";
 
@@ -60,8 +61,8 @@ export async function POST(_req: NextRequest, { params }: Params) {
     const baseAmount = cheapestPrice(planDoc.prices);
     const masterSettings = await getOrCreateMasterSettings();
     const gstPercent = masterSettings.gstPercent;
-    const gstAmount = Math.round((baseAmount * gstPercent) / 100);
-    const totalAmount = baseAmount + gstAmount;
+    const gstAmount = calculateGst(baseAmount, gstPercent);
+    const totalAmount = roundToTwoDecimals(baseAmount + gstAmount);
 
     const payment = await Payment.create({
       user: user._id,

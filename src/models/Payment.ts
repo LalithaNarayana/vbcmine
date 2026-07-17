@@ -3,7 +3,7 @@ import mongoose, { Schema, Model, Document, Types } from "mongoose";
 import "@/models/User";
 import "@/models/Plan";
 
-export type PaymentPurpose = "new-connection" | "renewal";
+export type PaymentPurpose = "new-connection" | "renewal" | "upgrade";
 
 export interface IPayment extends Document {
   user: Types.ObjectId; // ref User
@@ -27,7 +27,7 @@ const PaymentSchema = new Schema<IPayment>(
     plan: { type: Schema.Types.ObjectId, ref: "Plan", required: true },
     purpose: {
       type: String,
-      enum: ["new-connection", "renewal"],
+      enum: ["new-connection", "renewal", "upgrade"],
       default: "renewal",
     },
     baseAmount: { type: Number, required: true },

@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { IndianRupee, Clock, XCircle } from "lucide-react";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
 
 interface PaymentUser {
   name: string;
@@ -90,6 +92,8 @@ export default function AdminPaymentsPage() {
       return true;
     });
   }, [items, statusFilter, fromDate, toDate]);
+
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(filtered, 10);
 
   const STAT_CARDS = totals
     ? [
@@ -197,7 +201,7 @@ export default function AdminPaymentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((p) => {
+                {pageItems.map((p) => {
                   const d = formatDate(p.createdAt);
                   return (
                     <tr key={p._id} className="border-t border-gray-100">
@@ -240,6 +244,15 @@ export default function AdminPaymentsPage() {
               </tbody>
             </table>
           )}
+        </div>
+        <div className="admin-card-body" style={{ paddingTop: 0 }}>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="transactions"
+          />
         </div>
       </div>
     </div>

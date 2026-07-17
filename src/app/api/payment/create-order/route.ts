@@ -4,13 +4,16 @@ import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import ConnectionRequest from "@/models/ConnectionRequest";
 import Payment from "@/models/Payment";
+import Plan from "@/models/Plan";
 import { getOrCreateMasterSettings } from "@/models/MasterSettings";
-import { cheapestPrice } from "@/lib/planPricing";
+import { cheapestPrice, calculateGst, roundToTwoDecimals } from "@/lib/planPricing";
 import { getPaymentProvider } from "@/lib/payment";
 import { requireUser } from "@/lib/userAuth";
 
 const bodySchema = z.object({
-  purpose: z.enum(["new-connection", "renewal"]).default("renewal"),
+  purpose: z.enum(["new-connection", "renewal", "upgrade"]).default("renewal"),
+  // Required when purpose === "upgrade" — the plan the user wants to move to.
+  planId: z.string().optional(),
 });
 
 /**
@@ -18,6 +21,9 @@ const bodySchema = z.object({
  * applies the current GST % from MasterSettings, creates a local Payment
  * record, and opens an order with the configured PaymentProvider (mock
  * for now, a real gateway later via PAYMENT_PROVIDER env swap).
+ *
+ * For purpose === "upgrade", the amount charged is for the NEW plan
+ * (passed in via planId) rather than the plan the user is currently on.
  */
 export async function POST(req: NextRequest) {
   const session = await requireUser();
@@ -32,7 +38,14 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const { purpose } = parsed.data;
+    const { purpose, planId } = parsed.data;
+
+    if (purpose === "upgrade" && !planId) {
+      return NextResponse.json(
+        { error: "Please select a plan to upgrade to." },
+        { status: 400 }
+      );
+    }
 
     await connectDB();
 
@@ -55,11 +68,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const planDoc = assignedRequest.plan as unknown as {
+    const currentPlanDoc = assignedRequest.plan as unknown as {
       _id: { toString(): string };
       name: string;
       prices: { duration: unknown; price: number }[];
     };
+
+    // For an upgrade, the payment (and the amount charged) is for the
+    // NEW plan the user picked — not the plan they're currently on.
+    let planDoc = currentPlanDoc;
+    if (purpose === "upgrade") {
+      if (currentPlanDoc._id.toString() === planId) {
+        return NextResponse.json(
+          { error: "You're already on this plan." },
+          { status: 400 }
+        );
+      }
+      const targetPlan = await Plan.findById(planId).select("name prices");
+      if (!targetPlan) {
+        return NextResponse.json({ error: "Selected plan was not found." }, { status: 404 });
+      }
+      planDoc = targetPlan as unknown as {
+        _id: { toString(): string };
+        name: string;
+        prices: { duration: unknown; price: number }[];
+      };
+    }
 
     const baseAmount = cheapestPrice(planDoc.prices);
     if (baseAmount <= 0) {
@@ -71,8 +105,8 @@ export async function POST(req: NextRequest) {
 
     const masterSettings = await getOrCreateMasterSettings();
     const gstPercent = masterSettings.gstPercent;
-    const gstAmount = Math.round((baseAmount * gstPercent) / 100);
-    const totalAmount = baseAmount + gstAmount;
+    const gstAmount = calculateGst(baseAmount, gstPercent);
+    const totalAmount = roundToTwoDecimals(baseAmount + gstAmount);
 
     const payment = await Payment.create({
       user: user._id,
@@ -102,6 +136,7 @@ export async function POST(req: NextRequest) {
       providerOrderId: order.providerOrderId,
       currency: order.currency,
       planName: planDoc.name,
+      currentPlanName: purpose === "upgrade" ? currentPlanDoc.name : undefined,
       baseAmount,
       gstPercent,
       gstAmount,

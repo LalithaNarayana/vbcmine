@@ -3,7 +3,7 @@ import connectDB from "@/lib/mongodb";
 import ConnectionRequest from "@/models/ConnectionRequest";
 import Payment from "@/models/Payment";
 import { getOrCreateMasterSettings } from "@/models/MasterSettings";
-import { cheapestPrice } from "@/lib/planPricing";
+import { cheapestPrice, calculateGst, roundToTwoDecimals } from "@/lib/planPricing";
 import { requireAdmin } from "@/lib/auth";
 import { notifyUserOnce } from "@/lib/notify";
 
@@ -65,8 +65,8 @@ export async function POST(_req: Request, { params }: Params) {
 
     const masterSettings = await getOrCreateMasterSettings();
     const gstPercent = masterSettings.gstPercent;
-    const gstAmount = Math.round((baseAmount * gstPercent) / 100);
-    const totalAmount = baseAmount + gstAmount;
+    const gstAmount = calculateGst(baseAmount, gstPercent);
+    const totalAmount = roundToTwoDecimals(baseAmount + gstAmount);
 
     const payment = await Payment.create({
       user: connectionRequest.user,
@@ -92,7 +92,7 @@ export async function POST(_req: Request, { params }: Params) {
       connectionRequest.user,
       "payment",
       "Payment required to proceed",
-      `Good news — your connection request has been verified! Please pay ₹${totalAmount.toLocaleString("en-IN")} to proceed with installation.`,
+      `Good news — your connection request has been verified! Please pay ₹${totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} to proceed with installation.`,
       `payment-link:${connectionRequest._id.toString()}`
     );
 

@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { Types } from "mongoose";
 import connectDB from "@/lib/mongodb";
 import Payment from "@/models/Payment";
 import ConnectionRequest from "@/models/ConnectionRequest";
 import { getPaymentProvider } from "@/lib/payment";
 import { requireUser } from "@/lib/userAuth";
 import { notifyUserOnce } from "@/lib/notify";
-import { logSubscriptionChange } from "@/lib/subscriptionHistory";
+import { logSubscriptionChange, classifyPlanChange } from "@/lib/subscriptionHistory";
+import { cheapestPrice } from "@/lib/planPricing";
 
 const bodySchema = z.object({
   paymentId: z.string().min(1, "Missing payment reference."),
@@ -72,7 +74,47 @@ export async function POST(req: NextRequest) {
           payment.user,
           "payment",
           "Payment successful",
-          `We've received your payment of ₹${payment.totalAmount.toLocaleString("en-IN")}. Our team will now schedule the router installation and assign your Account ID shortly.`,
+          `We've received your payment of ₹${payment.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Our team will now schedule the router installation and assign your Account ID shortly.`,
+          `payment:${payment._id.toString()}`
+        );
+      } else if (payment.purpose === "upgrade") {
+        // Move the user's active connection onto the new plan and log the
+        // change so it shows up in their subscription history timeline.
+        const assignedRequest = await ConnectionRequest.findOne({
+          user: payment.user,
+          status: "assigned",
+        })
+          .sort({ updatedAt: -1 })
+          .populate({ path: "plan", select: "name prices" });
+
+        if (assignedRequest && assignedRequest.plan) {
+          const oldPlanDoc = assignedRequest.plan as unknown as {
+            _id: Types.ObjectId;
+            name: string;
+            prices: { duration: unknown; price: number }[];
+          };
+          const oldPlanId = oldPlanDoc._id;
+          const oldPlanName = oldPlanDoc.name;
+          const oldPrice = cheapestPrice(oldPlanDoc.prices);
+          const reason = classifyPlanChange(oldPrice, payment.baseAmount);
+
+          assignedRequest.plan = payment.plan;
+          await assignedRequest.save();
+
+          await logSubscriptionChange({
+            userId: payment.user,
+            oldPlanId,
+            newPlanId: payment.plan,
+            reason,
+            note: `Plan ${reason}d from ${oldPlanName} via online payment of ₹${payment.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`,
+          });
+        }
+
+        await notifyUserOnce(
+          payment.user,
+          "payment",
+          "Plan upgraded",
+          `Your payment of ₹${payment.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} was successful and your plan has been updated. Enjoy your new plan!`,
           `payment:${payment._id.toString()}`
         );
       } else {
@@ -80,7 +122,7 @@ export async function POST(req: NextRequest) {
           payment.user,
           "payment",
           "Payment received",
-          `We've received your payment of ₹${payment.totalAmount.toLocaleString("en-IN")}. Thank you!`,
+          `We've received your payment of ₹${payment.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Thank you!`,
           `payment:${payment._id.toString()}`
         );
 
@@ -89,7 +131,7 @@ export async function POST(req: NextRequest) {
           oldPlanId: payment.plan,
           newPlanId: payment.plan,
           reason: "renewal",
-          note: `Plan renewed via online payment of ₹${payment.totalAmount.toLocaleString("en-IN")}.`,
+          note: `Plan renewed via online payment of ₹${payment.totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`,
         });
       }
     }

@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Loader2, RefreshCw } from "lucide-react";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
 
 interface RenewalRow {
   userId: string;
@@ -54,6 +56,8 @@ export default function AdminRenewalsPage() {
     if (tab === "overdue") return items.filter((i) => i.daysLeft < 0);
     return items;
   }, [items, tab]);
+
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(filtered, 10);
 
   const counts = useMemo(
     () => ({
@@ -128,7 +132,7 @@ export default function AdminRenewalsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((row) => (
+                {pageItems.map((row) => (
                   <tr key={row.userId} className="border-t border-gray-100">
                     <td className="px-3 py-3" style={{ minWidth: "180px" }}>
                       <div className="font-medium text-gray-900">{row.name}</div>
@@ -180,6 +184,15 @@ export default function AdminRenewalsPage() {
               </tbody>
             </table>
           )}
+        </div>
+        <div className="admin-card-body" style={{ paddingTop: 0 }}>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="customers"
+          />
         </div>
       </div>
     </div>

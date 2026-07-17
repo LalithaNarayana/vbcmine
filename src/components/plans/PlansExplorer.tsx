@@ -4,6 +4,8 @@ import { useState } from "react";
 import { CheckCircle, Zap, X } from "lucide-react";
 import AppIcon from "@/components/admin/DynamicIcon";
 import { usePlanRequest } from "./PlanRequestProvider";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
+import UpgradePlanModal from "./UpgradePlanModal";
 import type { PlanCategory, Plan, PlanDuration, PlanBullet } from "@/types/plan";
 
 interface PlansExplorerProps {
@@ -30,8 +32,22 @@ function bulletTexts(plan: Plan): string[] {
 
 export default function PlansExplorer({ categories, plansByCategory, topTagline, bottomTagline }: PlansExplorerProps) {
   const { openPlanRequest } = usePlanRequest();
+  const { user } = useUserSession();
   const [activeTab, setActiveTab] = useState(categories[0]?._id || "");
   const [ottPopup, setOttPopup] = useState<{ name: string; image: string } | null>(null);
+  const [upgradePlan, setUpgradePlan] = useState<Plan | null>(null);
+
+  // An existing customer with a live connection gets the "upgrade" popup +
+  // payment link instead of the new-connection request form.
+  const isExistingCustomer = !!user && user.connectionStatus === "active" && !!user.accountId;
+
+  function handleGetPlan(plan: Plan) {
+    if (isExistingCustomer) {
+      setUpgradePlan(plan);
+    } else {
+      openPlanRequest(plan._id);
+    }
+  }
 
   if (categories.length === 0) {
     return (
@@ -249,7 +265,7 @@ export default function PlansExplorer({ categories, plansByCategory, topTagline,
                     )}
 
                     <button
-                      onClick={() => openPlanRequest(plan._id)}
+                      onClick={() => handleGetPlan(plan)}
                       style={{
                         display: "block",
                         width: "100%",
@@ -268,7 +284,7 @@ export default function PlansExplorer({ categories, plansByCategory, topTagline,
                         cursor: "pointer",
                       }}
                     >
-                      Get This Plan
+                      {isExistingCustomer ? "Upgrade To This Plan" : "Get This Plan"}
                     </button>
                   </div>
                 );
@@ -347,6 +363,15 @@ export default function PlansExplorer({ categories, plansByCategory, topTagline,
           </div>
         </div>
       )}
+
+      <UpgradePlanModal
+        open={!!upgradePlan}
+        onClose={() => setUpgradePlan(null)}
+        planId={upgradePlan?._id || ""}
+        planName={upgradePlan?.name || ""}
+        planSpeed={upgradePlan?.speed}
+        planSpeedUnit={upgradePlan?.speedUnit}
+      />
 
       <style>{`
         .plan-tile:hover { transform: translateY(-4px); }

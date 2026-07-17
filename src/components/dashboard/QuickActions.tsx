@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { RefreshCw, FileText, Headphones, Wifi, User, CreditCard } from "lucide-react";
+import { RefreshCw, FileText, Headphones, Wifi, TrendingUp, CreditCard } from "lucide-react";
 
 const actions = [
   { icon: <RefreshCw size={20} />, label: "Renew Plan", href: "/renew", primary: true },
   { icon: <FileText size={20} />, label: "Raise Ticket", href: "/dashboard/complaints", primary: false },
   { icon: <Headphones size={20} />, label: "Support", href: "/contact", primary: false },
   { icon: <Wifi size={20} />, label: "Speed Test", href: "#", primary: false },
-  { icon: <User size={20} />, label: "Edit Profile", href: "#", primary: false },
+  { icon: <TrendingUp size={20} />, label: "Upgrade Plan", href: "/plans?upgrade=1", primary: false },
   { icon: <CreditCard size={20} />, label: "Pay Bill", href: "/renew", primary: false },
 ];
 

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Pagination from "@/components/ui/Pagination";
+import { usePagination } from "@/lib/usePagination";
 
 interface BusinessServiceRequestItem {
   _id: string;
@@ -33,6 +35,7 @@ export default function AdminBusinessRequestsPage() {
   const [items, setItems] = useState<BusinessServiceRequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const { pageItems, currentPage, setCurrentPage, totalItems, pageSize } = usePagination(items, 10);
 
   async function load() {
     setLoading(true);
@@ -100,7 +103,7 @@ export default function AdminBusinessRequestsPage() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => {
+                {pageItems.map((item) => {
                   const submittedOn = formatSubmittedOn(item.createdAt);
                   return (
                     <tr key={item._id} className="border-t border-gray-100">
@@ -155,6 +158,15 @@ export default function AdminBusinessRequestsPage() {
               </tbody>
             </table>
           )}
+        </div>
+        <div className="admin-card-body" style={{ paddingTop: 0 }}>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="requests"
+          />
         </div>
       </div>
     </div>
