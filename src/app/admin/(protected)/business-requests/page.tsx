@@ -7,6 +7,7 @@ import { usePagination } from "@/lib/usePagination";
 interface BusinessServiceRequestItem {
   _id: string;
   businessServiceName: string;
+  name: string;
   city: string;
   address: string;
   mobile: string;
@@ -95,6 +96,7 @@ export default function AdminBusinessRequestsPage() {
               <thead>
                 <tr>
                   <th className="px-3 py-2">Business Service</th>
+                  <th className="px-3 py-2">Name</th>
                   <th className="px-3 py-2">Contact Details</th>
                   <th className="px-3 py-2">City / Address</th>
                   <th className="px-3 py-2">Message</th>
@@ -111,7 +113,12 @@ export default function AdminBusinessRequestsPage() {
                         <div className="font-medium text-gray-900">{item.businessServiceName}</div>
                       </td>
                       <td className="px-3 py-3" style={{ whiteSpace: "nowrap" }}>
-                        {item.mobile}
+                        <div className="font-medium text-gray-900">{item.name}</div>
+                      </td>
+                      <td className="px-3 py-3" style={{ whiteSpace: "nowrap" }}>
+                        <a href={`tel:${item.mobile}`} style={{ color: "#CC0000", textDecoration: "none" }}>
+                          {item.mobile}
+                        </a>
                       </td>
                       <td className="px-3 py-3" style={{ minWidth: "200px", maxWidth: "260px" }}>
                         <div style={{ fontWeight: 500, color: "#344054" }}>{item.city}</div>

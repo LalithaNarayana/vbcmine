@@ -90,24 +90,28 @@ export default function ContactPageClient({ settings, cities, heading }: Contact
       title: "Visit Us",
       html: settings.address || "",
       lines: null as string[] | null,
+      hrefPrefix: null as string | null,
     },
     {
       icon: <Phone size={20} />,
       title: "Call Us",
       html: "",
       lines: [settings.contact1, settings.contact2].filter(Boolean) as string[],
+      hrefPrefix: "tel:",
     },
     {
       icon: <Mail size={20} />,
       title: "Email Us",
       html: "",
       lines: [settings.mail1, settings.mail2].filter(Boolean) as string[],
+      hrefPrefix: "mailto:",
     },
     {
       icon: <Clock size={20} />,
       title: "Working Hours",
       html: settings.workingHours || "",
       lines: null as string[] | null,
+      hrefPrefix: null as string | null,
     },
   ].filter((item) => (item.lines && item.lines.length > 0) || item.html.trim().length > 0);
 
@@ -238,11 +242,23 @@ export default function ContactPageClient({ settings, cities, heading }: Contact
                       {item.title}
                     </div>
                     {item.lines ? (
-                      item.lines.map((line, j) => (
-                        <div key={j} style={{ fontSize: 13, color: "#475467", lineHeight: 1.8 }}>
-                          {line}
-                        </div>
-                      ))
+                      item.lines.map((line, j) =>
+                        item.hrefPrefix ? (
+                          <a
+                            key={j}
+                            href={`${item.hrefPrefix}${item.hrefPrefix === "tel:" ? line.replace(/[^\d+]/g, "") : line}`}
+                            style={{ display: "block", fontSize: 13, color: "#475467", lineHeight: 1.8, textDecoration: "none" }}
+                            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#CC0000")}
+                            onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#475467")}
+                          >
+                            {line}
+                          </a>
+                        ) : (
+                          <div key={j} style={{ fontSize: 13, color: "#475467", lineHeight: 1.8 }}>
+                            {line}
+                          </div>
+                        )
+                      )
                     ) : (
                       <div
                         className="ck-content"

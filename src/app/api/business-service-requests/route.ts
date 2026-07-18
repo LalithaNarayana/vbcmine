@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/auth";
 
 const createSchema = z.object({
   businessServiceId: z.string().min(1, "Please select a business service."),
+  name: z.string().trim().min(1, "Please enter your name."),
   city: z.string().trim().min(1, "Please select your city."),
   address: z.string().trim().optional().default(""),
   mobile: z
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const { businessServiceId, city, address, mobile, message } = parsed.data;
+    const { businessServiceId, name, city, address, mobile, message } = parsed.data;
 
     await connectDB();
 
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
     const request = await BusinessServiceRequest.create({
       businessService: service._id,
       businessServiceName: service.name,
+      name,
       city,
       address,
       mobile,

@@ -43,8 +43,8 @@ export default function Footer({
 }: FooterProps = {}) {
   const logoSrc = logo || "/images/logo.png";
   const siteLabel = siteName || "VBC On Fiber";
-  const phoneDisplay = [contact1, contact2].filter(Boolean).join(", ");
-  const mailDisplay = [mail1, mail2].filter(Boolean).join(", ");
+  const phones = [contact1, contact2].filter(Boolean) as string[];
+  const mails = [mail1, mail2].filter(Boolean) as string[];
   const services = businessServices || [];
 
   return (
@@ -133,16 +133,38 @@ export default function Footer({
                   <span style={{ color: "#6B7280" }}>Address not set.</span>
                 )}
               </div>
-              {phoneDisplay && (
+              {phones.length > 0 && (
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Phone size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                  <span>{phoneDisplay}</span>
+                  <div>
+                    {phones.map((p, i) => (
+                      <a
+                        key={i}
+                        href={`tel:${p.replace(/[^\d+]/g, "")}`}
+                        className="footer-contact-link"
+                        style={{ display: "block", color: "#B7BDC6", textDecoration: "none" }}
+                      >
+                        {p}
+                      </a>
+                    ))}
+                  </div>
                 </div>
               )}
-              {mailDisplay && (
+              {mails.length > 0 && (
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Mail size={16} color="#CC0000" style={{ flexShrink: 0, marginTop: "4px" }} />
-                  <span>{mailDisplay}</span>
+                  <div>
+                    {mails.map((m, i) => (
+                      <a
+                        key={i}
+                        href={`mailto:${m}`}
+                        className="footer-contact-link"
+                        style={{ display: "block", color: "#B7BDC6", textDecoration: "none" }}
+                      >
+                        {m}
+                      </a>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -192,6 +214,9 @@ export default function Footer({
         }
         .footer-service-link:hover {
           color: #CC0000;
+        }
+        .footer-contact-link:hover {
+          color: #CC0000 !important;
         }
         @media (max-width: 960px) {
           .footer-grid {

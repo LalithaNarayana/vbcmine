@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { X, Briefcase, MapPin, Phone, MessageSquare, CircleCheck } from "lucide-react";
+import { X, Briefcase, MapPin, Phone, MessageSquare, CircleCheck, User } from "lucide-react";
+import { useUserSession } from "@/components/auth/UserSessionProvider";
 
 interface ServiceOption {
   _id: string;
@@ -46,7 +47,10 @@ export default function BusinessServiceEnquiryModal({
   preselectedServiceId,
   cities,
 }: BusinessServiceEnquiryModalProps) {
+  const { user } = useUserSession();
+
   const [businessServiceId, setBusinessServiceId] = useState("");
+  const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [mobile, setMobile] = useState("");
@@ -56,16 +60,21 @@ export default function BusinessServiceEnquiryModal({
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  // When the visitor is logged in, their name & mobile come straight from
+  // the user session instead of being typed in manually.
+  const isSessionPrefilled = !!user;
+
   const resetState = useCallback(() => {
     setBusinessServiceId(preselectedServiceId || "");
+    setName(user?.name || "");
     setCity("");
     setAddress("");
-    setMobile("");
+    setMobile(user?.mobile || "");
     setMessage("");
     setLoading(false);
     setError("");
     setSubmitted(false);
-  }, [preselectedServiceId]);
+  }, [preselectedServiceId, user]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -76,6 +85,7 @@ export default function BusinessServiceEnquiryModal({
 
   const canSubmit =
     !!businessServiceId &&
+    name.trim().length >= 2 &&
     !!city &&
     /^\d{10}$/.test(mobile) &&
     message.trim().length >= 5 &&
@@ -89,7 +99,7 @@ export default function BusinessServiceEnquiryModal({
       const res = await fetch("/api/business-service-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessServiceId, city, address, mobile, message }),
+        body: JSON.stringify({ businessServiceId, name, city, address, mobile, message }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -227,6 +237,37 @@ export default function BusinessServiceEnquiryModal({
                   </div>
                 </div>
 
+                {/* Name */}
+                <div>
+                  <label style={labelStyle}>Your Name *</label>
+                  <div style={{ position: "relative" }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: "14px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        color: "#CC0000",
+                        display: "flex",
+                      }}
+                    >
+                      <User size={14} />
+                    </div>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      readOnly={isSessionPrefilled}
+                      placeholder="Enter your full name"
+                      style={{
+                        ...inputStyle,
+                        background: isSessionPrefilled ? "#F2F4F7" : "#ffffff",
+                        cursor: isSessionPrefilled ? "not-allowed" : "text",
+                      }}
+                    />
+                  </div>
+                </div>
+
                 {/* City */}
                 <div>
                   <label style={labelStyle}>Select City *</label>
@@ -287,8 +328,13 @@ export default function BusinessServiceEnquiryModal({
                       maxLength={10}
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+                      readOnly={isSessionPrefilled}
                       placeholder="+91 XXXXX XXXXX"
-                      style={inputStyle}
+                      style={{
+                        ...inputStyle,
+                        background: isSessionPrefilled ? "#F2F4F7" : "#ffffff",
+                        cursor: isSessionPrefilled ? "not-allowed" : "text",
+                      }}
                     />
                   </div>
                 </div>
